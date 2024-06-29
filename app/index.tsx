@@ -1,0 +1,67 @@
+import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { colors } from '@/utils/colors';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getHeaders, removeStorge } from '@/services/MainService';
+
+const SplashScreenView = () => {
+    const navigation = useNavigation();
+    const [headers, setHeaders] = useState(null)
+
+    useEffect(() => {
+      //AsyncStorage.removeItem("tokenGesco").then()
+      const fetchHeaders = async () => {
+        try {
+          const headersData = await getHeaders();
+          console.log(headersData)
+          return headersData
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      
+      fetchHeaders().then((res: any) => {
+        if (res !== "Pas de donnée stockée") {
+          setHeaders(res.headers);
+          console.log(headers)
+          console.log("Nous sommes dans le Teacher")
+          setTimeout(() => {
+            navigation.navigate("(tabs)")
+          }, 3000)
+        } else {
+          setTimeout(() => {
+            console.log("Nous sommes dans le login")
+            navigation.navigate('connexion');
+          }, 3000)
+        }
+      });
+    }, []);
+
+    return (
+      <View style={styles.container}>
+        <Animated.View
+          entering={FadeIn.delay(200).duration(1000).springify()}
+        >
+          <Image source={require("@/assets/images/logo_blanc.png")} style={styles.image} />
+        </Animated.View>
+      </View>
+    );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.BLEU
+  },
+  image: {
+    height: 150,
+    width: 150,
+    resizeMode: 'cover'
+  }
+});
+
+export default SplashScreenView;

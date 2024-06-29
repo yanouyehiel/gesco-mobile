@@ -12,8 +12,20 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  /*const [loaded] = useFonts({
+    SpaceMono: require('@/assets/fonts/CormorantGaramond-Regular.ttf'),
+  });*/
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    'Bold': require('@/assets/fonts/CormorantGaramond-Bold.ttf'),
+    'Bold-Italic': require('@/assets/fonts/CormorantGaramond-BoldItalic.ttf'),
+    'Italic': require('@/assets/fonts/CormorantGaramond-Italic.ttf'),
+    'Light': require('@/assets/fonts/CormorantGaramond-Light.ttf'),
+    'Light-Italic': require('@/assets/fonts/CormorantGaramond-LightItalic.ttf'),
+    'Medium': require('@/assets/fonts/CormorantGaramond-Medium.ttf'),
+    'Medium-Italic': require('@/assets/fonts/CormorantGaramond-MediumItalic.ttf'),
+    'Regular': require('@/assets/fonts/CormorantGaramond-Regular.ttf'),
+    'SemiBold': require('@/assets/fonts/CormorantGaramond-SemiBold.ttf'),
+    'SemiBold-Italic': require('@/assets/fonts/CormorantGaramond-SemiBoldItalic.ttf')
   });
 
   useEffect(() => {
@@ -28,7 +40,14 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+      <Stack
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="connexion" />
+        <Stack.Screen name='onboarding' />
+        <Stack.Screen name='register' />
+        <Stack.Screen name='otp-code' />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
