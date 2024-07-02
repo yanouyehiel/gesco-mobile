@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Button, Image, Modal, TouchableOpacity, Dimensions, FlatList, ScrollView, SafeAreaView  } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, Button, Image, Modal, TouchableOpacity, Dimensions, FlatList, ScrollView, SafeAreaView, KeyboardAvoidingView  } from 'react-native'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { colors } from '@/utils/colors'
 import { AntDesign } from '@expo/vector-icons';
 import AjouterCours from '@/components/AjouterCours';
@@ -12,7 +12,9 @@ import { useLocalSearchParams } from 'expo-router';
 import { useRoute } from '@react-navigation/native';
 import AxiosApi from '@/services/AxiosApi';
 import axios from 'axios';
-//import Modal from 'react-native-modal';
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
+import "react-native-gesture-handler"
+import BottomSheet from '@gorhom/bottom-sheet';
 
 const CourseScreen = () => {
   const route = useRoute()
@@ -22,6 +24,12 @@ const CourseScreen = () => {
   const [cours, setCours] = useState([])
   const [loading, setLoading] = useState(true)
 
+  const bottomSheetModalRef = useRef(null);
+  const snapPoints = useMemo(() => ['25%', '50%', '70%', '100%'], []);
+  const handleOpenPress = () => bottomSheetModalRef.current?.expand();
+  const handleClosePress = () => bottomSheetModalRef.current?.close()
+  const snapToIndex = (index) => bottomSheetModalRef.current?.snapToIndex(index)
+
   useEffect(() => {
     getCours().then(() => setLoading(false))
   }, [classe, user, headers])
@@ -29,7 +37,6 @@ const CourseScreen = () => {
   const getCours = async () => {
     try {
       const res = await axios.get('https://test.comtheplug.com/api/get-cours-classe/' + classe.id, {headers: headers});
-      console.log(res.data)
       setCours(res.data.cours);
     } catch (error) {
       console.error('Erreur lors de la récupération des cours:', error);
@@ -38,106 +45,109 @@ const CourseScreen = () => {
 
   return (
     <SafeAreaView>
-      <ScrollView>
-        <View style={styles.banner}>
-          <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
-            <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
-              <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace</Text>
-              <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 100}}>
-                <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
+      <KeyboardAvoidingView>
+        <ScrollView>
+          <View style={styles.banner}>
+            <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
+              <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
+                <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace</Text>
+                <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 100}}>
+                  <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
+                </View>
               </View>
-            </View>
-            <View style={{width: "30%"}}>
-              <Image source={require("@/assets/images/ob5.png")} style={{width: 80, height: 80}} />
+              <View style={{width: "30%"}}>
+                <Image source={require("@/assets/images/ob5.png")} style={{width: 80, height: 80}} />
+              </View>
             </View>
           </View>
-        </View>
 
-        <View style={{margin: 15}}>
-          <Heading text={"Tous les cours"} />
-          {!loading ? <FlatList
-            data={cours}
-            showsVerticalScrollIndicator={false}
-            horizontal={false}
-            renderItem={({item, i}) => (
-              <View key={i} style={styles.cours}>
-                <View style={styles.coursImage}>
-                  <Image source={require("@/assets/images/cours.png")} style={{width: 50, height: 50}} />
+          <View style={{margin: 15}}>
+            <Heading text={"Tous les cours"} />
+            {!loading ? <FlatList
+              data={cours}
+              showsVerticalScrollIndicator={false}
+              horizontal={false}
+              renderItem={({item, i}) => (
+                <View key={i} style={styles.cours}>
+                  <View style={styles.coursImage}>
+                    <Image source={require("@/assets/images/cours.png")} style={{width: 50, height: 50}} />
+                  </View>
+                  <View style={styles.coursDesc}>
+                    <Text style={{fontSize: 20, fontFamily: 'SemiBold'}}>{item.titre}</Text>
+                    <Text style={[styles.text, {fontSize: 18}]} numberOfLines={2} ellipsizeMode="tail">{longueurTexte(item.description, 35)}</Text>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                      <Text style={[styles.text, {fontFamily: 'Bold'}]}>{longueurTexte(item.nom_matiere)}</Text>
+                      <Text style={styles.text}>{item.nom_teacher + ' ' + item.prenom_teacher}</Text>
+                    </View>
+                    <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
+                  </View>
+                </View>
+              )}
+            /> :
+            [0, 1, 2, 3, 4].map((t, i) => (
+              <View style={styles.cours} key={i}>
+                <View style={{marginRight: 10}}>
+                  <Skeleton 
+                    show={true}
+                    width={50}
+                    height={50} 
+                    colorMode='light'
+                  />
                 </View>
                 <View style={styles.coursDesc}>
-                  <Text style={{fontSize: 20, fontFamily: 'SemiBold'}}>{item.titre}</Text>
-                  <Text style={[styles.text, {fontSize: 18}]} numberOfLines={2} ellipsizeMode="tail">{longueurTexte(item.description, 35)}</Text>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={[styles.text, {fontFamily: 'Bold'}]}>{longueurTexte(item.nom_matiere)}</Text>
-                    <Text style={styles.text}>{item.nom_teacher + ' ' + item.prenom_teacher}</Text>
+                  <View style={{marginBottom: 10}}>
+                    <Skeleton 
+                      show={true}
+                      width={150}
+                      height={10} 
+                      colorMode='light'
+                    />
                   </View>
-                  <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
+                  <View style={{marginBottom: 10}}>
+                    <Skeleton 
+                      show={true}
+                      width={250}
+                      height={10} 
+                      colorMode='light'
+                    />
+                  </View>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <Skeleton 
+                      show={true}
+                      width={100}
+                      height={10} 
+                      colorMode='light'
+                    />
+                    <Skeleton 
+                      show={true}
+                      width={70}
+                      height={10} 
+                      colorMode='light'
+                    />
+                  </View>
                 </View>
               </View>
-            )}
-          /> :
-          [0, 1, 2, 3, 4].map((t, i) => (
-            <View style={styles.cours} key={i}>
-              <View style={{marginRight: 10}}>
-                <Skeleton 
-                  show={true}
-                  width={50}
-                  height={50} 
-                  colorMode='light'
-                />
-              </View>
-              <View style={styles.coursDesc}>
-                <View style={{marginBottom: 10}}>
-                  <Skeleton 
-                    show={true}
-                    width={150}
-                    height={10} 
-                    colorMode='light'
-                  />
-                </View>
-                <View style={{marginBottom: 10}}>
-                  <Skeleton 
-                    show={true}
-                    width={250}
-                    height={10} 
-                    colorMode='light'
-                  />
-                </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                  <Skeleton 
-                    show={true}
-                    width={100}
-                    height={10} 
-                    colorMode='light'
-                  />
-                  <Skeleton 
-                    show={true}
-                    width={70}
-                    height={10} 
-                    colorMode='light'
-                  />
-                </View>
-              </View>
-            </View>
-          ))}
-          {(!loading && cours.length) === 0 && 
-            <NoData />
-          }
-        </View>
+            ))}
+            {(!loading && cours.length) === 0 && 
+              <NoData />
+            }
+          </View>
 
-        <TouchableOpacity onPress={() => setShowModal(true)} style={styles.addButton}>
-          <AntDesign name="plus" size={24} color={colors.BLANC} />
-        </TouchableOpacity>
-
-        <Modal
-          animationType='slide'
-          isVisible={showModal}
-          style={styles.modal}
-          //deviceHeight={deviceHeight * 0.5}
-        >
-          <AjouterCours hideModal={() => setShowModal(false)} user={user} headers={headers} classe={classe} />
-        </Modal>
-      </ScrollView>
+          <TouchableOpacity onPress={handleOpenPress} style={styles.addButton}>
+            <AntDesign name="plus" size={24} color={colors.BLANC} />
+          </TouchableOpacity>
+          
+          <BottomSheet 
+            index={1} 
+            ref={bottomSheetModalRef} 
+            snapPoints={snapPoints}
+            enablePanDownToClose={true}
+            handleIndicatorStyle={{ backgroundColor: colors.BLEU }}
+          >
+            <AjouterCours close={handleClosePress} user={user} headers={headers} classe={classe} />
+          </BottomSheet>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }

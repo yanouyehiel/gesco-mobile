@@ -25,7 +25,6 @@ const SplashScreenView = () => {
       fetchHeaders().then((res: any) => {
         if (res !== "Pas de donnée stockée") {
           setHeaders(res.headers);
-          console.log(headers)
           console.log("Nous sommes dans le Teacher")
           setTimeout(() => {
             navigation.navigate("(tabs)")

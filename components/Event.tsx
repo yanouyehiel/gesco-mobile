@@ -1,61 +1,35 @@
 import { MaterialIcons } from "@expo/vector-icons"
-import { SafeAreaView, StyleSheet, Text, View, Animated, TouchableOpacity } from "react-native"
+import { SafeAreaView, StyleSheet, Text, View, Animated, TouchableOpacity, Button } from "react-native"
 import { colors } from "@/utils/colors"
 import { dateParser } from "@/utils/fonctions"
-import { useRef, useState } from "react"
-import Modal from 'react-native-modal';
+import { useCallback, useMemo, useRef, useState } from "react"
 
 export const EventItem = ({event}: any) => {
-  const [visible, setVisible] = useState<any>(false)
-  console.log(event)
     
   return (
-    <TouchableOpacity onPress={() => setVisible(!visible)}>
-      <View style={styles.event}>
-        <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <MaterialIcons 
-            name="event" 
-            size={24} 
-            color={event.id%2==0 ? colors.VERT : colors.BLEU_CLAIR} 
-          />
-        </View>
-        
-        <View style={styles.eventItem}>
-          <Text style={{fontSize: 20}}>{event.title}</Text>
-          <View>
-            <Text style={{color: colors.NOIR}}>Débute le {dateParser(event.start)}</Text>
-            <Text style={{color: colors.NOIR}}>Fini le {dateParser(event.end)}</Text>
-          </View>
+    <View style={styles.event}>
+      <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <MaterialIcons 
+          name="event" 
+          size={24} 
+          color={event.id%2==0 ? colors.VERT : colors.BLEU_CLAIR} 
+        />
+      </View>
+      
+      <View style={styles.eventItem}>
+        <Text style={{fontSize: 20}}>{event.title}</Text>
+        <View>
+          <Text style={{color: colors.NOIR}}>Débute le {dateParser(event.start)}</Text>
+          <Text style={{color: colors.NOIR}}>Fini le {dateParser(event.end)}</Text>
         </View>
       </View>
-
-      <Modal
-        isVisible={visible}
-        style={{
-          justifyContent: 'flex-end',
-          margin: 0,
-        }}
-      >
-        <View>
-          <Animated.View /*style={[
-            styles.popup, 
-            {opacity: scale.interpolate({inputRange: [0, 1], outputRange: [0, 1]})},
-            {
-              transform: [{scale: scale}]
-            }]}*/>
-              <Text>{event?.title}</Text>
-              <Text>{event?.description}</Text>
-              <Text>{event?.start}</Text>
-              <Text>{event?.end}</Text>
-          </Animated.View>
-        </View>
-      </Modal>
-    </TouchableOpacity>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   event: {
+    flex: 1,
     backgroundColor: '#f2f2f2',
     display: 'flex',
     flexDirection: 'row',
@@ -66,6 +40,15 @@ const styles = StyleSheet.create({
   eventItem: {
     flexDirection: 'column',
     marginLeft: 20
+  },
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: 'grey',
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
 })
 

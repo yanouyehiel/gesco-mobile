@@ -11,7 +11,7 @@ import { useLocalSearchParams } from 'expo-router'
 import axios from 'axios'
 import { showToast } from '@/utils/fonctions'
 
-const AjouterCours = ({hideModal, user, headers, classe}) => {
+const AjouterCours = ({user, headers, classe, close}) => {
     const [selectedValue, setSelectedValue] = useState('');
     const [matieres, setMatieres] = useState([])
     const ecole = user.ecole_id
@@ -36,14 +36,14 @@ const AjouterCours = ({hideModal, user, headers, classe}) => {
 
     async function handleSubmit() {
         const data = {
-            titre: titre, 
-            description: desc, 
-            matiere_id: selectedValue, 
-            teacher_id: user.id, 
-            ecole_id: ecole, 
+            titre: titre,
+            description: desc,
+            matiere_id: selectedValue,
+            teacher_id: user.id,
+            ecole_id: ecole,
             classe_id: classe.id
         }
-        
+
         try {
             const res = await axios.post('https://test.comtheplug.com/api/add-cours', data, {
                 headers: headers
@@ -52,7 +52,7 @@ const AjouterCours = ({hideModal, user, headers, classe}) => {
             /*setTimeout(() => {
                 hideModal()
             }, 3000)*/
-            hideModal()
+            close()
         } catch (error) {
             showToast(error.message)
         }
@@ -61,25 +61,21 @@ const AjouterCours = ({hideModal, user, headers, classe}) => {
     return (
         <View style={{flex: 1}}>
             <KeyboardAvoidingView>
-                <TouchableOpacity style={styles.header} onPress={() => hideModal()}>
-                    <Ionicons name='arrow-back-outline' size={30} color="black" />
-                    <Text style={styles.titleHeader}>Enregistrer un cours</Text>
-                </TouchableOpacity>
-            
+                <Text style={styles.titleHeader}>Enregistrer un cours</Text>
 
                 <View style={{margin: 10}}>
                     <View style={{marginTop: 20, paddingBottom: 20}}>
                         <Heading text={"Remplissez le formulaire"} />
-                        <TextInput 
-                            placeholder='Entrer le titre du cours' 
-                            style={styles.textArea} 
-                            numberOfLines={1} multiline={false} 
+                        <TextInput
+                            placeholder='Entrer le titre du cours'
+                            style={styles.textArea}
+                            numberOfLines={1} multiline={false}
                             onChangeText={(text) => setTitre(text)}
                         />
-                        <TextInput 
-                            placeholder='Entrer le résumé du cours' 
-                            style={styles.textArea} 
-                            numberOfLines={5} multiline={false} 
+                        <TextInput
+                            placeholder='Entrer le résumé du cours'
+                            style={styles.textArea}
+                            numberOfLines={5} multiline={false}
                             onChangeText={(text) => setDesc(text)}
                         />
                         <View>
@@ -87,7 +83,7 @@ const AjouterCours = ({hideModal, user, headers, classe}) => {
                             <Picker
                                 selectedValue={selectedValue}
                                 onValueChange={(itemValue) => setSelectedValue(itemValue)}
-                                style={styles.textArea} 
+                                style={styles.textArea}
                                 itemStyle={{color: colors.BLEU}}
                             >
                                 {matieres.map((matiere, i) => (
@@ -119,7 +115,8 @@ const styles = StyleSheet.create({
     titleHeader: {
         fontSize: 25,
         fontFamily: 'Bold',
-        textAlign: 'center'
+        textAlign: 'center',
+        color: colors.NOIR
     },
     textArea: {
         borderWidth: 1,

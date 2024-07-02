@@ -1,5 +1,5 @@
 import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, Animated, SafeAreaView, Alert } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Header from '@/components/Header'
 import Slider from '@/components/Slider'
 import { slidesClasse } from '@/utils/slides'
@@ -17,7 +17,13 @@ import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
 import axios from 'axios'
 import { showToast } from '@/utils/fonctions'
-import Modal from 'react-native-modal';
+import "react-native-gesture-handler"
+import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler'
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
 
 const HomeScreen = () => {
   const [matieres, setMatieres] = useState<any[]>([])
@@ -33,6 +39,19 @@ const HomeScreen = () => {
   const [loadingMatiere, setLoadingMatiere] = useState<any>(true)
   const scale = useRef<any>(new Animated.Value(0)).current
   const navigation = useNavigation()
+  //const [visible, setVisible] = useState<any>(false)
+
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  // variables
+  const snapPoints = useMemo(() => ['25%', '50%'], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
 
   useEffect(() => {
     const fetchHeaders = async () => {
@@ -106,7 +125,7 @@ const HomeScreen = () => {
     setVisible(!visible)
   }
 
-  const PopupEvent = ({event}: any) => {
+  /*const PopupEvent = ({event}: any) => {
     console.log(event)
     setVisible(!visible)
     return (
@@ -126,7 +145,7 @@ const HomeScreen = () => {
         </View>
       </Modal>
     )
-  }
+  }*/
 
   return (
     <ScrollView style={styles.container}>
@@ -162,7 +181,11 @@ const HomeScreen = () => {
               data={events}
               //style={styles.events}
               renderItem={({item, index}) => (
-                <EventItem key={index} event={item} />
+                <TouchableOpacity
+                  onPress={handlePresentModalPress}
+                >
+                  <EventItem key={index} event={item} />
+                </TouchableOpacity>
               )}
               keyExtractor={(item, index) => index.toString()}
             /> :
@@ -231,12 +254,28 @@ const HomeScreen = () => {
             <ActivityIndicator color={colors.VERT} size='large' />
         </Text>
       }
+
+      <BottomSheetModalProvider>
+        <View style={styles.container}>
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={1}
+            snapPoints={snapPoints}
+            onChange={handleSheetChanges}
+          >
+            <BottomSheetView style={styles.contentContainer}>
+              <Text>Awesome 🎉</Text>
+            </BottomSheetView>
+          </BottomSheetModal>
+        </View>
+      </BottomSheetModalProvider>
     </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: colors.BLANC
   },
   headerEvent: {
@@ -262,7 +301,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     elevation: 5,
     height: 400
-  }
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
 })
 
 export default HomeScreen
