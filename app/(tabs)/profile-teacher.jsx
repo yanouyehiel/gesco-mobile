@@ -5,6 +5,7 @@ import { AntDesign, Feather, FontAwesome5, MaterialIcons } from '@expo/vector-ic
 import { useNavigation } from '@react-navigation/native';
 import { getHeaders, removeStorge, getUser } from '@/services/MainService';
 import { showToast } from '@/utils/fonctions';
+import axios from 'axios';
 
 const ProfileTeacher = () => {
     const navigation = useNavigation()
