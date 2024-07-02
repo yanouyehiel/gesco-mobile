@@ -4,10 +4,6 @@ import { Ionicons } from '@expo/vector-icons'
 import Heading from '@/components/Heading'
 import { colors } from '@/utils/colors'
 import { Picker } from '@react-native-picker/picker'
-
-import { addCours, getAllMatieres } from '@/services/MainService'
-import { ALERT_TYPE, Toast } from 'react-native-alert-notification'
-import { useLocalSearchParams } from 'expo-router'
 import axios from 'axios'
 import { showToast } from '@/utils/fonctions'
 
@@ -48,10 +44,6 @@ const AjouterCours = ({user, headers, classe, close}) => {
             const res = await axios.post('https://test.comtheplug.com/api/add-cours', data, {
                 headers: headers
             })
-            //showToast(res.message)
-            /*setTimeout(() => {
-                hideModal()
-            }, 3000)*/
             close()
         } catch (error) {
             showToast(error.message)

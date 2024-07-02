@@ -2,7 +2,6 @@ import { MaterialIcons } from "@expo/vector-icons"
 import { SafeAreaView, StyleSheet, Text, View, Animated, TouchableOpacity, Button } from "react-native"
 import { colors } from "@/utils/colors"
 import { dateParser } from "@/utils/fonctions"
-import { useCallback, useMemo, useRef, useState } from "react"
 
 export const EventItem = ({event}: any) => {
     

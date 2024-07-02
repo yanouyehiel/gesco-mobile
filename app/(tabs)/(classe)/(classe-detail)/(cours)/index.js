@@ -8,11 +8,9 @@ import { dateParser, longueurTexte } from '@/utils/fonctions';
 import Heading from '@/components/Heading';
 import { Skeleton } from 'moti/skeleton';
 import NoData from '@/components/NoData';
-import { useLocalSearchParams } from 'expo-router';
 import { useRoute } from '@react-navigation/native';
 import AxiosApi from '@/services/AxiosApi';
 import axios from 'axios';
-import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import BottomSheet from '@gorhom/bottom-sheet';
 
@@ -28,7 +26,6 @@ const CourseScreen = () => {
   const snapPoints = useMemo(() => ['25%', '50%', '70%', '100%'], []);
   const handleOpenPress = () => bottomSheetModalRef.current?.expand();
   const handleClosePress = () => bottomSheetModalRef.current?.close()
-  const snapToIndex = (index) => bottomSheetModalRef.current?.snapToIndex(index)
 
   useEffect(() => {
     getCours().then(() => setLoading(false))
@@ -166,15 +163,16 @@ const styles = StyleSheet.create({
     borderRadius: 15
   },
   addButton: {
-    backgroundColor: colors.BLEU,
+    position: 'absolute',
     width: 50,
     height: 50,
-    borderRadius: 99,
     alignItems: 'center',
     justifyContent: 'center',
-    right: 15,
-    bottom: 10,
-    position: 'absolute'
+    right: 20,
+    bottom: 20,
+    backgroundColor: colors.BLEU,
+    borderRadius: 99,
+    elevation: 5,
   },
   modal: {
     height: 400,
