@@ -41,7 +41,6 @@ const LoginScreen = () => {
         try {
           login(data).then((res) => {
             setLoading(false)
-            console.log(res)
             if (res.status_code === 401) {
               showToast(res.message)
             } else {
@@ -49,11 +48,9 @@ const LoginScreen = () => {
               navigation.navigate("(tabs)")   
             }          
           }, (err) => {
-            showToast(err.response.message)
-            console.log(err.response.message)
+            showToast(err.response.data.message)
           })
         } catch (err) {
-          console.log(err)
           setLoading(false);
           showToast(err.response?.data.message);
         }

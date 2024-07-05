@@ -23,6 +23,17 @@ export async function getHeaders() {
     }
 }
 
+export async function getTokenId() {
+    const data = await AsyncStorage.getItem('tokenGesco')
+    if (data === null) {
+        return "Pas de token stocké"
+    } else {
+        const json = JSON.parse(data)
+        
+        return parseInt(json.token_id)
+    }
+}
+
 export const storeData = async (key, value) => {
     try {
       const jsonValue = JSON.stringify(value);

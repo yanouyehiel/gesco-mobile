@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState, useEffect } from 'react'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { Skeleton } from 'moti/skeleton'
@@ -7,7 +7,7 @@ import NoData from '@/components/NoData';
 import { colors } from '@/utils/colors'
 import { dateParser, longueurTexte } from '@/utils/fonctions';
 import { showToast } from '@/utils/fonctions'
-import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet'
+import BottomSheet from '@gorhom/bottom-sheet'
 import { AntDesign } from '@expo/vector-icons'
 import AjouterNote from '../../../../../components/AjouterNote'
 import Heading from '@/components/Heading'

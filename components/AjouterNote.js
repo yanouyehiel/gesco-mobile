@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { colors } from '@/utils/colors'
 import { Picker } from '@react-native-picker/picker'
+import Heading from '@/components/Heading'
 
 const AjouterNote = ({user, headers, classe, close}) => {
     const [matieres, setMatieres] = useState([])

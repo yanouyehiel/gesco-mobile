@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } fr
 import { colors } from '@/utils/colors'
 import { AntDesign, Feather, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { getHeaders, removeStorge, getUser } from '@/services/MainService';
+import { getHeaders, removeStorge, getUser, getTokenId } from '@/services/MainService';
 import { showToast } from '@/utils/fonctions';
 import axios from 'axios';
 
@@ -12,6 +12,7 @@ const ProfileTeacher = () => {
     const [headers, setHeaders] = useState()
     const [loading, setLoading] = useState(false)
     const [user, setUser] = useState(null)
+    const tokenId = getTokenId()
 
     useEffect(() => {
         const fetchHeaders = async () => {
@@ -22,7 +23,7 @@ const ProfileTeacher = () => {
               console.error(error);
             }
         };
-      
+        
         fetchHeaders()
         fetchUser(() => console.log(user))
     }, [])
@@ -35,9 +36,11 @@ const ProfileTeacher = () => {
 
     const deconnexion = async () => {
         setLoading(true)
-        
+        const data = {
+            token_id: tokenId
+        }
         try {
-            const res = await axios.post("https://test.comtheplug.com/api/auth/logout", {}, {
+            const res = await axios.post("https://test.comtheplug.com/api/auth/logout", data, {
                 headers: headers
             })
             showToast(res.data.message)

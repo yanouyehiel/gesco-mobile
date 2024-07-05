@@ -8,7 +8,7 @@ import NoData from '@/components/NoData';
 import { colors } from '@/utils/colors'
 import { dateParser, longueurTexte } from '@/utils/fonctions';
 import { AntDesign } from '@expo/vector-icons'
-import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet'
+import BottomSheet from '@gorhom/bottom-sheet'
 import AjouterDevoir from '../../../../../components/AjouterDevoir'
 import Heading from '@/components/Heading'
 
