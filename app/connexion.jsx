@@ -45,7 +45,13 @@ const LoginScreen = () => {
               showToast(res.message)
             } else {
               storeData('tokenGesco', res).then((res) => console.log(res))
-              navigation.navigate("(tabs)")   
+              if (res.user.role_id === 2) {
+                console.log("Nous sommes dans le Teacher")
+                navigation.navigate("(tabs_teacher)")
+              } else if (res.user.role_id === 3) {
+                console.log("Nous sommes dans le Parent")
+                navigation.navigate("(tabs_parent)")
+              }  
             }          
           }, (err) => {
             showToast(err.response.data.message)

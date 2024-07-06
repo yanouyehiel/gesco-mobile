@@ -14,6 +14,7 @@ const AjouterCours = ({user, headers, classe, close}) => {
     const [loading, setLoading] = useState(true)
     const [titre, setTitre] = useState("")
     const [desc, setDesc] = useState("")
+    const [error, setError] = useState(false)
 
     useEffect(() => {
         getMatieres().then(() => setLoading(false))
@@ -31,45 +32,58 @@ const AjouterCours = ({user, headers, classe, close}) => {
     }
 
     async function handleSubmit() {
-        const data = {
-            titre: titre,
-            description: desc,
-            matiere_id: selectedValue,
-            teacher_id: user.id,
-            ecole_id: ecole,
-            classe_id: classe.id
+        setLoading(true)
+        if (titre === "" || desc === "" || selectedValue === "") {
+            setError(true)
+        } else {
+            const data = {
+                titre: titre,
+                description: desc,
+                matiere_id: selectedValue,
+                teacher_id: user.id,
+                ecole_id: ecole,
+                classe_id: classe.id
+            }
+    
+            try {
+                const res = await axios.post('https://test.comtheplug.com/api/add-cours', data, {
+                    headers: headers
+                })
+                showToast(res.data.message)
+            } catch (error) {
+                showToast(error.message)
+            }
         }
-
-        try {
-            const res = await axios.post('https://test.comtheplug.com/api/add-cours', data, {
-                headers: headers
-            })
-            close()
-        } catch (error) {
-            showToast(error.message)
-        }
+        setLoading(false)
     }
 
     return (
-        <View style={{flex: 1}}>
+        <View style={{flex: 1, margin: 15}}>
             <KeyboardAvoidingView>
-                <Text style={styles.titleHeader}>Enregistrer un cours</Text>
+                <TouchableOpacity style={styles.header} onPress={() => close()}>
+                    <Ionicons name='arrow-back-outline' size={30} color="black" />
+                    <Text style={styles.titleHeader}>Enregistrer un cours</Text>
+                </TouchableOpacity>
 
                 <View style={{margin: 10}}>
                     <View style={{marginTop: 20, paddingBottom: 20}}>
                         <Heading text={"Remplissez le formulaire"} />
                         <TextInput
                             placeholder='Entrer le titre du cours'
-                            style={styles.textArea}
+                            style={[error ? styles.error : styles.textArea]}
                             numberOfLines={1} multiline={false}
                             onChangeText={(text) => setTitre(text)}
                         />
+                        {error && <Text style={styles.errorText}>Veuillez entrer le titre du cours</Text>}
+
                         <TextInput
                             placeholder='Entrer le résumé du cours'
-                            style={styles.textArea}
+                            style={[error ? styles.error : styles.textArea]}
                             numberOfLines={5} multiline={false}
                             onChangeText={(text) => setDesc(text)}
                         />
+                        {error && <Text style={styles.errorText}>Veuillez entrer une description du cours</Text>}
+
                         <View>
                             <Text style={{fontFamily: 'SemiBold', fontSize: 20}}>Sélectionner la matière</Text>
                             <Picker
@@ -78,10 +92,12 @@ const AjouterCours = ({user, headers, classe, close}) => {
                                 style={styles.textArea}
                                 itemStyle={{color: colors.BLEU}}
                             >
+                                <Picker.Item label={"Sélectionner ici..."} value={""} />
                                 {matieres.map((matiere, i) => (
                                 <Picker.Item label={matiere.intitule} value={matiere.id} key={i} />
                                 ))}
                             </Picker>
+                            {error && <Text style={styles.errorText}>Veuillez sélectionner une matière</Text>}
                         </View>
 
                         <TouchableOpacity onPress={handleSubmit}>
@@ -117,6 +133,19 @@ const styles = StyleSheet.create({
         padding: 10,
         fontSize: 16,
         borderColor: colors.BLEU,
+        marginBottom: 15
+    },
+    error: {
+        borderWidth: 1,
+        borderRadius: 15,
+        textAlignVertical: 'top',
+        padding: 10,
+        fontSize: 16,
+        borderColor: colors.ROUGE
+    },
+    errorText: {
+        color: colors.ROUGE, 
+        fontSize: 15,
         marginBottom: 15
     },
     btnSave: {

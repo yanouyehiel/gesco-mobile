@@ -48,7 +48,7 @@ export default function RootLayout() {
         <Stack.Screen name='onboarding' />
         <Stack.Screen name='register' />
         <Stack.Screen name='otp-code' />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs_teacher)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>

@@ -4,18 +4,18 @@ import { colors } from '@/utils/colors';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getHeaders, removeStorge } from '@/services/MainService';
+import { getHeaders, getUser, removeStorge } from '@/services/MainService';
 
 const SplashScreenView = () => {
     const navigation = useNavigation();
     const [headers, setHeaders] = useState(null)
+    const user: any = getUser().then()
 
     useEffect(() => {
-      AsyncStorage.removeItem("tokenGesco").then()
+      //AsyncStorage.removeItem("tokenGesco").then()
       const fetchHeaders = async () => {
         try {
           const headersData = await getHeaders();
-          console.log(headersData)
           return headersData
         } catch (error) {
           console.error(error);
@@ -25,9 +25,14 @@ const SplashScreenView = () => {
       fetchHeaders().then((res: any) => {
         if (res !== "Pas de donnée stockée") {
           setHeaders(res.headers);
-          console.log("Nous sommes dans le Teacher")
           setTimeout(() => {
-            navigation.navigate("(tabs)")
+            if (user._j.role_id === 2) {
+              console.log("Nous sommes dans le Teacher")
+              navigation.navigate("(tabs_teacher)")
+            } else if (user._j.role_id === 3) {
+              console.log("Nous sommes dans le Parent")
+              navigation.navigate("(tabs_parent)")
+            }
           }, 3000)
         } else {
           setTimeout(() => {

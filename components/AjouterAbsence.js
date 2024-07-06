@@ -8,6 +8,7 @@ import { colors } from '@/utils/colors'
 import { Picker } from '@react-native-picker/picker'
 import { addAbsence, getStudentsOfClasse } from '@/services/MainService'
 import axios from 'axios'
+import { showToast } from '@/utils/fonctions'
 
 const AjouterAbsence = ({hideModal, user, headers, classe}) => {
     const [timeListDebut, setTimeListDebut] = useState()
@@ -18,6 +19,7 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
     const [loading, setLoading] = useState(true)
     const [students, setStudents] = useState([])
     const [selectedStudent, setSelectedStudent] = useState()
+    const [error, setError] = useState(false)
 
     const getTime = () => {
         const timeList1 = []
@@ -50,22 +52,22 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
 
     async function handleSubmit() {
         setLoading(true)
-        const data = {
-            student_id: selectedStudent,
-            date: selectedDate,
-            periode: selectedTimeDebut + ' - ' + selectedTimeFin,
-            ecole_id: user.ecole_id,
-            classe_id: classe.id
+        if (selectedDate === "" || selectedStudent === "" || selectedTimeDebut === "" || selectedTimeFin === "") {
+            setError(true)
+        } else {
+            const data = {
+                student_id: selectedStudent,
+                date: selectedDate,
+                periode: selectedTimeDebut + ' - ' + selectedTimeFin,
+                ecole_id: user.ecole_id,
+                classe_id: classe.id
+            }
+            
+            await addAbsence(data, headers).then((res) => {
+                showToast(res.message)
+            })
         }
-        
-        await addAbsence(data, headers.headers).then((res) => {
-            Toast.show({
-                type: 'success',
-                text: res.message,
-            });
-            alert(res.message)
-            hideModal()
-        })
+        setLoading(false)
     }
 
     return (
@@ -91,6 +93,7 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                             selectedBackgroundColor={colors.VERT}
                         />
                     </View>
+                    {error && <Text style={styles.errorText}>Veuillez sélectionner une date</Text>}
 
                     <View style={{marginTop: 20}}>
                         <Heading text={"Selectionner une tranche horaire"} />
@@ -101,15 +104,15 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                             renderItem={({item, index}) => (
                                 <TouchableOpacity 
                                     key={index} style={{marginRight: 10}}
-                                    onPress={(item) => setSelectedTimeDebut(item.time)}
+                                    onPress={() => setSelectedTimeDebut(item.time)}
                                 >
                                     <Text style={[
                                         selectedTimeDebut !== "" ? styles.selectedTimeDebut : styles.unselectedTime
                                     ]}>{item.time}</Text>
                                 </TouchableOpacity>
                             )}
-                            style={{marginBottom: 15}}
                         />
+                        {error && <Text style={[styles.errorText, {marginBottom: 15}]}>Veuillez sélectionner un horaire de début</Text>}
                         <FlatList 
                             data={timeListFin}
                             horizontal={true}
@@ -117,7 +120,7 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                             renderItem={({item, index}) => (
                                 <TouchableOpacity 
                                     key={index} style={{marginRight: 10}}
-                                    onPress={(item) => setSelectedTimeFin(item.time)}
+                                    onPress={() => setSelectedTimeFin(item.time)}
                                 >
                                     <Text style={[
                                         selectedTimeFin !== "" ? styles.selectedTimeFin : styles.unselectedTime
@@ -125,6 +128,7 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                                 </TouchableOpacity>
                             )}
                         />
+                        {error && <Text style={styles.errorText}>Veuillez sélectionner un horaire de fin</Text>}
                     </View>
 
                     <View style={{marginTop: 20}}>
@@ -135,10 +139,12 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                             style={styles.textArea} 
                             itemStyle={{color: colors.BLEU}}
                         >
+                            <Picker.Item label={"Sélectionner ici..."} value={""} />
                             {students.map((student, i) => (
                             <Picker.Item label={student.nom + ' ' + student.prenom} value={student.id} key={i} />
                             ))}
                         </Picker>
+                        {error && <Text style={styles.errorText}>Veuillez sélectionner un élève</Text>}
                     </View>
 
                     <TouchableOpacity onPress={handleSubmit} disabled={loading} style={styles.btnSave}>
@@ -219,7 +225,11 @@ const styles = StyleSheet.create({
         borderRadius: 99,
         elevation: 2,
         marginTop: 30
-    }
+    },
+    errorText: {
+        color: colors.ROUGE, 
+        fontSize: 15,
+    },
 })
 
 export default AjouterAbsence

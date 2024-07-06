@@ -4,12 +4,12 @@ import { colors } from '../utils/colors'
 import { useNavigation } from '@react-navigation/native'
 
 const SlideClassItem = ({ item, headers, user }) => {
-    const navigation = useNavigation()
+    //const navigation = useNavigation()
     return (
         <TouchableOpacity 
-            onPress={() => navigation.navigate("../(classe)/(classe-detail)", {
+            /*onPress={() => navigation.navigate("../(classe)/(classe-detail)", {
                 classe: item, headers: headers, user: user
-            })}
+            })}*/
         >
             <View style={styles.sliderItem}>
                 <Image 

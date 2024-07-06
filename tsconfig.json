@@ -12,6 +12,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "app/connexion.jsx", "services/MainService.js", "components/AjouterCours.js", "app/(tabs)/(classe)/(classe-detail)/(cours)/index.js", "components/SideBar.js", "app/(tabs)/(classe)/(classe-detail)/classe.js", "app/(tabs)/(classe)/(classe-detail)/_layout.js"  ]
+    "expo-env.d.ts",
+    "app/connexion.jsx", "services/MainService.js", "components/AjouterCours.js", "app/(tabs_teacher)/(classe)/(classe-detail)/(cours)/index.js", "components/SideBar.js", "app/(tabs_teacher)/(classe)/(classe-detail)/classe.js", "app/(tabs_teacher)/(classe)/(classe-detail)/_layout.js"  ]
 }

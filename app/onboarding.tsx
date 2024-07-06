@@ -51,7 +51,7 @@ const Onboarding = () => {
 
       <NextButton scrollTo={scrollTo} percentage={(currentIndex + 1) * (100 / slidesOnboarding.length)} />
       
-      <TouchableOpacity onPress={() => navigate.navigate('(tabs)')}>
+      <TouchableOpacity onPress={() => navigate.navigate('(tabs_teacher)')}>
         <Text 
           style={styles.slideEnd}
         >Passer</Text>
