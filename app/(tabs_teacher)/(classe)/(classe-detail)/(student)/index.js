@@ -39,7 +39,7 @@ const StudentScreen = () => {
       </View>
 
       <View style={{margin: 15}}>
-        <Heading text={"Tous les eleves"} />
+        <Heading text={"Tous les élèves"} value={students.length} />
         {!loading ?
           <FlatList
             data={students}

@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, Animated, SafeAreaView, Alert, Modal } from 'react-native'
+import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, Animated, SafeAreaView, Alert, Modal, RefreshControl } from 'react-native'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Header from '@/components/Header'
 import Slider from '@/components/Slider'
@@ -40,6 +40,7 @@ const HomeScreen = () => {
   const [loadingMatiere, setLoadingMatiere] = useState<any>(true)
   const navigation = useNavigation()
   const [showEvent, setShowEvent] = useState<any>(false)
+  const [refreshing, setRefreshing] = useState(false);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   // variables
@@ -142,8 +143,31 @@ const HomeScreen = () => {
     )
   }*/
 
+  const onRefresh = React.useCallback(() => {
+    setLoadingClasse(true)
+    setLoadingEvent(true)
+    setLoadingMatiere(true)
+    setRefreshing(true);
+    fetchClasses().then(() => setLoadingClasse(false))
+    fetchEvents().then(() => setLoadingEvent(false))
+    fetchMatieres().then(() => setLoadingMatiere(false))
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      refreshControl={
+        <RefreshControl 
+          refreshing={refreshing} 
+          onRefresh={onRefresh}
+          colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
+          progressBackgroundColor={colors.BLANC}
+        />
+      }
+    >
       <StatusBar backgroundColor={colors.BLEU} />
       {/* Header */}
       <Header user={user} />

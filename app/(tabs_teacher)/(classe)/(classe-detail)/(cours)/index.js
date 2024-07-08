@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Button, Image, Modal, TouchableOpacity, Dimensions, FlatList, ScrollView, SafeAreaView, KeyboardAvoidingView, RefreshControl, StatusBar  } from 'react-native'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { colors } from '@/utils/colors'
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import AjouterCours from '@/components/AjouterCours';
 import { dateParser, longueurTexte } from '@/utils/fonctions';
 import Heading from '@/components/Heading';
@@ -16,17 +16,13 @@ const CourseScreen = () => {
   const route = useRoute()
   const { classe, user, headers } = route.params
   const [cours, setCours] = useState([])
+  const [cour, setCour] = useState({})
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false)
-
-  const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['25%', '50%', '70%', '100%'], []);
-  const handleOpenPress = () => bottomSheetModalRef.current?.expand();
-  const handleClosePress = () => bottomSheetModalRef.current?.close()
+  const [visibleC, setVisibleC] = useState(false)
 
   useEffect(() => {
-    handleClosePress()
     getCours().then(() => setLoading(false))
   }, [classe, user, headers])
 
@@ -77,26 +73,36 @@ const CourseScreen = () => {
           </View>
 
           <View style={{margin: 15}}>
-            <Heading text={"Tous les cours"} />
+            <Heading text={"Tous les cours"} style={{marginBottom: 20}} />
+            
+            <TouchableOpacity onPress={() => setVisible(true)} style={styles.addButton}>
+              <AntDesign name="plus" size={24} color={colors.BLANC} />
+            </TouchableOpacity>
+
             {!loading ? <FlatList
               data={cours}
               showsVerticalScrollIndicator={false}
               horizontal={false}
               renderItem={({item, i}) => (
-                <View key={i} style={styles.cours}>
-                  <View style={styles.coursImage}>
-                    <Image source={require("@/assets/images/cours.png")} style={{width: 50, height: 50}} />
-                  </View>
-                  <View style={styles.coursDesc}>
-                    <Text style={{fontSize: 20, fontFamily: 'SemiBold'}}>{item.titre}</Text>
-                    <Text style={[styles.text, {fontSize: 18}]} numberOfLines={2} ellipsizeMode="tail">{longueurTexte(item.description, 35)}</Text>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                      <Text style={[styles.text, {fontFamily: 'Bold'}]}>{longueurTexte(item.nom_matiere)}</Text>
-                      <Text style={styles.text}>{item.nom_teacher + ' ' + item.prenom_teacher}</Text>
+                <TouchableOpacity onPress={() => {
+                  setCour(item)
+                  setVisibleC(true)
+                }} key={i}>
+                  <View style={styles.cours}>
+                    <View style={styles.coursImage}>
+                      <Image source={require("@/assets/images/cours.png")} style={{width: 50, height: 50}} />
                     </View>
-                    <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
+                    <View style={styles.coursDesc}>
+                      <Text style={{fontSize: 20, fontFamily: 'SemiBold'}}>{item.titre}</Text>
+                      <Text style={[styles.text, {fontSize: 18}]} numberOfLines={2} ellipsizeMode="tail">{longueurTexte(item.description, 35)}</Text>
+                      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <Text style={[styles.text, {fontFamily: 'Bold'}]}>{longueurTexte(item.nom_matiere)}</Text>
+                        <Text style={styles.text}>{item.nom_teacher + ' ' + item.prenom_teacher}</Text>
+                      </View>
+                      <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
+                    </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               )}
             /> :
             [0, 1, 2, 3, 4].map((t, i) => (
@@ -148,9 +154,35 @@ const CourseScreen = () => {
             }
           </View>
 
-          <TouchableOpacity onPress={() => setVisible(true)} style={styles.addButton}>
-            <AntDesign name="plus" size={24} color={colors.BLANC} />
-          </TouchableOpacity>
+          <Modal 
+            animationType='slide'
+            visible={visibleC}
+          >
+            <View style={{flex: 1, margin: 15}}>
+              <TouchableOpacity style={styles.header} onPress={() => setVisibleC(false)}>
+                <Ionicons name='arrow-back-outline' size={30} color="black" />
+                <Text style={styles.titleHeader}>Détails du cours</Text>
+              </TouchableOpacity>
+
+              <View>
+                <View style={{marginBottom: 10}}>
+                  <Text style={styles.title}>Titre :</Text>
+                  <Text style={styles.titleContent}>{cour.titre}</Text>
+                </View>
+                <View style={{marginBottom: 10}}>
+                  <Text style={styles.title}>Description :</Text>
+                  <Text style={styles.titleContent}>{cour.description}</Text>
+                </View>
+                <View style={{marginBottom: 10}}>
+                  <Text style={[styles.title, {marginBottom: 10}]}>Matière : <Text style={{color: colors.BLEU}}>{cour.nom_matiere}</Text></Text>
+                  <Text style={styles.title}>Enseignant : <Text style={{color: colors.VERT}}>
+                    {cour.nom_teacher + ' ' + cour.prenom_teacher}
+                  </Text></Text>
+                </View>
+                <Text style={{fontFamily: 'Regular', fontSize: 20}}>Enregistré le {dateParser(cour.created_at)}</Text>
+              </View>
+            </View>
+          </Modal>
 
           <Modal
             animationType='slide'
@@ -158,16 +190,7 @@ const CourseScreen = () => {
           >
             <AjouterCours close={() => setVisible(false)} user={user} headers={headers} classe={classe} />
           </Modal>
-          
-          {/* <BottomSheet 
-            index={1} 
-            ref={bottomSheetModalRef} 
-            snapPoints={snapPoints}
-            enablePanDownToClose={true}
-            handleIndicatorStyle={{ backgroundColor: colors.BLEU }}
-          >
-            <AjouterCours close={handleClosePress} user={user} headers={headers} classe={classe} />
-          </BottomSheet> */}
+         
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -189,12 +212,11 @@ const styles = StyleSheet.create({
   },
   addButton: {
     position: 'absolute',
+    right: 20,
     width: 50,
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    right: 20,
-    bottom: 20,
     backgroundColor: colors.BLEU,
     borderRadius: 99,
     elevation: 5,
@@ -221,6 +243,29 @@ const styles = StyleSheet.create({
     flexDirection: 'column'
   },
   text: {
+    fontFamily: 'Regular'
+  },
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  titleHeader: {
+      fontSize: 25,
+      fontFamily: 'Bold',
+      textAlign: 'center',
+      color: colors.NOIR
+  },
+  title: {
+    textAlign: 'left',
+    fontSize: 22,
+    textDecorationLine: 'underline',
+    fontFamily: 'Bold'
+  },
+  titleContent: {
+    fontSize: 20,
     fontFamily: 'Regular'
   }
 })

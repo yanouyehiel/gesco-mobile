@@ -11,7 +11,6 @@ import { AntDesign } from '@expo/vector-icons'
 import BottomSheet from '@gorhom/bottom-sheet'
 import AjouterDevoir from '../../../../../components/AjouterDevoir'
 import Heading from '@/components/Heading'
-import { FAB } from 'react-native-elements'
 
 const DevoirScreen = () => {
   const [loading, setLoading] = useState(true)
@@ -74,7 +73,12 @@ const DevoirScreen = () => {
       </View>
 
       <View style={{margin: 15}}>
-        <Heading text={"Tous les devoirs"} />
+        <Heading text={"Tous les devoirs"} style={{marginBottom: 20}} />
+
+        <TouchableOpacity onPress={() => setVisible(true)} style={styles.addButton}>
+          <AntDesign name="plus" size={24} color={colors.BLANC} />
+        </TouchableOpacity>
+
         {!loading ? <FlatList 
             data={devoirs}
             showsVerticalScrollIndicator={false}
@@ -152,19 +156,6 @@ const DevoirScreen = () => {
             <NoData />
           }
       </View>
-
-      <TouchableOpacity onPress={() => setVisible(true)} style={styles.addButton}>
-        <AntDesign name="plus" size={24} color={colors.BLANC} />
-        {/* <FAB
-          placement="right"
-          color={colors.BLEU}
-          size="large"
-          visible={true}
-          icon={{ name: 'add', color: 'white' }}
-          onPress={() => setVisible(true)}
-        /> */}
-      </TouchableOpacity>
-
      
       <Modal
         animationType='slide'
@@ -194,7 +185,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     right: 20,
-    bottom: 20,
     backgroundColor: colors.BLEU,
     borderRadius: 99,
     elevation: 5,

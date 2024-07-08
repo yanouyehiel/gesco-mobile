@@ -87,7 +87,7 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                             maxDate={Date.now()}
                             todayBackgroundColor={colors.BLANC}
                             todayTextStyle={colors.NOIR}
-                            selectedDayColor={colors.BLANC}
+                            selectedDayColor={colors.VERT}
                             selectedDayStyle={colors.BLANC}
                             selectedDayTextColor={colors.BLANC}
                             selectedBackgroundColor={colors.VERT}
@@ -107,8 +107,10 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                                     onPress={() => setSelectedTimeDebut(item.time)}
                                 >
                                     <Text style={[
-                                        selectedTimeDebut !== "" ? styles.selectedTimeDebut : styles.unselectedTime
-                                    ]}>{item.time}</Text>
+                                        selectedTimeDebut === item.time
+                                            ? styles.selectedTimeDebut
+                                            : styles.unselectedTime,
+                                        ]}>{item.time}</Text>
                                 </TouchableOpacity>
                             )}
                         />
@@ -123,8 +125,10 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                                     onPress={() => setSelectedTimeFin(item.time)}
                                 >
                                     <Text style={[
-                                        selectedTimeFin !== "" ? styles.selectedTimeFin : styles.unselectedTime
-                                    ]}>{item.time}</Text>
+                                        selectedTimeFin === item.time
+                                            ? styles.selectedTimeFin
+                                            : styles.unselectedTime,
+                                        ]}>{item.time}</Text>
                                 </TouchableOpacity>
                             )}
                         />

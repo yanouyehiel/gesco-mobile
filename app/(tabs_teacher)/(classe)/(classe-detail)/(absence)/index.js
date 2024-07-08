@@ -2,10 +2,10 @@ import { View, Text, ScrollView, StyleSheet, Image, FlatList, TouchableOpacity, 
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import Heading from '@/components/Heading'
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
-import { dateParserTime } from '@/utils/fonctions'
+import { dateParserTime, dateParser } from '@/utils/fonctions'
 import AjouterAbsence from '@/components/AjouterAbsence'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
@@ -18,6 +18,8 @@ const AbsenceScreen = () => {
   const [absences, setAbsences] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [refreshing, setRefreshing] = useState(false);
+  const [visible, setVisible] = useState(false)
+  const [absence, setAbsence] = useState({})
 
   useEffect(() => {
     getPresences().then(() => setLoading(false))
@@ -63,21 +65,31 @@ const AbsenceScreen = () => {
       </View>
 
       <View style={{margin: 15}}>
-        <Heading text={"Toutes les absences"} />
+        <Heading text={"Toutes les absences"} style={{marginBottom: 20}} />
+        
+        <TouchableOpacity onPress={() => setShowModal(true)} style={styles.addButton}>
+          <AntDesign name="plus" size={24} color={colors.BLANC} />
+        </TouchableOpacity>
+
         {!loading ?
           <FlatList
             data={absences}
             renderItem={({item, i}) => (
-              <View key={i} style={styles.absence}>
-                <View style={{margin: 10}}>
-                  <AntDesign name="warning" size={30} color={colors.ROUGE} />
+              <TouchableOpacity onPress={() => {
+                setAbsence(item)
+                setVisible(true)
+              }} key={i}>
+                <View style={styles.absence}>
+                  <View style={{margin: 10}}>
+                    <AntDesign name="warning" size={30} color={colors.ROUGE} />
+                  </View>
+                  <View style={{marginLeft: 10}}>
+                    <Text style={{fontSize: 18, fontWeight: '400'}}>{item.periode}</Text>
+                    <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{item.nom_student + ' ' + item.prenom_student}</Text>
+                    <Text>Enregistré le : <Text style={{fontFamily: 'SemiBold', fontSize: 18}}>{dateParserTime(item.created_at)}</Text></Text>
+                  </View>
                 </View>
-                <View style={{marginLeft: 10}}>
-                  <Text style={{fontSize: 18, fontWeight: '400'}}>{item.periode}</Text>
-                  <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{item.nom_student + ' ' + item.prenom_student}</Text>
-                  <Text>Enregistré le : <Text style={{fontFamily: 'SemiBold', fontSize: 18}}>{dateParserTime(item.created_at)}</Text></Text>
-                </View>
-              </View>
+              </TouchableOpacity>
             )}
           /> :
           [0, 1, 2, 3, 4].map((t, i) => (
@@ -120,9 +132,26 @@ const AbsenceScreen = () => {
         }
       </View>
 
-      <TouchableOpacity onPress={() => setShowModal(true)} style={styles.addButton}>
-        <AntDesign name="plus" size={24} color={colors.BLANC} />
-      </TouchableOpacity>
+      <Modal
+        visible={visible}
+        animationType='slide'
+      >
+        <View style={{flex: 1, margin: 15}}>
+          <TouchableOpacity style={styles.header} onPress={() => setVisible(false)}>
+            <Ionicons name='arrow-back-outline' size={30} color="black" />
+            <Text style={styles.titleHeader}>Détails de l'absence</Text>
+          </TouchableOpacity>
+          <View style={{marginBottom: 10}}>
+            <Text style={styles.title}>Période :</Text>
+            <Text style={styles.titleContent}>{absence.periode}</Text>
+          </View>
+          <View style={{marginBottom: 10}}>
+            <Text style={styles.title}>Nom et prénom de l'élève :</Text>
+            <Text style={styles.titleContent}>{absence.nom_student + ' ' + absence.prenom_student}</Text>
+          </View>
+          <Text style={{fontFamily: 'Regular', fontSize: 20}}>Enregistré le {dateParser(absence.created_at)}</Text>
+        </View>
+      </Modal>
 
       <Modal
         animationType='slide'
@@ -165,12 +194,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     right: 15,
-    bottom: 10,
   },
   modal: {
     height: 400,
     elevation: 5,
   },
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  titleHeader: {
+      fontSize: 25,
+      fontFamily: 'Bold',
+      textAlign: 'center',
+      color: colors.NOIR
+  },
+  title: {
+    textAlign: 'left',
+    fontSize: 22,
+    textDecorationLine: 'underline',
+    fontFamily: 'Bold'
+  },
+  titleContent: {
+    fontSize: 24,
+    fontFamily: 'SemiBold'
+  }
 })
 
 export default AbsenceScreen

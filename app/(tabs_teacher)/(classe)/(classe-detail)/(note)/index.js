@@ -73,7 +73,12 @@ const NoteScreen = () => {
       </View>
 
       <View style={{margin: 15}}> 
-        <Heading text={"Tous les notes"} />
+        <Heading text={"Tous les notes"} style={{marginBottom: 20}} />
+        
+        <TouchableOpacity onPress={() => setVisible(true)} style={styles.addButton}>
+          <AntDesign name="plus" size={24} color={colors.BLANC} />
+        </TouchableOpacity>
+
         {!loading ? <FlatList
           data={notes}
           showsVerticalScrollIndicator={false}
@@ -161,26 +166,12 @@ const NoteScreen = () => {
         }
       </View>
 
-      <TouchableOpacity onPress={() => setVisible(true)} style={styles.addButton}>
-        <AntDesign name="plus" size={24} color={colors.BLANC} />
-      </TouchableOpacity>
-
       <Modal
         animationType='slide'
         visible={visible}
       >
         <AjouterNote close={() => setVisible(false)} user={user} headers={headers} classe={classe} />
       </Modal>
-
-      {/* <BottomSheet 
-        index={1} 
-        ref={bottomSheetModalRef} 
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        handleIndicatorStyle={{ backgroundColor: colors.BLEU }}
-      >
-        <AjouterNote close={handleClosePress} user={user} headers={headers} classe={classe} />
-      </BottomSheet> */}
 
     </ScrollView>
   )
@@ -204,7 +195,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     right: 20,
-    bottom: 20,
     backgroundColor: colors.BLEU,
     borderRadius: 99,
     elevation: 5,
