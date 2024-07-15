@@ -201,7 +201,6 @@ const HomeScreen = () => {
               //style={styles.events}
               renderItem={({item, index}) => (
                 <TouchableOpacity
-                  //onPress={handlePresentModalPress}
                   onPress={() => handleView(item)}
                 >
                   <EventItem key={index} event={item} />

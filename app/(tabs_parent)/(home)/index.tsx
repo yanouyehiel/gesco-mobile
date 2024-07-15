@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, Animated, SafeAreaView, Alert } from 'react-native'
+import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, Animated, SafeAreaView, Alert, RefreshControl, Modal } from 'react-native'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Header from '@/components/Header'
 import Slider from '@/components/Slider'
@@ -15,18 +15,11 @@ import EventItem from '../../../components/Event'
 import SkeletonComponent from '@/components/SkeletonComponent'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
-import axios from 'axios'
 import { showToast } from '@/utils/fonctions'
 import "react-native-gesture-handler"
-import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler'
-import {
-  BottomSheetModal,
-  BottomSheetView,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
+import ShowEvent from '@/components/ShowEvent'
 
 const HomeScreen = () => {
-  const [matieres, setMatieres] = useState<any[]>([])
   const [classes, setClasses] = useState<any[]>([])
   const [headers, setHeaders] = useState<any>(null)
   const [user, setUser] = useState<any>({})
@@ -36,22 +29,10 @@ const HomeScreen = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [loadingClasse, setLoadingClasse] = useState(true)
   const [loadingEvent, setLoadingEvent] = useState(true)
-  const [loadingMatiere, setLoadingMatiere] = useState<any>(true)
   const scale = useRef<any>(new Animated.Value(0)).current
   const navigation = useNavigation()
-  //const [visible, setVisible] = useState<any>(false)
-
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  // variables
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
-
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
+  const [showEvent, setShowEvent] = useState<any>(false)
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const fetchHeaders = async () => {
@@ -70,11 +51,21 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (!isLoading) {
-      fetchClasses().then(() => setLoadingClasse(false))
+      //fetchClasses().then(() => setLoadingClasse(false))
       fetchEvents().then(() => setLoadingEvent(false))
-      fetchMatieres().then(() => setLoadingMatiere(false))
     }
   }, [isLoading])
+
+  const fetchEvents = async () => {
+    try {
+      if (user.ecole_id) {
+        const res = await getAllEvents(user.ecole_id, headers)
+        setEvents(res)
+      }
+    } catch (error: any) {
+      showToast(error.message)
+    }
+  }
 
   const fetchUser = async () => {
     await getUser().then(res => {
@@ -93,77 +84,49 @@ const HomeScreen = () => {
     }
   };
 
-  const fetchEvents = async () => {
-    try {
-      if (user.ecole_id) {
-        const res = await getAllEvents(user.ecole_id, headers)
-        setEvents(res)
-      }
-    } catch (error: any) {
-      showToast(error.message)
-    }
-  }
-
-  const fetchMatieres = async () => {
-    try {
-      if (user.ecole_id) {
-        const res = await getMatieresSchool(user.ecole_id, headers);
-        setMatieres(res);
-      }
-    } catch (error: any) {
-      showToast(error.message)
-    }
-  };
-
   function handleView(item: any) {
     setEvent(item)
-    Alert.alert(event.title, event.description, [
-      {
-        text: 'Fermer'
-      }
-    ])
-    setVisible(!visible)
+    setShowEvent(!showEvent)
   }
 
-  /*const PopupEvent = ({event}: any) => {
-    console.log(event)
-    setVisible(!visible)
-    return (
-      <Modal isVisible={visible} style={{ flex: 1 }}>
-        <View>
-          <Animated.View style={[
-            styles.popup, 
-            {opacity: scale.interpolate({inputRange: [0, 1], outputRange: [0, 1]})},
-            {
-              transform: [{scale: scale}]
-            }]}>
-              <Text>{event?.title}</Text>
-              <Text>{event?.description}</Text>
-              <Text>{event?.start}</Text>
-              <Text>{event?.end}</Text>
-          </Animated.View>
-        </View>
-      </Modal>
-    )
-  }*/
+  const onRefresh = React.useCallback(() => {
+    //setLoadingClasse(true)
+    setLoadingEvent(true)
+    setRefreshing(true);
+    //fetchClasses().then(() => setLoadingClasse(false))
+    fetchEvents().then(() => setLoadingEvent(false))
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      refreshControl={
+        <RefreshControl 
+          refreshing={refreshing} 
+          onRefresh={onRefresh}
+          colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
+          progressBackgroundColor={colors.BLANC}
+        />
+      }
+    >
       <StatusBar backgroundColor={colors.BLEU} />
       {/* Header */}
       <Header user={user} />
       {user ?
         <View style={{padding: 20}}>
-          {/* Slider Classes */}
-          <Slider 
+          {/* <Slider 
             slider={classes} 
             headers={headers}
             user={user}
             loading={loadingClasse}
             Component={SlideClassItem} 
             titleHeading='Nos Classes' 
+            style={{}}
           />
-          {/* Slider Matieres */}
+          
           <Slider 
             slider={matieres} 
             headers={headers}
@@ -172,7 +135,7 @@ const HomeScreen = () => {
             Component={SlideMatiereItem} 
             titleHeading='Nos Matières' 
             style={{ marginTop: 20 }}
-          />
+          /> */}
 
           <View>
             <Heading style={styles.headerEvent} text="Les prochains évènements" />
@@ -181,9 +144,7 @@ const HomeScreen = () => {
               data={events}
               //style={styles.events}
               renderItem={({item, index}) => (
-                <TouchableOpacity
-                  //onPress={handlePresentModalPress}
-                >
+                <TouchableOpacity onPress={() => handleView(item)}>
                   <EventItem key={index} event={item} />
                 </TouchableOpacity>
               )}
@@ -233,21 +194,6 @@ const HomeScreen = () => {
               <NoData />
             }
           </View> 
-               
-          {/* <Modal animationType='slide' visible={visible} style={styles.popup}>
-            <SafeAreaView style={{ flex: 1 }}>
-              <Animated.View style={[
-                {opacity: scale.interpolate({inputRange: [0, 1], outputRange: [0, 1]})},
-                {
-                  transform: [{scale: scale}]
-                }]}>
-                  <Text style={{color: colors.NOIR}}>{event.title}</Text>
-                  <Text style={{color: colors.NOIR}}>{event.description}</Text>
-                  <Text style={{color: colors.NOIR}}>{event.start}</Text>
-                  <Text style={{color: colors.NOIR}}>{event.end}</Text>
-              </Animated.View>
-            </SafeAreaView>
-          </Modal> */}
         </View>
         :
         <Text style={{ fontSize: 15, textAlign: 'center' }}>
@@ -255,20 +201,13 @@ const HomeScreen = () => {
         </Text>
       }
 
-      <BottomSheetModalProvider>
-        <View style={styles.container}>
-          <BottomSheetModal
-            ref={bottomSheetModalRef}
-            index={1}
-            snapPoints={snapPoints}
-            onChange={handleSheetChanges}
-          >
-            <BottomSheetView style={styles.contentContainer}>
-              <Text>Awesome 🎉</Text>
-            </BottomSheetView>
-          </BottomSheetModal>
-        </View>
-      </BottomSheetModalProvider>
+      <Modal
+        animationType='slide'
+        visible={showEvent}
+      >
+        <ShowEvent hideModal={() => setShowEvent(false)} event={event} />
+      </Modal>
+
     </ScrollView>
   )
 }

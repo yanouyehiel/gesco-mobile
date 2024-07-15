@@ -131,3 +131,23 @@ export async function addAbsence(absence, headers) {
     const response = await axios.post(`${API_URL}/add-absence`, absence, {headers});
     return response.data;
 }
+
+export async function getAbsencesChildren(id, headers) {
+    const response = await axios.get(`${API_URL}/get-absences-children/${parseInt(id)}`, {headers});
+    return response.data;
+}
+
+export async function getNotesChildren(id, headers) {
+    const response = await axios.get(`${API_URL}/get-notes-children/${parseInt(id)}`, {headers});
+    return response.data;
+}
+
+export async function getDevoirsChildren(id, headers) {
+    const response = await axios.get(`${API_URL}/get-devoirs-children/${parseInt(id)}`, {headers});
+    return response.data;
+}
+
+export async function getMyChildren(id, headers) {
+    const response = await axios.get(`${API_URL}/get-my-children/${parseInt(id)}`, {headers});
+    return response.data;
+}

@@ -5,7 +5,7 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { colors } from '@/utils/colors';
-import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -25,17 +25,8 @@ export default function TabLayout() {
       },
       headerShown: false,
     }}>
-      {/* <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
-        }}
-      /> */}
       <Tabs.Screen 
-        name="(teacher)" 
+        name="(home)" 
         options={{
           title: "Accueil",
           tabBarIcon: ({color, size}) => (
@@ -45,17 +36,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(classe)"
+        name="(student)"
         options={{
-          title: 'Classes',
+          title: 'Mes enfants',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="google-classroom" size={size} color={color} />  
+            <FontAwesome6 name="children" size={size} color={color} />  
           ),
           headerShown: false
         }}
       />
       <Tabs.Screen
-        name="profile-teacher"
+        name="profile-parent"
         options={{
           title: 'Profil',
           tabBarIcon: ({ color, size }) => (

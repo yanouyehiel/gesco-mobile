@@ -15,7 +15,7 @@ export default function HomeLayout() {
       }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen 
-        name="(classe-detail)" 
+        name="(student-detail)" 
         options={{ headerShown: false }}
       />
     </Stack>

@@ -47,7 +47,7 @@ const ProfileTeacher = () => {
             setTimeout(() => {
                 removeStorge('tokenGesco').then(() => console.log('Tokens supprimes'))
                 setLoading(false)
-                navigation.navigate("index")
+                navigation.navigate("connexion")
             }, 2000)
         } catch (error) {
             showToast(error.message)

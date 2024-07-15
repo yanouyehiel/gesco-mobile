@@ -47,10 +47,7 @@ const HomeDetail = () => {
       </View>
       <View style={[styles.card, {backgroundColor: colors.VERT_CLAIR}]}>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
-          <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Gérer efficacement votre classe</Text>
-          <View style={styles.textView}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
+          <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Restez informés de tout ce qui se passe dans la classe de votre enfant</Text>
         </View>
         <View style={{width: "30%"}}>
           <Image source={require("@/assets/images/ob3.png")} style={{width: 80, height: 80}} />
@@ -61,18 +58,12 @@ const HomeDetail = () => {
           <Image source={require("@/assets/images/ob2.png")} style={{width: 80, height: 80}} />
         </View>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%'}}>
-          <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des élèves essentielle pour suivre leurs progrès</Text>
-          <View style={styles.textView}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
+          <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Suivez les progrès de votre enfant à travers ses devoirs</Text>
         </View>
       </View>
       <View style={[styles.card, {backgroundColor: colors.VERT_CLAIR}]}>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
-          <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des présences permet de surveiller l'assiduité des élèves</Text>
-          <View style={styles.textView}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
+          <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Suivez l'assiduité de votre enfant en analysant ses présences en classe</Text>
         </View>
         <View style={{width: "30%"}}>
           <Image source={require("@/assets/images/presence-remove.png")} style={{width: 80, height: 80}} />
@@ -84,17 +75,11 @@ const HomeDetail = () => {
         </View>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%'}}>
           <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des notes permet de suivre les performances des élèves</Text>
-          <View style={styles.textView}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
         </View>
       </View>
       <View style={[styles.card, {backgroundColor: colors.VERT_CLAIR}]}>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
           <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace</Text>
-          <View style={styles.textView}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
         </View>
         <View style={{width: "30%"}}>
           <Image source={require("@/assets/images/ob5.png")} style={{width: 80, height: 80}} />

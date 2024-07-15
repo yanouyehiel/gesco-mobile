@@ -8,20 +8,21 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useParams } from 'react-router-dom';
 import { useRoute } from '@react-navigation/native';
 import { useEffect } from 'react';
+import SidebarStudent from '../../../../components/SidebarStudent';
 
 
 export default function HomeLayout({}) {
   const route = useRoute()
-  const { user, classe, headers } = route.params
+  const { user, classe, headers, student } = route.params
 
   useEffect(() => {
-    console.log(classe, user, headers)
+    console.log(classe, user, headers, student)
   }, [])
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer 
-        drawerContent={(props) => <SideBar classe={classe} {...props} />}
+        drawerContent={(props) => <SidebarStudent classe={classe} student={student} {...props} />}
         screenOptions={{
           //statusBarColor: colors.VERT,
           headerStyle: {
@@ -32,7 +33,7 @@ export default function HomeLayout({}) {
         }}
       >
         <Drawer.Screen
-          name="classe"
+          name="student"
           options={{
             drawerIcon: ({ color, size }) => (
               <Feather name="list" size={24} color={colors.NOIR} />
@@ -55,7 +56,7 @@ export default function HomeLayout({}) {
               <AntDesign name="book" size={24} color={colors.NOIR} />
             ),
             headerTitle: "Les Cours",
-            drawerLabel: 'Gérer vos cours',
+            drawerLabel: 'Ses cours',
             drawerLabelStyle: {
               color: colors.NOIR,
               fontWeight: '600',
@@ -70,7 +71,7 @@ export default function HomeLayout({}) {
             drawerIcon: ({ color, size }) => (
               <SimpleLineIcons name="note" size={24} color={colors.NOIR} />
             ),
-            drawerLabel: 'Gérer les notes',
+            drawerLabel: 'Ses notes',
             drawerLabelStyle: {
               color: colors.NOIR,
               fontWeight: '600',
@@ -86,7 +87,7 @@ export default function HomeLayout({}) {
             drawerIcon: ({ color, size }) => (
               <Feather name="watch" size={24} color={colors.NOIR} />
             ),
-            drawerLabel: 'Gérer les absences',
+            drawerLabel: 'Ses absences',
             drawerLabelStyle: {
               color: colors.NOIR,
               fontWeight: '600',
@@ -102,7 +103,7 @@ export default function HomeLayout({}) {
             drawerIcon: ({ color, size }) => (
               <Octicons name="workflow" size={24} color={colors.NOIR} />
             ),
-            drawerLabel: 'Gérer les devoirs',
+            drawerLabel: 'Ses devoirs',
             drawerLabelStyle: {
               color: colors.NOIR,
               fontWeight: '600',
@@ -118,7 +119,7 @@ export default function HomeLayout({}) {
             drawerIcon: ({ color, size }) => (
               <Octicons name="person" size={24} color={colors.NOIR} />
             ),
-            drawerLabel: 'Gérer les élèves',
+            drawerLabel: 'Voir son profil',
             drawerLabelStyle: {
               color: colors.NOIR,
               fontWeight: '600',

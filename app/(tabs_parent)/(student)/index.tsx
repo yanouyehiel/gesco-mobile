@@ -2,14 +2,14 @@ import { View, Text, StyleSheet, FlatList, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import PageHeading from '@/components/PageHeading'
-import SingleClassItem from '@/components/SingleClassItem'
+import SingleStudentItem from '@/components/SingleStudentItem'
 import { Skeleton } from 'moti/skeleton'
 import { skeletonProps } from '@/utils/skeletonProps'
-import { getAllClasses, getHeaders, getUser } from '@/services/MainService'
+import { getAllClasses, getHeaders, getMyChildren, getUser } from '@/services/MainService'
 import { isLoading } from 'expo-font'
 
 const ClasseScreen = () => {
-  const [classes, setClasses] = useState<any[]>([])
+  const [students, setStudents] = useState<any[]>([])
   const [headers, setHeaders] = useState<any>({})
   const [user, setUser] = useState<any>({})
   const [isLoading, setIsLoading] = useState(true)
@@ -30,7 +30,7 @@ const ClasseScreen = () => {
 
   useEffect(() => {
     if (!isLoading) {
-      fetchClasses().then(() => setLoading(false))
+      fetchStudents().then(() => setLoading(false))
     }
   }, [isLoading])
 
@@ -49,22 +49,22 @@ const ClasseScreen = () => {
     });
   };
 
-  const fetchClasses = async () => {
+  const fetchStudents = async () => {
     if (user) {
-      const res = await getAllClasses(user.ecole_id, headers);
-      setClasses(res);
+      const res = await getMyChildren(user.id, headers);
+      setStudents(res.students);
     }
   };
 
   return (
     <View style={{padding: 20, paddingTop: 40}}>
-      <PageHeading title={'Toutes les classes'} />
+      <PageHeading title={'Tous mes enfants'} />
 
-      {(classes.length > 0 && !loading) ?
+      {(students.length > 0 && !loading) ?
         <FlatList 
-          data={classes}
+          data={students}
           renderItem={({item, index}) => (
-            <SingleClassItem headers={headers} user={user} classe={item} key={index} />
+            <SingleStudentItem headers={headers} user={user} student={item} key={index} />
           )}
           style={{marginTop: 20}}
           showsVerticalScrollIndicator={false}
