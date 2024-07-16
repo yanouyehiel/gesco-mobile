@@ -56,8 +56,8 @@ const AbsenceScreen = () => {
                   <AntDesign name="warning" size={30} color={colors.ROUGE} />
                 </View>
                 <View style={{marginLeft: 10}}>
-                  <Text style={{fontSize: 18, fontWeight: '400'}}>{item.periode}</Text>
-                  <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{student.nom + ' ' + student.prenom}</Text>
+                <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{student.nom + ' ' + student.prenom}</Text>
+                  <Text style={{fontSize: 18, fontWeight: '400'}}>Absent(e) à : {item.periode}</Text>
                   <Text>Enregistré le : <Text style={{fontFamily: 'SemiBold', fontSize: 18}}>{dateParser(item.created_at)}</Text></Text>
                 </View>
               </View>

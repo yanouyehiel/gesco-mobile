@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { View, Text, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { showToast } from '@/utils/fonctions'
 import axios from 'axios'
@@ -7,28 +7,21 @@ import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData';
 import { colors } from '@/utils/colors'
 import { dateParser, longueurTexte } from '@/utils/fonctions';
-import { AntDesign } from '@expo/vector-icons'
-import BottomSheet from '@gorhom/bottom-sheet'
-import AjouterDevoir from '../../../../../components/AjouterDevoir'
 import Heading from '@/components/Heading'
 
 const DevoirScreen = () => {
   const [loading, setLoading] = useState(true)
   const [devoirs, setDevoirs] = useState([])
   const route = useRoute()
-  const { classe, user, headers } = route.params
-  const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['25%', '50%', '70%', '100%'], []);
-  const handleOpenPress = () => bottomSheetModalRef.current?.expand();
-  const handleClosePress = () => bottomSheetModalRef.current?.close()
+  const { student, user, headers } = route.params
 
   useEffect(() => {
     getDevoirs().then(() => setLoading(false))
-  }, [classe])
+  }, [student])
 
   const getDevoirs = async () => {
     try {
-      const res = await axios.get('https://test.comtheplug.com/api/devoirs-classe/' + classe.id, {headers: headers});
+      const res = await axios.get('https://test.comtheplug.com/api/get-devoirs-children/' + student.classe_id, {headers: headers});
       setDevoirs(res.data)
     } catch (error) {
       showToast(error.response.message)
@@ -36,7 +29,7 @@ const DevoirScreen = () => {
   }
 
   return (
-    <SafeAreaView>
+    <ScrollView>
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
           <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
@@ -66,8 +59,8 @@ const DevoirScreen = () => {
                   <Text style={{fontSize: 20, fontFamily: 'SemiBold'}}>{longueurTexte(item.nom_matiere, 35)}</Text>
                   <Text style={[styles.text, {fontSize: 18}]} numberOfLines={2} ellipsizeMode="tail">{item.nom_livre}</Text>
                   <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={[styles.text, {fontFamily: 'Bold'}]}>{item.num_page}</Text>
-                    <Text style={styles.text}>{item.num_exo}</Text>
+                    <Text style={[styles.text, {fontFamily: 'Bold'}]}>Num page : {item.num_page}</Text>
+                    <Text style={styles.text}>Num exo : {item.num_exo}</Text>
                   </View>
                   <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
                 </View>
@@ -131,20 +124,7 @@ const DevoirScreen = () => {
           }
       </View>
 
-      <TouchableOpacity onPress={handleOpenPress} style={styles.addButton}>
-        <AntDesign name="plus" size={24} color={colors.BLANC} />
-      </TouchableOpacity>
-
-      <BottomSheet 
-        index={1} 
-        ref={bottomSheetModalRef} 
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        handleIndicatorStyle={{ backgroundColor: colors.BLEU }}
-      >
-        <AjouterDevoir close={handleClosePress} user={user} headers={headers} classe={classe} />
-      </BottomSheet>
-    </SafeAreaView>
+    </ScrollView>
   )
 }
 
