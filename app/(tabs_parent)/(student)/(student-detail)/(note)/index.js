@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
+import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView } from 'react-native'
 import React, { useMemo, useRef, useState, useEffect } from 'react'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
@@ -11,32 +11,36 @@ import BottomSheet from '@gorhom/bottom-sheet'
 import { AntDesign } from '@expo/vector-icons'
 import AjouterNote from '../../../../../components/AjouterNote'
 import Heading from '@/components/Heading'
+import ModalNote from './modal'
 
 const NoteScreen = () => {
   const [loading, setLoading] = useState(true)
   const [notes, setNotes] = useState([])
   const route = useRoute()
-  const { classe, user, headers } = route.params
-  const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['25%', '50%', '70%', '100%'], []);
-  const handleOpenPress = () => bottomSheetModalRef.current?.expand();
-  const handleClosePress = () => bottomSheetModalRef.current?.close()
+  const { student, user, headers } = route.params
+  const [showModal, setShowModal] = useState(false)
+  const [note, setNote] = useState({})
 
   useEffect(() => {
     getNotes().then(() => setLoading(false))
-  }, [classe])
+  }, [student])
 
   const getNotes = async () => {
     try {
-      const res = await axios.get('https://test.comtheplug.com/api/get-notes-classe/' + classe.id, {headers: headers});
+      const res = await axios.get('https://test.comtheplug.com/api/get-notes-children/' + student.id, {headers: headers});
       setNotes(res.data.notes)
     } catch (error) {
-      showToast(error.response.message)
+      showToast(error.response.data.message)
     }
   }
 
+  function handleShowNote(data) {
+    setNote(data)
+    setShowModal(true)
+  }
+
   return (
-    <SafeAreaView>
+    <ScrollView>
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
           <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
@@ -58,23 +62,28 @@ const NoteScreen = () => {
           showsVerticalScrollIndicator={false}
           horizontal={false}
           renderItem={({item, index}) => (
-            <View key={index} style={styles.note}>
-              <View style={styles.noteImage}>
-                <Image source={require("@/assets/images/matiere.png")} style={{width: 50, height: 50}} />
-              </View>
-              <View style={styles.noteDesc}>
-                <Text style={[styles.text, {fontFamily: 'Bold'}]}>{item.nom_student +' '+ item.prenom_student}</Text>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                  <Text style={[styles.text, {fontFamily: 'Bold'}]}>{longueurTexte(item.nom_matiere, 35)}</Text>
-                  <Text style={styles.text}>{item.note} / 20</Text>
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleShowNote(item)}
+            >
+              <View style={styles.note}>
+                <View style={styles.noteImage}>
+                  <Image source={require("@/assets/images/matiere.png")} style={{width: 50, height: 50}} />
                 </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                  <Text style={[styles.text, {fontFamily: 'Bold'}]}>Séquence : {item.sequence}</Text>
-                  <Text style={styles.text}>{item.annee_scolaire}</Text>
+                <View style={styles.noteDesc}>
+                  <Text style={[styles.text, {fontFamily: 'Bold'}]}>{student.nom +' '+ student.prenom}</Text>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <Text style={[styles.text, {fontFamily: 'Bold'}]}>{longueurTexte(item.nom_matiere, 30)}</Text>
+                    <Text style={styles.text}>{item.note} / 20</Text>
+                  </View>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <Text style={[styles.text, {fontFamily: 'Bold'}]}>Séquence : {item.sequence}</Text>
+                    <Text style={[styles.text, {marginRight: 20}]}>{item.annee_scolaire}</Text>
+                  </View>
+                  <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
                 </View>
-                <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         /> :
         [0, 1, 2, 3, 4].map((t, i) => (
@@ -96,7 +105,7 @@ const NoteScreen = () => {
                   colorMode='light'
                 />
               </View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
                 <Skeleton 
                   show={true}
                   width={100}
@@ -110,7 +119,7 @@ const NoteScreen = () => {
                   colorMode='light'
                 />
               </View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
                 <Skeleton 
                   show={true}
                   width={100}
@@ -140,21 +149,8 @@ const NoteScreen = () => {
         }
       </View>
 
-      <TouchableOpacity onPress={handleOpenPress} style={styles.addButton}>
-        <AntDesign name="plus" size={24} color={colors.BLANC} />
-      </TouchableOpacity>
-
-      <BottomSheet 
-        index={1} 
-        ref={bottomSheetModalRef} 
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        handleIndicatorStyle={{ backgroundColor: colors.BLEU }}
-      >
-        <AjouterNote close={handleClosePress} user={user} headers={headers} classe={classe} />
-      </BottomSheet>
-
-    </SafeAreaView>
+      <ModalNote note={note} visible={showModal} setVisible={setShowModal} student={student} />
+    </ScrollView>
   )
 }
 
@@ -193,7 +189,8 @@ const styles = StyleSheet.create({
     borderColor: colors.BLEU
   },
   noteDesc: {
-    flexDirection: 'column'
+    flexDirection: 'column',
+    marginRight: 20
   },
   noteImage: {
     marginRight: 10

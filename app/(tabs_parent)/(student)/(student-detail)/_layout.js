@@ -13,16 +13,16 @@ import SidebarStudent from '../../../../components/SidebarStudent';
 
 export default function HomeLayout({}) {
   const route = useRoute()
-  const { user, classe, headers, student } = route.params
+  const { user, headers, student } = route.params
 
   useEffect(() => {
-    console.log(classe, user, headers, student)
+    console.log(user, headers, student)
   }, [])
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer 
-        drawerContent={(props) => <SidebarStudent classe={classe} student={student} {...props} />}
+        drawerContent={(props) => <SidebarStudent student={student} {...props} />}
         screenOptions={{
           //statusBarColor: colors.VERT,
           headerStyle: {
@@ -46,11 +46,11 @@ export default function HomeLayout({}) {
               fontSize: 18,
             },
           }}
-          initialParams={{ classe: classe, user: user, headers: headers }}
+          initialParams={{ student: student, user: user, headers: headers }}
         />
         <Drawer.Screen 
           name="(cours)/index" 
-          initialParams={{ classe: classe, user: user, headers: headers }}
+          initialParams={{ student: student, user: user, headers: headers }}
           options={{
             drawerIcon: ({ color, size }) => (
               <AntDesign name="book" size={24} color={colors.NOIR} />
@@ -66,7 +66,7 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(note)/index" 
-          initialParams={{ classe: classe, user: user, headers: headers }}
+          initialParams={{ student: student, user: user, headers: headers }}
           options={{
             drawerIcon: ({ color, size }) => (
               <SimpleLineIcons name="note" size={24} color={colors.NOIR} />
@@ -82,7 +82,7 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(absence)/index" 
-          initialParams={{ classe: classe, user: user, headers: headers }}
+          initialParams={{ student: student, user: user, headers: headers }}
           options={{
             drawerIcon: ({ color, size }) => (
               <Feather name="watch" size={24} color={colors.NOIR} />
@@ -98,7 +98,7 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(devoir)/index" 
-          initialParams={{ classe: classe, user: user, headers: headers }}
+          initialParams={{ student: student, user: user, headers: headers }}
           options={{
             drawerIcon: ({ color, size }) => (
               <Octicons name="workflow" size={24} color={colors.NOIR} />
@@ -114,7 +114,7 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(student)/index" 
-          initialParams={{ classe: classe, user: user, headers: headers }}
+          initialParams={{ student: student, user: user, headers: headers }}
           options={{
             drawerIcon: ({ color, size }) => (
               <Octicons name="person" size={24} color={colors.NOIR} />

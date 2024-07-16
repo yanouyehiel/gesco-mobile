@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { colors } from '@/utils/colors'
 import { AntDesign, Feather, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -55,7 +55,7 @@ const ProfileTeacher = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <View style={styles.header}></View>
             <View style={styles.profil}>
                 <View style={{marginTop: -80}}>
@@ -158,7 +158,7 @@ const ProfileTeacher = () => {
                     <Text style={styles.btnDeconnect}>Déconnexion</Text>
                 }
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 };
 

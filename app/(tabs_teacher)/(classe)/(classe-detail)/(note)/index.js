@@ -18,11 +18,11 @@ const NoteScreen = () => {
   const route = useRoute()
   const { classe, user, headers } = route.params
   const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['25%', '50%', '70%', '100%'], []);
-  const handleOpenPress = () => bottomSheetModalRef.current?.expand();
   const handleClosePress = () => bottomSheetModalRef.current?.close()
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false)
+  const [note, setNote] = useState({})
+  const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
     handleClosePress()
@@ -46,6 +46,11 @@ const NoteScreen = () => {
       setRefreshing(false);
     }, 2000);
   }, []);
+
+  function handleShowNote(data) {
+    setNote(data)
+    setShowModal(true)
+  }
 
   return (
     <ScrollView
@@ -84,23 +89,28 @@ const NoteScreen = () => {
           showsVerticalScrollIndicator={false}
           horizontal={false}
           renderItem={({item, index}) => (
-            <View key={index} style={styles.note}>
-              <View style={styles.noteImage}>
-                <Image source={require("@/assets/images/matiere.png")} style={{width: 50, height: 50}} />
-              </View>
-              <View style={styles.noteDesc}>
-                <Text style={[styles.text, {fontSize: 18}]}>{item.nom_student +' '+ item.prenom_student}</Text>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                  <Text style={[styles.text]}>{longueurTexte(item.nom_matiere, 35)}</Text>
-                  <Text style={styles.text}>{item.note} / 20</Text>
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleShowNote(item)}
+            >
+              <View style={styles.note}>
+                <View style={styles.noteImage}>
+                  <Image source={require("@/assets/images/matiere.png")} style={{width: 50, height: 50}} />
                 </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                  <Text style={[styles.text]}>Séquence : {item.sequence}</Text>
-                  <Text style={styles.text}>{item.annee_scolaire}</Text>
+                <View style={styles.noteDesc}>
+                  <Text style={[styles.text, {fontSize: 18}]}>{item.nom_student +' '+ item.prenom_student}</Text>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <Text style={[styles.text]}>{longueurTexte(item.nom_matiere, 35)}</Text>
+                    <Text style={styles.text}>{item.note} / 20</Text>
+                  </View>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <Text style={[styles.text]}>Séquence : {item.sequence}</Text>
+                    <Text style={styles.text}>{item.annee_scolaire}</Text>
+                  </View>
+                  <Text >Enregistré le {dateParser(item.created_at)}</Text>
                 </View>
-                <Text >Enregistré le {dateParser(item.created_at)}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         /> :
         [0, 1, 2, 3, 4].map((t, i) => (
@@ -168,6 +178,42 @@ const NoteScreen = () => {
 
       <Modal
         animationType='slide'
+        visible={showModal}
+      >
+        <View style={{flex: 1, margin: 15}}>
+          <TouchableOpacity style={styles.header} onPress={() => setShowModal(false)}>
+              <Ionicons name='arrow-back-outline' size={30} color="black" />
+              <Text style={styles.titleHeader}>Détails de la note</Text>
+          </TouchableOpacity>
+
+          <View>
+            <View style={{marginBottom: 10}}>
+                <Text style={styles.title}>Noms et prénoms :</Text>
+                <Text style={styles.titleContent}>{note.nom +' '+ note.prenom}</Text>
+            </View>
+            <View style={{marginBottom: 10}}>
+                <Text style={styles.title}>Matière :</Text>
+                <Text style={styles.titleContent}>{note.nom_matiere}</Text>
+            </View>
+            <View style={{marginBottom: 10}}>
+                <Text style={styles.title}>Note :</Text>
+                <Text style={styles.titleContent}>{note.note} / 20</Text>
+            </View>
+            <View style={{marginBottom: 10}}>
+                <Text style={styles.title}>Séquence :</Text>
+                <Text style={styles.titleContent}>{note.sequence}</Text>
+            </View>
+            <View style={{marginBottom: 10}}>
+                <Text style={styles.title}>Année scolaire :</Text>
+                <Text style={styles.titleContent}>{note.annee_scolaire}</Text>
+            </View>
+            <Text style={{fontFamily: 'Regular', fontSize: 20}}>Enregistré le {dateParser(note.created_at)}</Text>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType='slide'
         visible={visible}
       >
         <AjouterNote close={() => setVisible(false)} user={user} headers={headers} classe={classe} />
@@ -220,6 +266,29 @@ const styles = StyleSheet.create({
     fontFamily: 'Regular',
     fontFamily: 'Bold',
     fontSize: 16
+  },
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  titleHeader: {
+    fontSize: 25,
+    fontFamily: 'Bold',
+    textAlign: 'center',
+    color: colors.NOIR
+  },
+  title: {
+    textAlign: 'left',
+    fontSize: 22,
+    textDecorationLine: 'underline',
+    fontFamily: 'Bold'
+  },
+  titleContent: {
+    fontSize: 20,
+    fontFamily: 'Regular'
   }
 })
 

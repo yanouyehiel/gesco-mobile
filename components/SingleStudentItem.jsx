@@ -3,7 +3,7 @@ import React from 'react'
 import { useNavigation } from 'expo-router'
 import { colors } from '@/utils/colors'
 
-const SingleStudentItem = ({student, headers, user, classe}) => {
+const SingleStudentItem = ({student, headers, user}) => {
     const navigation = useNavigation()
 
     return (

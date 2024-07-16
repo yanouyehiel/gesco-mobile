@@ -14,7 +14,7 @@ import axios from 'axios'
 
 const AbsenceScreen = () => {
   const route = useRoute()
-  const { classe, user, headers } = route.params
+  const { student, user, headers } = route.params
   const [loading, setLoading] = useState(true)
   const [absences, setAbsences] = useState([])
   const [showModal, setShowModal] = useState(false)
@@ -25,10 +25,10 @@ const AbsenceScreen = () => {
   }, [])
 
   async function getPresences() {
-    const res = await axios.get('https://test.comtheplug.com/api/get-absences-classe/' + classe.id, {
+    const res = await axios.get('https://test.comtheplug.com/api/get-absences-children/' + student.classe_id, {
       headers: headers
     })
-    setAbsences(res.data)
+    setAbsences(res.data.absences)
   }
 
   return (
@@ -57,7 +57,7 @@ const AbsenceScreen = () => {
                 </View>
                 <View style={{marginLeft: 10}}>
                   <Text style={{fontSize: 18, fontWeight: '400'}}>{item.periode}</Text>
-                  <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{item.nom_student + ' ' + item.prenom_student}</Text>
+                  <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{student.nom + ' ' + student.prenom}</Text>
                   <Text>Enregistré le : <Text style={{fontFamily: 'SemiBold', fontSize: 18}}>{dateParser(item.created_at)}</Text></Text>
                 </View>
               </View>
@@ -102,19 +102,6 @@ const AbsenceScreen = () => {
           <NoData />
         }
       </View>
-
-      <TouchableOpacity onPress={() => setShowModal(true)} style={styles.addButton}>
-        <AntDesign name="plus" size={24} color={colors.BLANC} />
-      </TouchableOpacity>
-
-      <Modal
-        animationType='slide'
-        visible={showModal}
-        style={styles.modal}
-        deviceHeight={deviceHeight * 0.5}
-      >
-        <AjouterAbsence hideModal={() => setShowModal(false)} user={user} headers={headers} classe={classe} />
-      </Modal>
     </ScrollView>
   )
 }

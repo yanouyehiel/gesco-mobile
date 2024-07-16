@@ -13,31 +13,33 @@ import AxiosApi from '@/services/AxiosApi';
 import axios from 'axios';
 import "react-native-gesture-handler"
 import BottomSheet from '@gorhom/bottom-sheet';
+import ModalCours from './modal';
 
 const CourseScreen = () => {
   const route = useRoute()
-  const { classe, user, headers } = route.params
+  const { student, user, headers } = route.params
   const [showModal, setShowModal] = useState(false)
   const { height: deviceHeight } = Dimensions.get('screen');
   const [cours, setCours] = useState([])
   const [loading, setLoading] = useState(true)
-
-  const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['25%', '50%', '70%', '100%'], []);
-  const handleOpenPress = () => bottomSheetModalRef.current?.expand();
-  const handleClosePress = () => bottomSheetModalRef.current?.close()
+  const [cour, setCour] = useState({})
 
   useEffect(() => {
     getCours().then(() => setLoading(false))
-  }, [classe, user, headers])
+  }, [student, user, headers])
 
   const getCours = async () => {
     try {
-      const res = await axios.get('https://test.comtheplug.com/api/get-cours-classe/' + classe.id, {headers: headers});
+      const res = await axios.get('https://test.comtheplug.com/api/get-cours-children/' + student.id, {headers: headers});
       setCours(res.data.cours);
     } catch (error) {
       console.error('Erreur lors de la récupération des cours:', error);
     }
+  }
+
+  function handleShowCours(data) {
+    setCour(data)
+    setShowModal(true)
   }
 
   return (
@@ -65,20 +67,25 @@ const CourseScreen = () => {
               showsVerticalScrollIndicator={false}
               horizontal={false}
               renderItem={({item, i}) => (
-                <View key={i} style={styles.cours}>
-                  <View style={styles.coursImage}>
-                    <Image source={require("@/assets/images/cours.png")} style={{width: 50, height: 50}} />
-                  </View>
-                  <View style={styles.coursDesc}>
-                    <Text style={{fontSize: 20, fontFamily: 'SemiBold'}}>{item.titre}</Text>
-                    <Text style={[styles.text, {fontSize: 18}]} numberOfLines={2} ellipsizeMode="tail">{longueurTexte(item.description, 35)}</Text>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                      <Text style={[styles.text, {fontFamily: 'Bold'}]}>{longueurTexte(item.nom_matiere)}</Text>
-                      <Text style={styles.text}>{item.nom_teacher + ' ' + item.prenom_teacher}</Text>
+                <TouchableOpacity
+                  key={i}
+                  onPress={() => handleShowCours(item)}
+                >
+                  <View style={styles.cours}>
+                    <View style={styles.coursImage}>
+                      <Image source={require("@/assets/images/cours.png")} style={{width: 50, height: 50}} />
                     </View>
-                    <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
+                    <View style={styles.coursDesc}>
+                      <Text style={{fontSize: 20, fontFamily: 'SemiBold'}}>{item.titre}</Text>
+                      <Text style={[styles.text, {fontSize: 18}]} numberOfLines={2} ellipsizeMode="tail">{longueurTexte(item.description, 35)}</Text>
+                      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <Text style={[styles.text, {fontFamily: 'Bold'}]}>{longueurTexte(item.nom_matiere)}</Text>
+                        <Text style={styles.text}>{item.nom_teacher + ' ' + item.prenom_teacher}</Text>
+                      </View>
+                      <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
+                    </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               )}
             /> :
             [0, 1, 2, 3, 4].map((t, i) => (
@@ -130,19 +137,7 @@ const CourseScreen = () => {
             }
           </View>
 
-          <TouchableOpacity onPress={handleOpenPress} style={styles.addButton}>
-            <AntDesign name="plus" size={24} color={colors.BLANC} />
-          </TouchableOpacity>
-          
-          <BottomSheet 
-            index={1} 
-            ref={bottomSheetModalRef} 
-            snapPoints={snapPoints}
-            enablePanDownToClose={true}
-            handleIndicatorStyle={{ backgroundColor: colors.BLEU }}
-          >
-            <AjouterCours close={handleClosePress} user={user} headers={headers} classe={classe} />
-          </BottomSheet>
+          <ModalCours visible={showModal} setVisible={setShowModal} cour={cour} />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

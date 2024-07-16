@@ -17,7 +17,7 @@ const SignupScreen = () => {
   }; 
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
         {/* <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           <Animated.Image
             entering={FadeInUp.delay(200).duration(1000).springify()}
@@ -106,7 +106,7 @@ const SignupScreen = () => {
 
           {/* <BottomContainer /> */}
         </View>
-    </View>
+    </ScrollView>
   )
 }
 
@@ -114,10 +114,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 20, 
     backgroundColor: colors.BLANC, 
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
   },
   containerInput: {
     flexDirection: 'row',
