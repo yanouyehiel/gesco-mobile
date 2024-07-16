@@ -8,7 +8,7 @@ import { colors } from '@/utils/colors'
 import { dateParser, longueurTexte } from '@/utils/fonctions';
 import { showToast } from '@/utils/fonctions'
 import BottomSheet from '@gorhom/bottom-sheet'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, Ionicons } from '@expo/vector-icons'
 import AjouterNote from '../../../../../components/AjouterNote'
 import Heading from '@/components/Heading'
 
@@ -189,7 +189,7 @@ const NoteScreen = () => {
           <View>
             <View style={{marginBottom: 10}}>
                 <Text style={styles.title}>Noms et prénoms :</Text>
-                <Text style={styles.titleContent}>{note.nom +' '+ note.prenom}</Text>
+                <Text style={styles.titleContent}>{note.nom_student +' '+ note.prenom_student}</Text>
             </View>
             <View style={{marginBottom: 10}}>
                 <Text style={styles.title}>Matière :</Text>
