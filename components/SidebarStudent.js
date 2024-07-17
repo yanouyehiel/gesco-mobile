@@ -14,7 +14,7 @@ const SidebarStudent = (props) => {
         >
             <Image source={require("@/assets/images/user.jpeg")} style={styles.image} />
             <View>
-                <Text style={styles.name}>{props.student.nom}</Text>
+                <Text style={styles.name}>{props.student.nom +' '+ props.student.prenom}</Text>
                 <Text>{props.student.matricule}</Text>
             </View>
         </ImageBackground>

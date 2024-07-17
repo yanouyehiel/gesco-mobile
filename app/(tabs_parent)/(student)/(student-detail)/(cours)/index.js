@@ -30,7 +30,7 @@ const CourseScreen = () => {
 
   const getCours = async () => {
     try {
-      const res = await axios.get('https://test.comtheplug.com/api/get-cours-children/' + student.id, {headers: headers});
+      const res = await axios.get('https://test.comtheplug.com/api/get-cours-children/' + student.classe_id, {headers: headers});
       setCours(res.data.cours);
     } catch (error) {
       console.error('Erreur lors de la récupération des cours:', error);
