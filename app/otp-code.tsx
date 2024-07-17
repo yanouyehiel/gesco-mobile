@@ -1,8 +1,6 @@
-import { View, Text, TouchableOpacity, SafeAreaView, Image, TextInput, StyleSheet, NativeSyntheticEvent, TextInputKeyPressEventData, KeyboardAvoidingView } from 'react-native'
+import { View, Text, TouchableOpacity, SafeAreaView, TextInput, StyleSheet, NativeSyntheticEvent, TextInputKeyPressEventData, KeyboardAvoidingView, ActivityIndicator } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { colors } from '@/utils/colors'
-import { StatusBar } from 'expo-status-bar'
-import Animated, { FadeInUp } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
 import BottomContainer from '@/components/BottomContainer'
 
@@ -10,6 +8,7 @@ import BottomContainer from '@/components/BottomContainer'
 const OTPCode = () => {
     const inputRefs = useRef([])
     const navigate = useNavigation()
+    const [loading, setLoading] = useState(false)
 
     const handleChange = (text: string, index: number) => {
         if (text.length !== 0) {
@@ -27,19 +26,16 @@ const OTPCode = () => {
         }
     }
 
+    function handleSubmit() {
+        setLoading(true)
+        navigate.navigate('phone-number-forgot')
+    }
+
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.BLANC, padding: 16 }}>
 
-                {/* <View style={styles.containerLogo}>
-                    <Animated.Image
-                        entering={FadeInUp.delay(200).duration(1000).springify()}
-                        source={require('@/assets/images/logo_bleu_sans_bg.png')}
-                        style={styles.logo}
-                    />
-                </View> */}
-
-                <Text style={{color: '#333', fontSize: 23, fontFamily: 'SemiBold', textAlign: 'center', marginBottom: 20}}>Entrer le code de vérification</Text>
+                <Text style={{color: '#333', fontSize: 25, fontFamily: 'SemiBold', textAlign: 'center', marginBottom: 20}}>Entrer le code de vérification</Text>
                 <Text style={{fontSize: 20, fontFamily: 'Regular', textAlign: 'center'}}>Nous détectons automatiquement les SMS envoyés sur votre téléphone</Text>
 
                 <View style={styles.containerOTPCode}>
@@ -66,16 +62,21 @@ const OTPCode = () => {
                 <View>
                 <TouchableOpacity
                     style={styles.btnSend}
+                    onPress={handleSubmit}
+                    disabled={loading}
                 >
-                    <Text 
-                        style={styles.btnText}
-                    >Envoyer</Text>
+                    {!loading ?
+                        <Text style={styles.btnText}>
+                            Envoyer
+                        </Text>
+                        : <ActivityIndicator color={colors.BLANC} size='large' />
+                    }
                     </TouchableOpacity>
                 </View>
 
-                <BottomContainer />
+                {/* <BottomContainer /> */}
             </KeyboardAvoidingView>
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -83,7 +84,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1, 
         backgroundColor: colors.BLANC,
-        paddingTop: 30
+        paddingTop: 30,
+        flexDirection: 'row',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     containerLogo: {
         display: 'flex',

@@ -1,26 +1,22 @@
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInUp, FadeOut } from 'react-native-reanimated'
 import { colors } from '@/utils/colors'
 import { useNavigation } from '@react-navigation/native'
-import BottomContainer from '@/components/BottomContainer'
 
 const PasswordForgot = () => {
-    const navigate = useNavigation()
-    const [error, setError] = useState(false)
+  const navigate = useNavigation()
+  const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = () => {
+    setLoading(true)
+    navigate.navigate('otp-code')
+  }
     
   return (
     <View style={styles.container}>
-
-      {/* <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-        <Animated.Image
-          entering={FadeInUp.delay(200).duration(1000).springify()}
-          source={require('@/assets/images/logo_bleu_sans_bg.png')}
-          style={{ width: 300, height: 170 }}
-        />
-      </View> */}
-
       <View>
         <View style={{marginBottom: 40}}>
           <Animated.Text 
@@ -45,11 +41,15 @@ const PasswordForgot = () => {
             <Animated.View entering={FadeInDown.delay(600).duration(1000).springify()}>
                 <TouchableOpacity
                   style={styles.btn}
-                  onPress={() => navigate.navigate('otp-code')}
+                  onPress={handleSubmit}
+                  disabled={loading}
                 >
-                  <Text 
-                    style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 20}}
-                  >Envoyer le code</Text>
+                  {!loading ?
+                    <Text 
+                      style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 20}}
+                    >Envoyer le code</Text>
+                    : <ActivityIndicator color={colors.BLANC} size='large' />
+                  }
                 </TouchableOpacity>
             </Animated.View>
             <View>
@@ -64,8 +64,6 @@ const PasswordForgot = () => {
             </View>
         </View>
       </View>
-
-      {/* <BottomContainer /> */}
     </View>
   )
 }

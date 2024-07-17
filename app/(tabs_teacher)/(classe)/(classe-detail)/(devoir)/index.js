@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, Image, ScrollView, RefreshControl, Modal } from 'react-native'
+import { View, Text,  FlatList, StyleSheet, TouchableOpacity, Image, ScrollView, RefreshControl, Modal } from 'react-native'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { showToast } from '@/utils/fonctions'
 import axios from 'axios'
@@ -8,7 +8,6 @@ import NoData from '@/components/NoData';
 import { colors } from '@/utils/colors'
 import { dateParser, longueurTexte } from '@/utils/fonctions';
 import { AntDesign } from '@expo/vector-icons'
-import BottomSheet from '@gorhom/bottom-sheet'
 import AjouterDevoir from '../../../../../components/AjouterDevoir'
 import Heading from '@/components/Heading'
 

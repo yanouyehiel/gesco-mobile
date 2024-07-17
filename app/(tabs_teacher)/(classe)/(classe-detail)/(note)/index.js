@@ -7,7 +7,6 @@ import NoData from '@/components/NoData';
 import { colors } from '@/utils/colors'
 import { dateParser, longueurTexte } from '@/utils/fonctions';
 import { showToast } from '@/utils/fonctions'
-import BottomSheet from '@gorhom/bottom-sheet'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import AjouterNote from '../../../../../components/AjouterNote'
 import Heading from '@/components/Heading'

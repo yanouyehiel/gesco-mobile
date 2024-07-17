@@ -1,18 +1,13 @@
-import { View, Text, StyleSheet, Button, Image, Modal, TouchableOpacity, Dimensions, FlatList, ScrollView, SafeAreaView, KeyboardAvoidingView  } from 'react-native'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, FlatList, ScrollView, SafeAreaView, KeyboardAvoidingView  } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
-import { AntDesign } from '@expo/vector-icons';
-import AjouterCours from '@/components/AjouterCours';
-import { getAllCoursClasse } from '@/services/MainService';
 import { dateParser, longueurTexte } from '@/utils/fonctions';
 import Heading from '@/components/Heading';
 import { Skeleton } from 'moti/skeleton';
 import NoData from '@/components/NoData';
 import { useRoute } from '@react-navigation/native';
-import AxiosApi from '@/services/AxiosApi';
 import axios from 'axios';
 import "react-native-gesture-handler"
-import BottomSheet from '@gorhom/bottom-sheet';
 import ModalCours from './modal';
 
 const CourseScreen = () => {

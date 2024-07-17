@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { colors } from '@/utils/colors'
@@ -11,21 +11,30 @@ const SignupScreen = () => {
   const [error, setError] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [password, setPassword] = useState("")
+  const [nom, setNom] = useState("")
+  const [prenom, setPrenom] = useState("")
+  const [email, setEmail] = useState("")
+  const [tel, setTel] = useState("")
+  const [ID, setID] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const toggleShowPassword = () => { 
     setShowPassword(!showPassword); 
   }; 
 
+  function handleSubmit() {
+    setLoading(true)
+    if (nom === "" || prenom === "" || email === "" || tel === "" || ID === "" || password === "") {
+      setError(true)
+      setLoading(false)
+    } else {
+      console.log(nom, prenom, tel, ID, password, email)
+      navigate.navigate('onboarding')
+    }
+  }
+
   return (
     <ScrollView style={styles.container}>
-        {/* <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <Animated.Image
-            entering={FadeInUp.delay(200).duration(1000).springify()}
-            source={require('../assets/images/logo_bleu_sans_bg.png')}
-            style={{ width: 300, height: 170 }}
-          />
-        </View> */}
-
         <View>
           <View style={{marginBottom: 40}}>
             <Animated.Text 
@@ -46,6 +55,7 @@ const SignupScreen = () => {
                 placeholder='Nom' 
                 placeholderTextColor={'gray'}
                 style={[error ? styles.error : styles.input]}
+                onChangeText={(text) => setNom(text)}
               />
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()}>
@@ -53,6 +63,7 @@ const SignupScreen = () => {
                 placeholder='Prénom' 
                 placeholderTextColor={'gray'} 
                 style={[error ? styles.error : styles.input]}
+                onChangeText={(text) => setPrenom(text)}
               />
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()}>
@@ -60,17 +71,18 @@ const SignupScreen = () => {
                 placeholder='Email' 
                 placeholderTextColor={'gray'}
                 style={[error ? styles.error : styles.input]}
+                onChangeText={(text) => setEmail(text)}
               />
             </Animated.View>
             <Animated.View
               entering={FadeInDown.delay(400).duration(1000).springify()}
-              style={styles.containerInput}>
+              style={error ? styles.containerError : styles.containerInput}>
               <TextInput 
                 placeholder='Mot de passe' 
                 placeholderTextColor={'gray'}
                 secureTextEntry={!showPassword}
                 onChangeText={setPassword}
-                style={[error ? styles.error : {fontSize: 18, fontFamily: 'Regular'}]}
+                style={{fontSize: 18, fontFamily: 'Regular'}}
               />
               <MaterialCommunityIcons 
                 name={showPassword ? 'eye-off' : 'eye'} 
@@ -83,13 +95,25 @@ const SignupScreen = () => {
                 placeholder='Téléphone' 
                 placeholderTextColor={'gray'}
                 style={[error ? styles.error : styles.input]}
+                onChangeText={setTel}
+              />
+            </Animated.View>
+            <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()}>
+              <TextInput 
+                placeholder='Identifiant de votre école' 
+                placeholderTextColor={'gray'}
+                style={[error ? styles.error : styles.input]}
+                onChangeText={setID}
               />
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(600).duration(1000).springify()}>
               <TouchableOpacity
                 style={styles.btn}
-                onPress={() => navigate.navigate('onboarding')}>
-                <Text style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 23}}>S'inscrire</Text>
+                onPress={handleSubmit}>
+                {!loading ?
+                  <Text style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 23}}>S'inscrire</Text>
+                  : <ActivityIndicator color={colors.BLANC} size='large' />
+                }
               </TouchableOpacity>
             </Animated.View>
             <View style={{marginBottom: 40}}>
@@ -125,6 +149,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 50,
     marginTop: 20
+  },
+  containerError: {
+    flexDirection: 'row',
+    backgroundColor: '#ebedee',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 50,
+    marginTop: 20,
+    borderColor: 'red',
+    borderWidth: 1,
+    fontSize: 18,
   },
   input: {
     fontFamily: 'Regular',

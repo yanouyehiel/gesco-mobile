@@ -1,13 +1,10 @@
-import { View, Text, Image, ToastAndroid, TextInput, TouchableOpacity, ActivityIndicator, Alert, StyleSheet, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { StatusBar } from 'expo-status-bar'
+import { View, Text,  TextInput, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native'
+import React, { useState } from 'react'
 import { colors } from '@/utils/colors'
-import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInUp, FadeOut } from 'react-native-reanimated'
+import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
 import { login, storeData } from '@/services/MainService'
-import { ALERT_TYPE, Toast } from 'react-native-alert-notification'
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showToast } from '@/utils/fonctions'
 
 
@@ -76,14 +73,6 @@ const LoginScreen = () => {
   return (
     <View style={styles.container}>
       <View>
-        {/* <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <Animated.Image
-            entering={FadeInUp.delay(200).duration(1000).springify()}
-            source={require('@/assets/images/logo_bleu_sans_bg.png')}
-            style={{ width: 300, height: 170 }}
-          />
-        </View> */}
-
         <View>
           <View style={{marginBottom: 40}}>
             <Animated.Text 

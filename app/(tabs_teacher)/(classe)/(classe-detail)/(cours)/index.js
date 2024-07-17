@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Button, Image, Modal, TouchableOpacity, Dimensions, FlatList, ScrollView, SafeAreaView, KeyboardAvoidingView, RefreshControl, StatusBar  } from 'react-native'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { View, Text, StyleSheet, Image, Modal, TouchableOpacity, FlatList, ScrollView, SafeAreaView, KeyboardAvoidingView, RefreshControl, StatusBar  } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import AjouterCours from '@/components/AjouterCours';
@@ -10,7 +10,6 @@ import NoData from '@/components/NoData';
 import { useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import "react-native-gesture-handler"
-import BottomSheet from '@gorhom/bottom-sheet';
 
 const CourseScreen = () => {
   const route = useRoute()

@@ -1,25 +1,34 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, Modal, TouchableWithoutFeedback, FlatList } from 'react-native'
+import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, Modal, TouchableWithoutFeedback, FlatList, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { StatusBar } from 'expo-status-bar'
-import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInUp, FadeOut } from 'react-native-reanimated'
 import { AntDesign } from '@expo/vector-icons';
 import { colors } from '@/utils/colors';
-import Button from '@/components/Button';
 import { useNavigation } from '@react-navigation/native';
-import BottomContainer from '@/components/BottomContainer';
 
 const PhoneNumberForgot = () => {
     const [areas, setAreas] = useState([])
     const [selectedArea, setSelectedArea] = useState({})
     const [modalVisible, setModalVisible] = useState(false)
     const navigation = useNavigation()
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(false)
+    const [tel, setTel] = useState("")
+
+    function verify() {
+        setLoading(true)
+        if (tel === "") {
+            setError(true)
+            setLoading(false)
+        } else {
+            navigation.navigate("otp-code")
+        }
+        //console.log(selectedArea.callingCode)
+    }
 
     useEffect(() => {
         fetch("https://restcountries.com/v2/all")
         .then(response => response.json())
         .then(data => {
-            //console.log(data)
-            let areaData = data.map((item) => {
+            let areaData = data.map((item: any) => {
                 return {
                     code: item.alpha2Code,
                     item: item.name,
@@ -31,7 +40,7 @@ const PhoneNumberForgot = () => {
             setAreas(areaData)
 
             if (areaData.length > 0) {
-                let defaultData = areaData.filter((a) => a.code === "CM")
+                let defaultData = areaData.filter((a: any) => a.code === "CM")
                 
                 if (defaultData.length > 0) {
                     setSelectedArea(defaultData[0])
@@ -44,7 +53,7 @@ const PhoneNumberForgot = () => {
 
     const renderAreasCodeModal = () => {
 
-        const renderItem = ({ item }) => {
+        const renderItem = ({ item }: any) => {
             return (
                 <TouchableOpacity 
                     onPress={() => {
@@ -129,71 +138,84 @@ const PhoneNumberForgot = () => {
         )
     }
 
-  return (
-    <View className='bg-white h-full w-full justify-center items-center'>
-      <StatusBar />
+    return (
+        <View style={styles.body}>
+            <View style={{marginTop: '50%'}}>
+                <View style={styles.containerForm}>
+                    <Text style={{color: '#333', fontSize: 23, fontFamily: 'SemiBold', textAlign: 'center'}}>Entrer votre numéro de téléphone</Text>
+                    <Text style={{fontSize: 20, fontFamily: 'Regular', textAlign: 'center'}}>On vous enverra un code de vérification</Text>
 
-      <View className='items-center'>
-        <Image
-          entering={FadeInUp.delay(200).duration(1000).springify()}
-          className='w-90 h-50'
-          source={require('../assets/images/logo_bleu_sans_bg.png')}
-          style={{ width: 300, height: 170 }}
-        />
-      </View>
+                    <View style={[error ? styles.error : styles.inputContainer]}>
+                        <TouchableOpacity
+                            onPress={() => setModalVisible(true)}
+                            style={styles.selectFlagContainer}
+                        >
+                            <View style={{ justifyContent: 'center' }}>
+                                <AntDesign name="down" size={15} color="black" />
+                            </View>
+                            <View style={{ justifyContent: 'center', marginLeft: 5 }}>
+                                <Image 
+                                    source={{ uri: selectedArea?.flag}}
+                                    resizeMode='contain'
+                                    style={styles.flagIcon}
+                                />
+                            </View>
+                            <View style={{ justifyContent: 'center', marginLeft: 5 }}>
+                                <Text style={{ color: colors.NOIR, fontSize: 14 }}>{selectedArea?.callingCode}</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TextInput 
+                            placeholder='Entrer votre téléphone'
+                            style={styles.input}
+                            placeholderTextColor={colors.NOIR}
+                            selectionColor={colors.NOIR}
+                            keyboardType='numeric'
+                            onChangeText={(text) => setTel(text)}
+                        />
+                    </View>
 
-      <View style={styles.containerForm}>
-        <Text style={{color: '#333', fontSize: 23, fontFamily: 'SemiBold'}}>Entrer votre numéro de téléphone</Text>
-        <Text style={{fontSize: 20, fontFamily: 'Regular'}}>On vous enverra un code de vérification</Text>
-      
-        <View style={styles.inputContainer}>
-            <TouchableOpacity
-                onPress={() => setModalVisible(true)}
-                style={styles.selectFlagContainer}
-            >
-                <View style={{ justifyContent: 'center' }}>
-                    <AntDesign name="down" size={15} color="black" />
+                    <TouchableOpacity
+                        style={styles.btn}
+                        onPress={verify}
+                        disabled={loading}
+                    >
+                        {!loading ?
+                            <Text 
+                                style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 20}}
+                            >Vérifier</Text>
+                            : <ActivityIndicator color={colors.BLANC} size='large' />
+                        }
+                    </TouchableOpacity>
                 </View>
-                <View style={{ justifyContent: 'center', marginLeft: 5 }}>
-                    <Image 
-                        source={{ uri: selectedArea?.flag}}
-                        resizeMode='contain'
-                        style={styles.flagIcon}
-                    />
-                </View>
-                <View style={{ justifyContent: 'center', marginLeft: 5 }}>
-                    <Text style={{ color: colors.NOIR, fontSize: 12 }}>{selectedArea?.callingCode}</Text>
-                </View>
-            </TouchableOpacity>
-            <TextInput 
-                placeholder='Entrer votre téléphone'
-                style={styles.input}
-                placeholderTextColor={colors.NOIR}
-                selectionColor={colors.NOIR}
-                keyboardType='numeric'
-            />
+
+                {/* <BottomContainer /> */}
+
+                {renderAreasCodeModal()}
+            </View>
         </View>
-
-        <Button 
-            title="Verifier"
-            onPress={() => navigation.navigate("opt-code")}
-        />
-      </View>
-
-      <BottomContainer />
-
-      {renderAreasCodeModal()}
-    </View>
-  )
+    )
 }
 
 const styles = StyleSheet.create({
+    body: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     containerForm: {
         marginTop: 50
     },
     inputContainer: {
         flexDirection: 'row',
         borderBlockColor: colors.VERT,
+        borderBottomWidth: .4,
+        height: 58,
+        alignItems: 'center',
+        marginVertical: 32
+    },
+    error: {
+        flexDirection: 'row',
+        borderBlockColor: colors.ROUGE,
         borderBottomWidth: .4,
         height: 58,
         alignItems: 'center',
@@ -213,9 +235,20 @@ const styles = StyleSheet.create({
         flex: 1,
         marginVertical: 10,
         height: 40,
-        fontSize: 14,
+        fontSize: 18,
         color: colors.NOIR,
         fontFamily: 'Regular'
+    },
+    btn: {
+        marginTop: 30,
+        marginBottom: 30,
+        height: 50,
+        width: '100%',
+        borderRadius: 10,
+        backgroundColor: colors.BLEU,
+        display: 'flex',
+        justifyContent:'center',
+        alignItems: 'center'
     }
 })
 

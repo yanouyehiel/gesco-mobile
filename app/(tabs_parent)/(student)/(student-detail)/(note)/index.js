@@ -7,9 +7,6 @@ import NoData from '@/components/NoData';
 import { colors } from '@/utils/colors'
 import { dateParser, longueurTexte } from '@/utils/fonctions';
 import { showToast } from '@/utils/fonctions'
-import BottomSheet from '@gorhom/bottom-sheet'
-import { AntDesign } from '@expo/vector-icons'
-import AjouterNote from '../../../../../components/AjouterNote'
 import Heading from '@/components/Heading'
 import ModalNote from './modal'
 
@@ -17,7 +14,7 @@ const NoteScreen = () => {
   const [loading, setLoading] = useState(true)
   const [notes, setNotes] = useState([])
   const route = useRoute()
-  const { student, user, headers } = route.params
+  const { student, headers } = route.params
   const [showModal, setShowModal] = useState(false)
   const [note, setNote] = useState({})
 

@@ -2,16 +2,16 @@
   "expo": {
     "name": "GescoApp",
     "slug": "gesco-app",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "splash": {
+    /*"splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
-    },
+    },*/
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yanouyehiel.gescoapp"
