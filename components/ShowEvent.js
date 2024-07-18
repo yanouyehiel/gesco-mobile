@@ -1,11 +1,10 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
-import React, { useRef } from 'react'
+import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import Animated from 'react-native-reanimated'
-import { dateParser, dateParserTime } from '@/utils/fonctions'
+import { dateParser } from '@/utils/fonctions'
 
 const ShowEvent = ({ hideModal, event }) => {
-    //const scale = useRef(new Animated.Value(0)).current
 
     return (
         <ScrollView>

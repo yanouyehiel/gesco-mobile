@@ -1,7 +1,7 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { colors } from '@/utils/colors'
-import { Link, useNavigation } from 'expo-router'
+import { useNavigation } from 'expo-router'
 
 const SingleClassItem = ({classe, headers, user}) => {
     const navigation = useNavigation()

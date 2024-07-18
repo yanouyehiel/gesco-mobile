@@ -6,28 +6,21 @@ import { skeletonProps } from '@/utils/skeletonProps'
 
 const SkeletonComponent = () => {
   return (
-    <View style={styles.sliderItem}>
-        {/* <Skeleton 
+    <View style={styles.sliderItem}>   
+      <View style={styles.sliderBottom}>
+        <Skeleton
           show={true}
-          width={'100%'}
-          height={130}
+          height={'100%'}
+          width={70}
           {...skeletonProps}
-        ></Skeleton> */}
-        
-        <View style={styles.sliderBottom}>
-          <Skeleton
-            show={true}
-            height={'100%'}
-            width={70}
-            {...skeletonProps}
-          ></Skeleton>
-          <Skeleton
-            show={true}
-            height={'100%'}
-            width={140}
-            {...skeletonProps}
-          ></Skeleton>
-        </View>
+        ></Skeleton>
+        <Skeleton
+          show={true}
+          height={'100%'}
+          width={140}
+          {...skeletonProps}
+        ></Skeleton>
+      </View>
     </View>
   )
 }

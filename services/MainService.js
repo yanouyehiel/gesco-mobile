@@ -1,12 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { API_URL, AUTH } from "@/utils/global"
-
-export const headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer 66|a3yXFAjn2qMQ3XEn41GMGmyjqb6L0XLUgPwPWkSKb01bb66b'
-}
 
 export async function getHeaders() {
     const data = await AsyncStorage.getItem('tokenGesco')

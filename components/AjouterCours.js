@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, KeyboardAvoidingView, TouchableOpacity, StyleSheet, TextInput, ToastAndroid, ActivityIndicator } from 'react-native'
+import { View, Text, KeyboardAvoidingView, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import Heading from '@/components/Heading'

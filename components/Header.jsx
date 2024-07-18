@@ -15,7 +15,6 @@ import React, { useRef, useState } from 'react'
 import {colors} from '@/utils/colors'
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Skeleton } from 'moti/skeleton';
 
@@ -104,9 +103,9 @@ const Header = ({user}) => {
                         }
                     </View>
                 </View>
-                <TouchableOpacity onPress={() => resizeBox(1)}>
+                {/* <TouchableOpacity onPress={() => resizeBox(1)}>
                     <Ionicons name="options-outline" size={24} color={colors.BLANC} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <PopupMenu />
             </View>
 

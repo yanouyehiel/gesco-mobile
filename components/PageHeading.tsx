@@ -5,14 +5,15 @@ import { useNavigation } from '@react-navigation/native'
 
 const PageHeading = ({title}) => {
     const navigation = useNavigation()
-  return (
-    <View>
-        <TouchableOpacity style={styles.header} onPress={() => navigation.goBack()}>
-            <Ionicons name='arrow-back-outline' size={30} color="black" />
-            <Text style={styles.titleHeader}>{title}</Text>
-        </TouchableOpacity>
-    </View>
-  )
+    
+    return (
+        <View>
+            <TouchableOpacity style={styles.header} onPress={() => navigation.goBack()}>
+                <Ionicons name='arrow-back-outline' size={30} color="black" />
+                <Text style={styles.titleHeader}>{title}</Text>
+            </TouchableOpacity>
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({

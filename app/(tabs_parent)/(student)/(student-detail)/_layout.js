@@ -115,7 +115,7 @@ export default function HomeLayout({}) {
               fontWeight: '600',
               fontSize: 18,
             },
-            headerTitle: "Mon enfant"
+            headerTitle: student.nom +' '+ student.prenom
           }}
         />
       </Drawer>

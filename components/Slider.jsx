@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet, FlatList } from 'react-native'
+import { View, FlatList } from 'react-native'
 import React from 'react'
 import SkeletonComponent from '@/components/SkeletonComponent'
 import Heading from '@/components/Heading'
-import { colors } from '@/utils/colors'
 import NoData from '@/components/NoData'
 
 const Slider = ({ titleHeading, slider, Component, headers, user, style, loading }) => {
@@ -32,13 +31,5 @@ const Slider = ({ titleHeading, slider, Component, headers, user, style, loading
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    heading: {
-        fontSize: 20,
-        fontFamily: 'Bold',
-        marginBottom: 10
-    }
-})
 
 export default Slider

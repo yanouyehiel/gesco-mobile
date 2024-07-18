@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ImageBackground, Image,ScrollView } from 'react-native'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer'
 import { colors } from '../utils/colors'
 
@@ -10,8 +10,7 @@ const SideBar = (props) => {
     <DrawerContentScrollView {...props}>
       <ScrollView>
         <ImageBackground 
-            //source={require("../assets/images/wxw.png")}
-            style={{padding: 16, paddingTop: 48, display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center'}}
+            style={{padding: 16, paddingTop: 10, display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center'}}
         >
             <Image source={require("@/assets/images/classe.png")} style={styles.image} />
             <View>
@@ -20,7 +19,7 @@ const SideBar = (props) => {
             </View>
         </ImageBackground>
 
-        <View style={{ borderBottomColor: 'black', borderBottomWidth: 1 }} />
+        <View style={{ borderBottomColor: colors.BLEU, borderBottomWidth: 1 }} />
 
         <View style={styles.container}>
             <DrawerItemList 

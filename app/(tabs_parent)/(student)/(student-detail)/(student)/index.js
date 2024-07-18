@@ -7,7 +7,7 @@ import NoData from '@/components/NoData'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { FontAwesome } from '@expo/vector-icons'
-import { dateParser } from '@/utils/fonctions'
+import { dateParser, dateParserTime } from '@/utils/fonctions'
 
 const StudentScreen = () => {
   const route = useRoute()
@@ -17,6 +17,7 @@ const StudentScreen = () => {
 
   useEffect(() => {
     getFeesStudent().then(() => setLoading(false))
+    console.log(student)
   }, [])
 
   async function getFeesStudent() {
@@ -31,44 +32,51 @@ const StudentScreen = () => {
       <View style={styles.card}>
         <View style={{flexDirection: 'column', marginRight: 15}}>
           <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>{student.nom +' '+ student.prenom}</Text>
-          <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 100}}>
+          <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 200}}>
             <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>{student.matricule}</Text>
+          </View>
+          <View style={{flexDirection: 'row', gap: 30, marginTop: 15}}>
+            <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular'}}>{student.sexe}</Text>
+            <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular'}}>{student.nom_classe}</Text>
+            <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular'}}>{dateParserTime(student.date_naissance)}</Text>
           </View>
         </View>
       </View>
 
       <View style={{margin: 15}}>
         <Heading text={"Ses tarifs"} />
-        <View style={{margin: 15}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15}}>
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Inscription</Text>
-            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 150}}>
+            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
-                {feesStudent?.tarifs.inscription}
+                {feesStudent?.tarifs.inscription} XAF
               </Text>
             </View>
           </View>
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Première tranche</Text>
-            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 150}}>
+            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
-                {feesStudent?.tarifs.premiere_tranche}
+                {feesStudent?.tarifs.premiere_tranche} XAF
               </Text>
             </View>
           </View>
+        </View>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Deuxième tranche</Text>
-            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 150}}>
+            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
-                {feesStudent?.tarifs.deuxieme_tranche}
+                {feesStudent?.tarifs.deuxieme_tranche} XAF
               </Text>
             </View>
           </View>
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Troisième tranche</Text>
-            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 150}}>
+            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
-                {feesStudent?.tarifs.troisieme_tranche}
+                {feesStudent?.tarifs.troisieme_tranche} XAF
               </Text>
             </View>
           </View>
@@ -77,12 +85,12 @@ const StudentScreen = () => {
 
       <View style={{margin: 15}}>
         <Heading text={"Résumé"} />
-        <View style={{margin: 15, display: 'flex', flexDirection: 'row', gap: 15}}>
+        <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
           <View style={styles.cardResume}>
             <Text style={{color: colors.BLANC, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>
               Total
             </Text>
-            <Text style={{textAlign: 'center', fontSize: 16, fontFamily: 'Regular'}}>
+            <Text style={{fontSize: 20, fontFamily: 'Regular'}}>
               {feesStudent?.total}
             </Text>
           </View>
@@ -90,7 +98,7 @@ const StudentScreen = () => {
             <Text style={{color: colors.BLANC, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>
               Déjà payé
             </Text>
-            <Text style={{textAlign: 'center', fontSize: 16, fontFamily: 'Regular'}}>
+            <Text style={{fontSize: 20, fontFamily: 'Regular'}}>
               {feesStudent?.paye}
             </Text>
           </View>
@@ -98,7 +106,7 @@ const StudentScreen = () => {
             <Text style={{color: colors.BLANC, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>
               Reste à payer
             </Text>
-            <Text style={{textAlign: 'center', fontSize: 16, fontFamily: 'Regular'}}>
+            <Text style={{fontSize: 20, fontFamily: 'Regular'}}>
               {feesStudent?.reste}
             </Text>
           </View>
@@ -119,10 +127,10 @@ const StudentScreen = () => {
                 </View>
                 <View style={styles.studentDesc}>
                   <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{item.code}</Text>
-                  <Text style={{fontSize: 16, fontFamily: 'SemiBold'}}>{item.intitule}</Text>
+                  <Text style={{fontSize: 18, fontFamily: 'SemiBold'}}>{item.intitule}</Text>
                   <Text style={{fontSize: 18, fontFamily: 'Bold'}}>{item.montant} XAF</Text>
                   <Text>{item.annee_scolaire}</Text>
-                  <Text style={{marginTop: 20}}>{dateParser(item.created_at)}</Text>
+                  <Text style={{marginTop: 20}}>Payé le {dateParser(item.created_at)}</Text>
                 </View>
               </View>
             )}
@@ -176,7 +184,7 @@ const StudentScreen = () => {
             </View>
           ))
         }
-        {(!loading && feesStudent) &&
+        {(!loading && feesStudent.paiements.length === 0) &&
           <NoData />
         }
       </View>
@@ -187,27 +195,24 @@ const StudentScreen = () => {
 const styles = StyleSheet.create({
   card: {
     margin: 15,
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
     height: 150, 
+    padding: 15,
     borderRadius: 15,
-    backgroundColor: colors.BLEU_CLAIR
+    backgroundColor: colors.VERT
   },
   cardTarif: {
     borderRadius: 15,
     backgroundColor: colors.BLEU_CLAIR,
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     padding: 15
   },
   cardResume: {
     borderRadius: 15,
-    backgroundColor: colors.VERT_CLAIR,
-    width: 50,
-    height: 50,
-    padding: 15
+    backgroundColor: colors.VERT,
+    width: 90,
+    height: 90,
+    padding: 10
   },
   student: {
     backgroundColor: 'white',
@@ -221,7 +226,7 @@ const styles = StyleSheet.create({
     borderColor: colors.BLEU
   },
   studentImage: {
-    marginRight: 10
+    marginRight: 20
   },
   studentDesc: {
     flexDirection: 'column'
