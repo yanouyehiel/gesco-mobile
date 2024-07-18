@@ -10,10 +10,10 @@ import { useNavigation } from '@react-navigation/native'
 const Onboarding = () => {
   const scrollX = useRef(new Animated.Value(0)).current
   const [currentIndex, setCurrentIndex] = useState(0)
-  const slidesRef = useRef(null)
+  const slidesRef = useRef<any>(null)
   const navigate = useNavigation()
 
-  const viewableItemsChanged = useRef(({ viewableItems }) => {
+  const viewableItemsChanged = useRef(({ viewableItems }: any) => {
     setCurrentIndex(viewableItems[0].index)
   }).current
 
@@ -36,7 +36,7 @@ const Onboarding = () => {
           showsHorizontalScrollIndicator={false}
           pagingEnabled
           bounces={false}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX }}}], {
             useNativeDriver: false
           })}

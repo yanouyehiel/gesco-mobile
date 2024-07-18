@@ -50,6 +50,7 @@ const ProfileTeacher = () => {
                 navigation.navigate("connexion")
             }, 2000)
         } catch (error) {
+            setLoading(false)
             showToast(error.message)
         }
     }

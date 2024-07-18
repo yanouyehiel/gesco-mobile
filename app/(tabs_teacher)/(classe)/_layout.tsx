@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack } from 'expo-router';
 
 export default function HomeLayout() {
   
@@ -14,10 +14,7 @@ export default function HomeLayout() {
         },
       }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen 
-        name="(classe-detail)" 
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="(classe-detail)" options={{ headerShown: false }} />
     </Stack>
   );
 }

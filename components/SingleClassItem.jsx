@@ -6,7 +6,6 @@ import { Link, useNavigation } from 'expo-router'
 const SingleClassItem = ({classe, headers, user}) => {
     const navigation = useNavigation()
 
-
     return (
         <TouchableOpacity 
             style={styles.container} 
@@ -29,7 +28,7 @@ const SingleClassItem = ({classe, headers, user}) => {
                 </View>
                 <View style={{display: 'flex', flexDirection: 'row', gap: 10}}>
                     <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{classe.effectif} élèves</Text>
-                    <Text style={{color: colors.BLANC, backgroundColor: colors.VERT, fontSize: 15, borderRadius: 5, padding: 5, fontFamily: 'Bold'}}>{classe.nom_ecole}</Text>
+                    <Text style={{color: colors.BLANC, backgroundColor: colors.BLEU, fontSize: 15, borderRadius: 5, padding: 5, fontFamily: 'Bold'}}>{classe.nom_ecole}</Text>
                 </View>
             </View>
         </TouchableOpacity>

@@ -1,7 +1,6 @@
 import { View, Text, Image, StyleSheet, FlatList, ScrollView } from 'react-native'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { colors } from '@/utils/colors';
-import { useRoute } from '@react-navigation/native';
 
 const items = [
   {
@@ -27,8 +26,6 @@ const items = [
 ]
 
 const HomeDetail = () => {
-  const route = useRoute()
-  const { user, classe, headers } = route.params
 
   return (
     <ScrollView style={styles.container}>

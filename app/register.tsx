@@ -1,8 +1,7 @@
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
-import { StatusBar } from 'expo-status-bar'
 import { colors } from '@/utils/colors'
-import Animated, { FadeInDown, FadeInLeft, FadeInUp } from 'react-native-reanimated'
+import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 

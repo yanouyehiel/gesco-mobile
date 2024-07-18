@@ -1,29 +1,17 @@
-import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, Animated, SafeAreaView, Alert, Modal, RefreshControl } from 'react-native'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, Modal, RefreshControl } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import Header from '@/components/Header'
 import Slider from '@/components/Slider'
-import { slidesClasse } from '@/utils/slides'
 import SlideClassItem from '@/components/SlideClassItem'
-import { getAllClasses, getAllEvents, getHeaders, getMatieresSchool, getMyClasses, getUser } from '../../../services/MainService'
+import { getAllClasses, getAllEvents, getHeaders, getMatieresSchool, getUser } from '../../../services/MainService'
 import SlideMatiereItem from '../../../components/SlideMatiereItem'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native'
 import Heading from '../../../components/Heading'
-import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../../../utils/colors'
 import EventItem from '../../../components/Event'
-import SkeletonComponent from '@/components/SkeletonComponent'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
-import axios from 'axios'
 import { showToast } from '@/utils/fonctions'
 import "react-native-gesture-handler"
-import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler'
-import {
-  BottomSheetModal,
-  BottomSheetView,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
 import ShowEvent from "@/components/ShowEvent";
 
 const HomeScreen = () => {
@@ -33,26 +21,12 @@ const HomeScreen = () => {
   const [user, setUser] = useState<any>({})
   const [events, setEvents] = useState<any[]>([])
   const [event, setEvent] = useState<any>({})
-  const [visible, setVisible] = useState<any>(false)
   const [isLoading, setIsLoading] = useState(true)
   const [loadingClasse, setLoadingClasse] = useState(true)
   const [loadingEvent, setLoadingEvent] = useState(true)
   const [loadingMatiere, setLoadingMatiere] = useState<any>(true)
-  const navigation = useNavigation()
   const [showEvent, setShowEvent] = useState<any>(false)
   const [refreshing, setRefreshing] = useState(false);
-
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  // variables
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
-
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
 
   useEffect(() => {
     const fetchHeaders = async () => {
@@ -121,28 +95,6 @@ const HomeScreen = () => {
     setShowEvent(!showEvent)
   }
 
-  /*const PopupEvent = ({event}: any) => {
-    console.log(event)
-    setVisible(!visible)
-    return (
-      <Modal isVisible={visible} style={{ flex: 1 }}>
-        <View>
-          <Animated.View style={[
-            styles.popup, 
-            {opacity: scale.interpolate({inputRange: [0, 1], outputRange: [0, 1]})},
-            {
-              transform: [{scale: scale}]
-            }]}>
-              <Text>{event?.title}</Text>
-              <Text>{event?.description}</Text>
-              <Text>{event?.start}</Text>
-              <Text>{event?.end}</Text>
-          </Animated.View>
-        </View>
-      </Modal>
-    )
-  }*/
-
   const onRefresh = React.useCallback(() => {
     setLoadingClasse(true)
     setLoadingEvent(true)
@@ -169,11 +121,10 @@ const HomeScreen = () => {
       }
     >
       <StatusBar backgroundColor={colors.BLEU} />
-      {/* Header */}
+      
       <Header user={user} />
       {user ?
         <View style={{padding: 20}}>
-          {/* Slider Classes */}
           <Slider 
             slider={classes} 
             headers={headers}
@@ -182,7 +133,6 @@ const HomeScreen = () => {
             Component={SlideClassItem} 
             titleHeading='Nos Classes' 
           />
-          {/* Slider Matieres */}
           <Slider 
             slider={matieres} 
             headers={headers}
@@ -198,7 +148,6 @@ const HomeScreen = () => {
             {!loadingEvent ? <FlatList
               showsHorizontalScrollIndicator={false}
               data={events}
-              //style={styles.events}
               renderItem={({item, index}) => (
                 <TouchableOpacity
                   onPress={() => handleView(item)}

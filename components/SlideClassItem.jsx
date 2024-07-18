@@ -1,16 +1,11 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { colors } from '../utils/colors'
-import { useNavigation } from '@react-navigation/native'
 
-const SlideClassItem = ({ item, headers, user }) => {
-    //const navigation = useNavigation()
+const SlideClassItem = ({ item }) => {
+   
     return (
-        <TouchableOpacity 
-            /*onPress={() => navigation.navigate("../(classe)/(classe-detail)", {
-                classe: item, headers: headers, user: user
-            })}*/
-        >
+        <TouchableOpacity>
             <View style={styles.sliderItem}>
                 <Image 
                     source={require('@/assets/images/classe.png')} 

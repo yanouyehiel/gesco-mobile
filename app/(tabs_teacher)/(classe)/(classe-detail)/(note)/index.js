@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView, RefreshControl, Modal } from 'react-native'
-import React, { useMemo, useRef, useState, useEffect } from 'react'
+import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView, RefreshControl, Modal, Animated, TextInput } from 'react-native'
+import React, { useRef, useState, useEffect } from 'react'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { Skeleton } from 'moti/skeleton'
@@ -10,6 +10,10 @@ import { showToast } from '@/utils/fonctions'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import AjouterNote from '../../../../../components/AjouterNote'
 import Heading from '@/components/Heading'
+import { SimpleLineIcons } from '@expo/vector-icons';
+import { updateNote } from "@/services/MainService";
+import { Easing } from 'react-native'
+import { ActivityIndicator } from 'react-native'
 
 const NoteScreen = () => {
   const [loading, setLoading] = useState(true)
@@ -22,6 +26,8 @@ const NoteScreen = () => {
   const [visible, setVisible] = useState(false)
   const [note, setNote] = useState({})
   const [showModal, setShowModal] = useState(false)
+  const [showModalUpdate, setShowModalUpdate] = useState(false)
+  const [visibleOption, setVisibleOption] = useState(false)
 
   useEffect(() => {
     handleClosePress()
@@ -49,6 +55,93 @@ const NoteScreen = () => {
   function handleShowNote(data) {
     setNote(data)
     setShowModal(true)
+  }
+
+  function handleUpdateNote(data) {
+    setNote(data)
+    setShowModalUpdate(true)
+  }
+
+  const scale = useRef(new Animated.Value(0)).current
+
+  function resizeBox(to) {
+    to === 1 && setVisibleOption(true)
+    Animated.timing(scale, {
+      toValue: to,
+      useNativeDriver: true,
+      duration: 200,
+      easing: Easing.linear
+    }).start(() => to === 0 && setVisibleOption(false))
+  }
+
+  const handleSubmit = async (data) => {
+    setLoading(true)
+    await updateNote(data, headers).then((res) => {
+      setLoading(false)
+      showToast(res.message)
+    })
+  }
+
+  const PopUpdate = () => {
+    return (
+      <Modal transparent visible={showModalUpdate}>
+        <SafeAreaView
+          style={{ flex: 1 }}
+          onTouchStart={() => resizeBox(0)}
+        >
+          <Animated.View style={[
+            styles.popupUpdate, 
+            {opacity: scale.interpolate({inputRange: [0, 1], outputRange: [0, 1]})},
+            {
+              transform: [{scale: scale}]
+            }]}>
+              <Text>{note.nom_student +' '+ note.prenom_student}</Text>
+              <TextInput
+                placeholder='Entrer la nouvelle note'
+                //style={}
+                numberOfLines={1} multiline={false}
+                onChangeText={(text) => console.log(text)}
+              />
+
+              <TouchableOpacity onPress={handleSubmit}>
+                {loading ? <ActivityIndicator color={colors.BLANC} /> :
+                  <Text style={styles.btnSave}>Modifier</Text>
+                }
+              </TouchableOpacity>
+          </Animated.View>
+        </SafeAreaView>
+      </Modal>
+    )
+  }
+
+  const Popup = ({data}) => {
+    return (
+      <Modal transparent visible={visibleOption}>
+        <SafeAreaView 
+          style={{ flex: 1 }}
+          onTouchStart={() => resizeBox(0)}>
+          <Animated.View style={[
+            styles.popup, 
+            {opacity: scale.interpolate({inputRange: [0, 1], outputRange: [0, 1]})},
+            {
+              transform: [{scale: scale}]
+            }]}> 
+            <TouchableOpacity
+              onPress={() => handleShowNote(data)}
+              style={styles.option}
+            >
+              <Text>Voir</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => handleUpdateNote(data)} 
+              style={styles.option}
+            >
+              <Text>Modifier</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </SafeAreaView>
+      </Modal>
+    )
   }
 
   return (
@@ -88,13 +181,10 @@ const NoteScreen = () => {
           showsVerticalScrollIndicator={false}
           horizontal={false}
           renderItem={({item, index}) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleShowNote(item)}
-            >
+            <View>
               <View style={styles.note}>
                 <View style={styles.noteImage}>
-                  <Image source={require("@/assets/images/matiere.png")} style={{width: 50, height: 50}} />
+                  <Image source={require("@/assets/images/matiere.png")} style={{width: 30, height: 30}} />
                 </View>
                 <View style={styles.noteDesc}>
                   <Text style={[styles.text, {fontSize: 18}]}>{item.nom_student +' '+ item.prenom_student}</Text>
@@ -106,10 +196,15 @@ const NoteScreen = () => {
                     <Text style={[styles.text]}>Séquence : {item.sequence}</Text>
                     <Text style={styles.text}>{item.annee_scolaire}</Text>
                   </View>
-                  <Text >Enregistré le {dateParser(item.created_at)}</Text>
                 </View>
+                <TouchableOpacity onPress={() => resizeBox(1)}>
+                  <SimpleLineIcons name="options-vertical" size={24} color="black" />
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+              <Text >Enregistré le {dateParser(item.created_at)}</Text>
+              <Popup data={item} />
+              <PopUpdate />
+            </View>
           )}
         /> :
         [0, 1, 2, 3, 4].map((t, i) => (
@@ -173,6 +268,7 @@ const NoteScreen = () => {
         {(!loading && notes.length) === 0 && 
           <NoData />
         }
+
       </View>
 
       <Modal
@@ -181,8 +277,8 @@ const NoteScreen = () => {
       >
         <View style={{flex: 1, margin: 15}}>
           <TouchableOpacity style={styles.header} onPress={() => setShowModal(false)}>
-              <Ionicons name='arrow-back-outline' size={30} color="black" />
-              <Text style={styles.titleHeader}>Détails de la note</Text>
+            <Ionicons name='arrow-back-outline' size={30} color="black" />
+            <Text style={styles.titleHeader}>Détails de la note</Text>
           </TouchableOpacity>
 
           <View>
@@ -288,6 +384,42 @@ const styles = StyleSheet.create({
   titleContent: {
     fontSize: 20,
     fontFamily: 'Regular'
+  },
+  popup: {
+    borderRadius: 8,
+    borderColor: '#f2f2f2',
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    position: 'absolute',
+    top: 45,
+    right: 20
+  },
+  option: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 7,
+    borderBottomColor: '#ccc'
+  },
+  popupUpdate: {
+    borderColor: '#f2f2f2',
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    position: 'absolute',
+    bottom : 0
+  },
+  btnSave: {
+    textAlign: 'center',
+    fontFamily: 'Regular',
+    fontSize: 20,
+    backgroundColor: colors.BLEU,
+    color: colors.BLANC,
+    padding: 13,
+    borderRadius: 99,
+    elevation: 2,
+    marginTop: 10
   }
 })
 

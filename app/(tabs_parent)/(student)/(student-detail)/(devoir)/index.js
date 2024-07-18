@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { View, Text, FlatList, StyleSheet, Image, ScrollView } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { showToast } from '@/utils/fonctions'
 import axios from 'axios'
 import { useRoute } from '@react-navigation/native'
@@ -13,7 +13,7 @@ const DevoirScreen = () => {
   const [loading, setLoading] = useState(true)
   const [devoirs, setDevoirs] = useState([])
   const route = useRoute()
-  const { student, user, headers } = route.params
+  const { student, headers } = route.params
 
   useEffect(() => {
     getDevoirs().then(() => setLoading(false))

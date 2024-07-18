@@ -1,10 +1,9 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { colors } from '@/utils/colors';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getHeaders, getUser, removeStorge } from '@/services/MainService';
+import { getHeaders, getUser } from '@/services/MainService';
 
 const SplashScreenView = () => {
     const navigation = useNavigation();
@@ -12,7 +11,6 @@ const SplashScreenView = () => {
     const user: any = getUser().then()
 
     useEffect(() => {
-      //AsyncStorage.removeItem("tokenGesco").then()
       const fetchHeaders = async () => {
         try {
           const headersData = await getHeaders();

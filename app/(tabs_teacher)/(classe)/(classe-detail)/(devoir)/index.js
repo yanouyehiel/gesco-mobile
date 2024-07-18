@@ -1,5 +1,5 @@
 import { View, Text,  FlatList, StyleSheet, TouchableOpacity, Image, ScrollView, RefreshControl, Modal } from 'react-native'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { showToast } from '@/utils/fonctions'
 import axios from 'axios'
 import { useRoute } from '@react-navigation/native'
@@ -16,10 +16,6 @@ const DevoirScreen = () => {
   const [devoirs, setDevoirs] = useState([])
   const route = useRoute()
   const { classe, user, headers } = route.params
-  const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['25%', '50%', '70%', '100%'], []);
-  const handleOpenPress = () => bottomSheetModalRef.current?.expand();
-  const handleClosePress = () => bottomSheetModalRef.current?.close()
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false)
 
@@ -90,7 +86,7 @@ const DevoirScreen = () => {
                 <View style={styles.devoirDesc}>
                   <Text style={{fontSize: 20, fontFamily: 'SemiBold'}}>{longueurTexte(item.nom_matiere, 35)}</Text>
                   <Text style={[styles.text, {fontSize: 18}]} numberOfLines={2} ellipsizeMode="tail">{item.nom_livre}</Text>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                  <View style={{flexDirection: 'row', gap: 10}}>
                     <Text style={[styles.text, {fontFamily: 'Bold'}]}>Page : {item.num_page}</Text>
                     <Text style={[styles.text, {fontFamily: 'Bold'}]}>Numéro : {item.num_exo}</Text>
                   </View>

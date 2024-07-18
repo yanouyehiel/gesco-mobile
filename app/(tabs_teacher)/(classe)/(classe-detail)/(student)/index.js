@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, ScrollView, FlatList } from 'react-native'
+import { View, Text, StyleSheet, Image, ScrollView, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import Heading from '@/components/Heading'
@@ -6,26 +6,50 @@ import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
+import { showToast } from '@/utils/fonctions'
 
 const StudentScreen = () => {
   const route = useRoute()
-  const { classe, user, headers } = route.params
+  const { classe, headers } = route.params
   const [loading, setLoading] = useState(true)
   const [students, setStudents] = useState([])
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getStudents().then(() => setLoading(false))
   }, [])
 
   async function getStudents() {
-    const res = await axios.get(`https://test.comtheplug.com/api/my-students/classe_id=${parseInt(classe.id)}&ecole_id=${parseInt(user.ecole_id)}`, {
-      headers: headers
-    })
-    setStudents(res.data)
+    try {
+      const res = await axios.get(`https://test.comtheplug.com/api/students/classe_id=${classe.id}&ecole_id=${ecole}`, {
+        headers: headers
+      })
+      setStudents(res.data)
+    } catch (error) {
+      showToast(error.message)
+    }
   }
 
+  const onRefresh = React.useCallback(() => {
+    setLoading(true)
+    setRefreshing(true);
+    getStudents().then(() => setLoading(false))
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl 
+          refreshing={refreshing} 
+          onRefresh={onRefresh}
+          colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
+          progressBackgroundColor={colors.BLANC}
+        />
+      }
+    >
       <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
         <View style={{width: "30%"}}>
           <Image source={require("@/assets/images/ob2.png")} style={{width: 80, height: 80}} />
@@ -39,7 +63,7 @@ const StudentScreen = () => {
       </View>
 
       <View style={{margin: 15}}>
-        <Heading text={"Tous les élèves"} value={students.length} />
+        <Heading text={"Tous les élèves"} value={students.length + ' élèves'} />
         {!loading ?
           <FlatList
             data={students}

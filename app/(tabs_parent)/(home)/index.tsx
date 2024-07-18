@@ -1,18 +1,10 @@
-import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, Animated, SafeAreaView, Alert, RefreshControl, Modal } from 'react-native'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Modal } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import Header from '@/components/Header'
-import Slider from '@/components/Slider'
-import { slidesClasse } from '@/utils/slides'
-import SlideClassItem from '@/components/SlideClassItem'
-import { getAllClasses, getAllEvents, getHeaders, getMatieresSchool, getMyClasses, getUser } from '../../../services/MainService'
-import SlideMatiereItem from '../../../components/SlideMatiereItem'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native'
+import { getAllEvents, getHeaders, getUser } from '../../../services/MainService'
 import Heading from '../../../components/Heading'
-import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../../../utils/colors'
 import EventItem from '../../../components/Event'
-import SkeletonComponent from '@/components/SkeletonComponent'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
 import { showToast } from '@/utils/fonctions'
@@ -20,17 +12,12 @@ import "react-native-gesture-handler"
 import ShowEvent from '@/components/ShowEvent'
 
 const HomeScreen = () => {
-  const [classes, setClasses] = useState<any[]>([])
   const [headers, setHeaders] = useState<any>(null)
   const [user, setUser] = useState<any>({})
   const [events, setEvents] = useState<any[]>([])
   const [event, setEvent] = useState<any>({})
-  const [visible, setVisible] = useState<any>(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [loadingClasse, setLoadingClasse] = useState(true)
   const [loadingEvent, setLoadingEvent] = useState(true)
-  const scale = useRef<any>(new Animated.Value(0)).current
-  const navigation = useNavigation()
   const [showEvent, setShowEvent] = useState<any>(false)
   const [refreshing, setRefreshing] = useState(false);
 
@@ -51,7 +38,6 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (!isLoading) {
-      //fetchClasses().then(() => setLoadingClasse(false))
       fetchEvents().then(() => setLoadingEvent(false))
     }
   }, [isLoading])
@@ -73,27 +59,14 @@ const HomeScreen = () => {
     });
   };
 
-  const fetchClasses = async () => {
-    if (user.ecole_id) {
-      try {
-        const res = await getAllClasses(user.ecole_id, headers);
-        setClasses(res);
-      } catch (error: any) {
-        showToast(error.message)
-      }
-    }
-  };
-
   function handleView(item: any) {
     setEvent(item)
     setShowEvent(!showEvent)
   }
 
   const onRefresh = React.useCallback(() => {
-    //setLoadingClasse(true)
     setLoadingEvent(true)
     setRefreshing(true);
-    //fetchClasses().then(() => setLoadingClasse(false))
     fetchEvents().then(() => setLoadingEvent(false))
     setTimeout(() => {
       setRefreshing(false);
@@ -113,36 +86,15 @@ const HomeScreen = () => {
       }
     >
       <StatusBar backgroundColor={colors.BLEU} />
-      {/* Header */}
+      
       <Header user={user} />
       {user ?
         <View style={{padding: 20}}>
-          {/* <Slider 
-            slider={classes} 
-            headers={headers}
-            user={user}
-            loading={loadingClasse}
-            Component={SlideClassItem} 
-            titleHeading='Nos Classes' 
-            style={{}}
-          />
-          
-          <Slider 
-            slider={matieres} 
-            headers={headers}
-            user={user}
-            loading={loadingMatiere}
-            Component={SlideMatiereItem} 
-            titleHeading='Nos Matières' 
-            style={{ marginTop: 20 }}
-          /> */}
-
           <View>
             <Heading style={styles.headerEvent} text="Les prochains évènements" />
             {!loadingEvent ? <FlatList
               showsHorizontalScrollIndicator={false}
               data={events}
-              //style={styles.events}
               renderItem={({item, index}) => (
                 <TouchableOpacity onPress={() => handleView(item)}>
                   <EventItem key={index} event={item} />

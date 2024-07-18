@@ -1,7 +1,6 @@
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
-import { StatusBar } from 'expo-status-bar'
-import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInUp, FadeOut } from 'react-native-reanimated'
+import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated'
 import { colors } from '@/utils/colors'
 import { useNavigation } from '@react-navigation/native'
 

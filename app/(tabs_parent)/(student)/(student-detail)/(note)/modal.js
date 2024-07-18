@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../../../../../utils/colors'
 import { dateParser } from '../../../../../utils/fonctions'
 
-const ModalNote = ({note, visible, setVisible, student}) => {
+const ModalNote = ({note, visible, setVisible}) => {
     return (
         <Modal
             animationType='slide'

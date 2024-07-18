@@ -2,69 +2,127 @@ import { View, Text, StyleSheet, Image, ScrollView, FlatList } from 'react-nativ
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import Heading from '@/components/Heading'
-import { getHeaders, getStudentsOfClasse } from '@/services/MainService'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
-import { useLocalSearchParams } from 'expo-router'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
+import { FontAwesome } from '@expo/vector-icons'
+import { dateParser } from '@/utils/fonctions'
 
 const StudentScreen = () => {
   const route = useRoute()
-  const { classe, user, headers } = route.params
+  const { student, headers } = route.params
   const [loading, setLoading] = useState(true)
-  const [students, setStudents] = useState([])
+  const [feesStudent, setFeesStudent] = useState(null)
 
   useEffect(() => {
-    getStudents().then(() => setLoading(false))
+    getFeesStudent().then(() => setLoading(false))
   }, [])
 
-  async function getStudents() {
-    const res = await axios.get(`https://test.comtheplug.com/api/my-students/classe_id=${parseInt(classe.id)}&ecole_id=${parseInt(user.ecole_id)}`, {
+  async function getFeesStudent() {
+    const res = await axios.get(`https://test.comtheplug.com/api/get-fees-student/${parseInt(student.id)}`, {
       headers: headers
     })
-    setStudents(res.data)
+    setFeesStudent(res.data)
   }
 
   return (
     <ScrollView>
-      <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
-        <View style={{width: "30%"}}>
-          <Image source={require("@/assets/images/ob2.png")} style={{width: 80, height: 80}} />
-        </View>
-        <View style={{flexDirection: 'column', marginRight: 15, width: '60%'}}>
-          <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des élèves essentielle pour suivre leurs progrès</Text>
+      <View style={styles.card}>
+        <View style={{flexDirection: 'column', marginRight: 15}}>
+          <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>{student.nom +' '+ student.prenom}</Text>
           <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 100}}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
+            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>{student.matricule}</Text>
           </View>
         </View>
       </View>
 
       <View style={{margin: 15}}>
-        <Heading text={"Tous les eleves"} />
+        <Heading text={"Ses tarifs"} />
+        <View style={{margin: 15}}>
+          <View style={styles.cardTarif}>
+            <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Inscription</Text>
+            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 150}}>
+              <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
+                {feesStudent?.tarifs.inscription}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.cardTarif}>
+            <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Première tranche</Text>
+            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 150}}>
+              <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
+                {feesStudent?.tarifs.premiere_tranche}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.cardTarif}>
+            <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Deuxième tranche</Text>
+            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 150}}>
+              <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
+                {feesStudent?.tarifs.deuxieme_tranche}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.cardTarif}>
+            <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Troisième tranche</Text>
+            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 150}}>
+              <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
+                {feesStudent?.tarifs.troisieme_tranche}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      <View style={{margin: 15}}>
+        <Heading text={"Résumé"} />
+        <View style={{margin: 15, display: 'flex', flexDirection: 'row', gap: 15}}>
+          <View style={styles.cardResume}>
+            <Text style={{color: colors.BLANC, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>
+              Total
+            </Text>
+            <Text style={{textAlign: 'center', fontSize: 16, fontFamily: 'Regular'}}>
+              {feesStudent?.total}
+            </Text>
+          </View>
+          <View style={styles.cardResume}>
+            <Text style={{color: colors.BLANC, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>
+              Déjà payé
+            </Text>
+            <Text style={{textAlign: 'center', fontSize: 16, fontFamily: 'Regular'}}>
+              {feesStudent?.paye}
+            </Text>
+          </View>
+          <View style={styles.cardResume}>
+            <Text style={{color: colors.BLANC, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>
+              Reste à payer
+            </Text>
+            <Text style={{textAlign: 'center', fontSize: 16, fontFamily: 'Regular'}}>
+              {feesStudent?.reste}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={{margin: 15}}>
+        <Heading text={"Tous ses paiements"} />
         {!loading ?
           <FlatList
-            data={students}
+            data={feesStudent?.paiements}
             horizontal={false}
             showsVerticalScrollIndicator={false}
             renderItem={({item, i}) => (
               <View key={i} style={styles.student}>
                 <View style={styles.studentImage}>
-                  <Image 
-                    source={require("@/assets/images/user.jpeg")} 
-                    style={{width: 50, height: 50}}
-                  />
+                  <FontAwesome name="money" size={50} color="black" />
                 </View>
                 <View style={styles.studentDesc}>
-                  <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{item.nom + ' ' + item.prenom}</Text>
-                    <Text style={{fontSize: 13, marginLeft: 5}}>{item.matricule}</Text>
-                  </View>
-                  <Text>{item.sexe}</Text>
-                  <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <Text>Parent : <Text style={{fontFamily: 'Bold', fontSize: 17}}>{item.nom_parent + ' ' + item.prenom_parent}</Text></Text>
-                    <Text>{item.tel_parent}</Text>
-                  </View>
+                  <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{item.code}</Text>
+                  <Text style={{fontSize: 16, fontFamily: 'SemiBold'}}>{item.intitule}</Text>
+                  <Text style={{fontSize: 18, fontFamily: 'Bold'}}>{item.montant} XAF</Text>
+                  <Text>{item.annee_scolaire}</Text>
+                  <Text style={{marginTop: 20}}>{dateParser(item.created_at)}</Text>
                 </View>
               </View>
             )}
@@ -118,7 +176,7 @@ const StudentScreen = () => {
             </View>
           ))
         }
-        {(!loading && students.length) === 0 &&
+        {(!loading && feesStudent) &&
           <NoData />
         }
       </View>
@@ -134,7 +192,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: 150, 
-    borderRadius: 15
+    borderRadius: 15,
+    backgroundColor: colors.BLEU_CLAIR
+  },
+  cardTarif: {
+    borderRadius: 15,
+    backgroundColor: colors.BLEU_CLAIR,
+    width: 200,
+    height: 200,
+    padding: 15
+  },
+  cardResume: {
+    borderRadius: 15,
+    backgroundColor: colors.VERT_CLAIR,
+    width: 50,
+    height: 50,
+    padding: 15
   },
   student: {
     backgroundColor: 'white',

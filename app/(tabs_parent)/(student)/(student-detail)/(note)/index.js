@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView } from 'react-native'
-import React, { useMemo, useRef, useState, useEffect } from 'react'
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { Skeleton } from 'moti/skeleton'

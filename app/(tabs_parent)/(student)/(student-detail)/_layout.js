@@ -1,13 +1,8 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Drawer } from 'expo-router/drawer';
-import SideBar from '@/components/SideBar';
-import { useLocalSearchParams } from 'expo-router';
 import { colors } from '@/utils/colors';
 import { AntDesign, Feather, Octicons, SimpleLineIcons } from '@expo/vector-icons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useParams } from 'react-router-dom';
 import { useRoute } from '@react-navigation/native';
-import { useEffect } from 'react';
 import SidebarStudent from '../../../../components/SidebarStudent';
 
 
@@ -15,16 +10,11 @@ export default function HomeLayout({}) {
   const route = useRoute()
   const { user, headers, student } = route.params
 
-  useEffect(() => {
-    console.log(user, headers, student)
-  }, [])
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer 
         drawerContent={(props) => <SidebarStudent student={student} {...props} />}
         screenOptions={{
-          //statusBarColor: colors.VERT,
           headerStyle: {
             backgroundColor: colors.BLEU
           },
@@ -125,7 +115,7 @@ export default function HomeLayout({}) {
               fontWeight: '600',
               fontSize: 18,
             },
-            headerTitle: "Les élèves"
+            headerTitle: "Mon enfant"
           }}
         />
       </Drawer>

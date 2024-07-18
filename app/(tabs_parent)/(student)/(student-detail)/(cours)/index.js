@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, FlatList, ScrollView, SafeAreaView, KeyboardAvoidingView  } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, SafeAreaView, KeyboardAvoidingView  } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import { dateParser, longueurTexte } from '@/utils/fonctions';
@@ -12,16 +12,15 @@ import ModalCours from './modal';
 
 const CourseScreen = () => {
   const route = useRoute()
-  const { student, user, headers } = route.params
+  const { student, headers } = route.params
   const [showModal, setShowModal] = useState(false)
-  const { height: deviceHeight } = Dimensions.get('screen');
   const [cours, setCours] = useState([])
   const [loading, setLoading] = useState(true)
   const [cour, setCour] = useState({})
 
   useEffect(() => {
     getCours().then(() => setLoading(false))
-  }, [student, user, headers])
+  }, [student])
 
   const getCours = async () => {
     try {

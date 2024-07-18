@@ -4,9 +4,7 @@ import { colors } from '@/utils/colors'
 import PageHeading from '@/components/PageHeading'
 import SingleClassItem from '@/components/SingleClassItem'
 import { Skeleton } from 'moti/skeleton'
-import { skeletonProps } from '@/utils/skeletonProps'
 import { getAllClasses, getHeaders, getUser } from '@/services/MainService'
-import { isLoading } from 'expo-font'
 
 const ClasseScreen = () => {
   const [classes, setClasses] = useState<any[]>([])

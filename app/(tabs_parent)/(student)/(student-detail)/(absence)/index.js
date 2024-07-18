@@ -1,24 +1,19 @@
-import { View, Text, ScrollView, StyleSheet, Image, FlatList, TouchableOpacity, Modal, Dimensions } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Image, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import Heading from '@/components/Heading'
-import { getAllPresences } from '@/services/MainService'
 import { AntDesign } from '@expo/vector-icons';
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
 import { dateParser } from '@/utils/fonctions'
-import AjouterAbsence from '@/components/AjouterAbsence'
-import { useLocalSearchParams } from 'expo-router'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 
 const AbsenceScreen = () => {
   const route = useRoute()
-  const { student, user, headers } = route.params
+  const { student, headers } = route.params
   const [loading, setLoading] = useState(true)
   const [absences, setAbsences] = useState([])
-  const [showModal, setShowModal] = useState(false)
-  const { height: deviceHeight } = Dimensions.get('screen');
 
   useEffect(() => {
     getPresences().then(() => setLoading(false))

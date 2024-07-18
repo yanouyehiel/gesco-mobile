@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const PhoneNumberForgot = () => {
     const [areas, setAreas] = useState([])
-    const [selectedArea, setSelectedArea] = useState({})
+    const [selectedArea, setSelectedArea] = useState<any>({})
     const [modalVisible, setModalVisible] = useState(false)
     const navigation = useNavigation()
     const [loading, setLoading] = useState(false)
@@ -21,7 +21,6 @@ const PhoneNumberForgot = () => {
         } else {
             navigation.navigate("otp-code")
         }
-        //console.log(selectedArea.callingCode)
     }
 
     useEffect(() => {
@@ -117,9 +116,7 @@ const PhoneNumberForgot = () => {
                             >
                                 <AntDesign 
                                     name="close" 
-                                    style={{
-                                        tintColor: colors.BLEU
-                                    }}
+                                    style={{tintColor: colors.BLEU}}
                                     size={20}
                                 />
                             </TouchableOpacity>
@@ -128,7 +125,7 @@ const PhoneNumberForgot = () => {
                                 data={areas}
                                 renderItem={renderItem}
                                 horizontal={false}
-                                keyExtractor={item => item.code}
+                                keyExtractor={item => item.code.toString()}
                                 style={{ padding: 20, marginBottom: 20 }}
                             />
                         </View>

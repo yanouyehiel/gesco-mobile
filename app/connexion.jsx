@@ -52,6 +52,7 @@ const LoginScreen = () => {
               }  
             }          
           }, (err) => {
+            setLoading(false);
             showToast(err.response.data.message)
           })
         } catch (err) {
@@ -59,6 +60,7 @@ const LoginScreen = () => {
           showToast(err.response?.data.message);
         }
       } else {
+        setLoading(false);
         setError(true)
         showToast("L'email est incorrect")
       }

@@ -151,3 +151,8 @@ export async function getMyChildren(id, headers) {
     const response = await axios.get(`${API_URL}/get-my-children/${parseInt(id)}`, {headers});
     return response.data;
 }
+
+export async function updateNote(data, headers) {
+    const response = await axios.put(`${API_URL}/update-note`, data, {headers});
+    return response.data;
+}

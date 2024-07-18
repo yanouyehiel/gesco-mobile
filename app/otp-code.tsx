@@ -1,8 +1,7 @@
-import { View, Text, TouchableOpacity, SafeAreaView, TextInput, StyleSheet, NativeSyntheticEvent, TextInputKeyPressEventData, KeyboardAvoidingView, ActivityIndicator } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, NativeSyntheticEvent, TextInputKeyPressEventData, KeyboardAvoidingView, ActivityIndicator } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { colors } from '@/utils/colors'
 import { useNavigation } from '@react-navigation/native'
-import BottomContainer from '@/components/BottomContainer'
 
 
 const OTPCode = () => {
