@@ -1,15 +1,15 @@
 import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Modal } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Header from '@/components/Header'
-import { getAllEvents, getHeaders, getUser } from '../../../services/MainService'
+import { getAllCalendars, getAllEvents, getHeaders, getUser } from '../../../services/MainService'
 import Heading from '../../../components/Heading'
 import { colors } from '../../../utils/colors'
-import EventItem from '../../../components/Event'
+import Calendar from '../../../components/Calendar'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
 import { showToast } from '@/utils/fonctions'
 import "react-native-gesture-handler"
-import ShowEvent from '@/components/ShowEvent'
+import ShowCalendar from '@/components/ShowCalendar'
 
 const HomeScreen = () => {
   const [headers, setHeaders] = useState<any>(null)
@@ -38,14 +38,14 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (!isLoading) {
-      fetchEvents().then(() => setLoadingEvent(false))
+      fetchCalendars().then(() => setLoadingEvent(false))
     }
   }, [isLoading])
 
-  const fetchEvents = async () => {
+  const fetchCalendars = async () => {
     try {
       if (user.ecole_id) {
-        const res = await getAllEvents(user.ecole_id, headers)
+        const res = await getAllCalendars(user.ecole_id, headers)
         setEvents(res)
       }
     } catch (error: any) {
@@ -67,7 +67,7 @@ const HomeScreen = () => {
   const onRefresh = React.useCallback(() => {
     setLoadingEvent(true)
     setRefreshing(true);
-    fetchEvents().then(() => setLoadingEvent(false))
+    fetchCalendars().then(() => setLoadingEvent(false))
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
@@ -91,13 +91,13 @@ const HomeScreen = () => {
       {user ?
         <View style={{padding: 20}}>
           <View>
-            <Heading style={styles.headerEvent} text="Les prochains évènements" />
+            <Heading style={styles.headerEvent} text="Le calendrier de l'école" />
             {!loadingEvent ? <FlatList
               showsHorizontalScrollIndicator={false}
               data={events}
               renderItem={({item, index}) => (
                 <TouchableOpacity onPress={() => handleView(item)}>
-                  <EventItem key={index} event={item} />
+                  <Calendar key={index} calendar={item} />
                 </TouchableOpacity>
               )}
               keyExtractor={(item, index) => index.toString()}
@@ -157,7 +157,7 @@ const HomeScreen = () => {
         animationType='slide'
         visible={showEvent}
       >
-        <ShowEvent hideModal={() => setShowEvent(false)} event={event} />
+        <ShowCalendar hideModal={() => setShowEvent(false)} calendar={event} />
       </Modal>
 
     </ScrollView>

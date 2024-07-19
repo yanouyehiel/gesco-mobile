@@ -76,17 +76,17 @@ const ClasseScreen = () => {
               <Skeleton show={true} colorMode='light'>
                 <Text style={[styles.text, {width: 50, height: 1, marginBottom: 20}]}></Text>
               </Skeleton>
-              <Skeleton show={true} colorMode='light'>
-                <Text style={[styles.text, {width: 150, height: 1, marginBottom: 20}]}></Text>
-              </Skeleton>
               <View style={{flexDirection: 'row', gap: 20}}>
-                <Skeleton show={true} colorMode='light'>
-                  <Text style={[styles.text, {width: 80}]}></Text>
-                </Skeleton>
                 <Skeleton show={true} colorMode='light'>
                   <Text style={[styles.text, {width: 120}]}></Text>
                 </Skeleton>
+                <Skeleton show={true} colorMode='light'>
+                  <Text style={[styles.text, {width: 80}]}></Text>
+                </Skeleton>
               </View>
+              <Skeleton show={true} colorMode='light'>
+                <Text style={[styles.text, {width: 150, height: 1, marginBottom: 20}]}></Text>
+              </Skeleton>
             </View>
           </View>
         ))

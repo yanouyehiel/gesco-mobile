@@ -8,7 +8,7 @@ import NoData from '@/components/NoData';
 import { useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import "react-native-gesture-handler"
-import ModalCours from './modal';
+import ModalCours from '../../../../../components/ModalCour';
 
 const CourseScreen = () => {
   const route = useRoute()

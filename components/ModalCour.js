@@ -1,8 +1,8 @@
 import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { colors } from '../../../../../utils/colors'
+import { colors } from '../utils/colors'
 import { Ionicons } from '@expo/vector-icons'
-import { dateParser } from "../../../../../utils/fonctions"
+import { dateParser } from "../utils/fonctions"
 
 const ModalCours = ({visible, setVisible, cour}) => {
     return (

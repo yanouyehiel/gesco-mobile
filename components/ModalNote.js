@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { colors } from '../../../../../utils/colors'
-import { dateParser } from '../../../../../utils/fonctions'
+import { colors } from '../utils/colors'
+import { dateParser } from '../utils/fonctions'
 
 const ModalNote = ({note, visible, setVisible}) => {
     return (

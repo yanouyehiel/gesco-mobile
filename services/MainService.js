@@ -96,6 +96,11 @@ export async function getAllEvents(id, headers) {
     return response.data;
 }
 
+export async function getAllCalendars(id, headers) {
+    const response = await axios.get(`${API_URL}/get-calendars/${parseInt(id)}`, {headers: headers})
+    return response.data;
+}
+
 export async function getAllMatieres(id, headers) {
     const response = await axios.get(`${API_URL}/get-matieres/${parseInt(id)}`, {headers: headers});
     return response.data;

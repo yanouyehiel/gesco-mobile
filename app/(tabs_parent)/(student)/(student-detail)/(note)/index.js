@@ -8,7 +8,7 @@ import { colors } from '@/utils/colors'
 import { dateParser, longueurTexte } from '@/utils/fonctions';
 import { showToast } from '@/utils/fonctions'
 import Heading from '@/components/Heading'
-import ModalNote from './modal'
+import ModalNote from '../../../../../components/ModalNote'
 
 const NoteScreen = () => {
   const [loading, setLoading] = useState(true)

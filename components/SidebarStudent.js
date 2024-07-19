@@ -49,10 +49,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: 80,
-        height: 80,
-        //borderRadius: 40,
-        //borderWidth: 1,
-        //borderColor: '#333'
+        height: 80
     },
     name: {
         color: colors.NOIR,
