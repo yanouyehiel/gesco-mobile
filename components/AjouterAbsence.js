@@ -99,6 +99,7 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                         <FlatList 
                             data={timeListDebut}
                             horizontal={true}
+                            style={{ marginBottom: 5}}
                             showsHorizontalScrollIndicator={false}
                             renderItem={({item, index}) => (
                                 <TouchableOpacity 

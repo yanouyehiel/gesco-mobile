@@ -1,9 +1,9 @@
 import { View, Text,  TextInput, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
-import { login, storeData } from '@/services/MainService'
+import { getHeaders, login, storeData } from '@/services/MainService'
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { showToast } from '@/utils/fonctions'
 
@@ -15,7 +15,25 @@ const LoginScreen = () => {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState(false)
+  const [headers, setHeaders] = useState(null)
 
+  useEffect(() => {
+    const fetchHeaders = async () => {
+      try {
+        const headersData = await getHeaders();
+        setHeaders(headersData)
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchHeaders().then()
+  }, [])
+
+  useEffect(() => {
+    if (!headers) {
+      navigation.goBack()
+    }
+  }, [headers])
 
   function isEmailValid(email) {
     var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -44,12 +62,12 @@ const LoginScreen = () => {
             } else {
               storeData('tokenGesco', res).then((res) => console.log(res))
               if (res.user.role_id === 2) {
-                console.log("Nous sommes dans le Teacher")
                 navigation.navigate("(tabs_teacher)")
               } else if (res.user.role_id === 3) {
-                console.log("Nous sommes dans le Parent")
                 navigation.navigate("(tabs_parent)")
-              }  
+              }  else {
+                showToast("Vous n'avez pas les accès.")
+              } 
             }          
           }, (err) => {
             setLoading(false);

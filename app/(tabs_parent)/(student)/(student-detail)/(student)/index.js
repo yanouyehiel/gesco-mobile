@@ -146,13 +146,7 @@ const StudentScreen = () => {
                 />
               </View>
               <View style={styles.studentDesc}>
-                <View style={{display: 'flex', gap: 30, flexDirection: 'row', alignItems: 'center', marginBottom: 10}}>
-                  <Skeleton 
-                    show={true}
-                    width={100}
-                    height={10} 
-                    colorMode='light'
-                  />
+                <View style={{marginBottom: 10}}>
                   <Skeleton 
                     show={true}
                     width={100}
@@ -160,22 +154,34 @@ const StudentScreen = () => {
                     colorMode='light'
                   />
                 </View>
-                <Skeleton 
-                  show={true}
-                  width={100}
-                  height={10} 
-                  colorMode='light'
-                />
-                <View style={{display: 'flex', flexDirection: 'row', gap: 30, marginTop: 10, alignItems: 'center'}}>
+                <View style={{marginBottom: 10}}>
                   <Skeleton 
                     show={true}
-                    width={100}
-                    height={10} 
+                    width={150}
+                    height={5} 
                     colorMode='light'
                   />
+                </View>
+                <View style={{marginBottom: 10}}>
                   <Skeleton 
                     show={true}
-                    width={100}
+                    width={80}
+                    height={5} 
+                    colorMode='light'
+                  />
+                </View>
+                <View style={{marginBottom: 10}}>
+                  <Skeleton 
+                    show={true}
+                    width={70}
+                    height={8} 
+                    colorMode='light'
+                  />
+                </View>
+                <View style={{marginBottom:30}}>
+                  <Skeleton 
+                    show={true}
+                    width={180}
                     height={10} 
                     colorMode='light'
                   />

@@ -42,9 +42,6 @@ const NoteScreen = () => {
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
           <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
             <Text style={{color: colors.NOIR, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>La gestion des devoirs permet de tenir au courant les parents des devoirs qu'ont leurs enfants et ainsi de les y aider mais aussi à l'enseignant de suivre de près l'évolution de ses élèves.</Text>
-            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 100}}>
-              <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-            </View>
           </View>
           <View style={{width: "30%"}}>
             <Image source={require("@/assets/images/ob4.png")} style={{width: 80, height: 80}} />
@@ -130,7 +127,7 @@ const NoteScreen = () => {
                   colorMode='light'
                 />
               </View>
-              <View style={{marginRight: 10}}>
+              <View>
                 <Skeleton 
                   show={true}
                   width={100}

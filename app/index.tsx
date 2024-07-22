@@ -7,7 +7,6 @@ import { getHeaders, getUser } from '@/services/MainService';
 
 const SplashScreenView = () => {
     const navigation = useNavigation();
-    const [headers, setHeaders] = useState(null)
     const user: any = getUser().then()
 
     useEffect(() => {
@@ -22,7 +21,6 @@ const SplashScreenView = () => {
       
       fetchHeaders().then((res: any) => {
         if (res !== "Pas de donnée stockée") {
-          setHeaders(res.headers);
           setTimeout(() => {
             if (user._j.role_id === 2) {
               console.log("Nous sommes dans le Teacher")

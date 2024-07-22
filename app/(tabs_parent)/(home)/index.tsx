@@ -103,7 +103,7 @@ const HomeScreen = () => {
               keyExtractor={(item, index) => index.toString()}
             /> :
             <View>
-              {[0, 1, 2].map((t, i) => (
+              {[0, 1, 2, 3, 4].map((t, i) => (
                 <View key={i} style={styles.event}>
                   <View style={{display: 'flex',alignItems: 'center', justifyContent: 'center'}}>
                     <Skeleton

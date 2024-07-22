@@ -63,6 +63,7 @@ const NoteScreen = () => {
   }
 
   const scale = useRef(new Animated.Value(0)).current
+  const scaleUpdate = useRef(new Animated.Value(0)).current
 
   function resizeBox(to) {
     to === 1 && setVisibleOption(true)
@@ -74,6 +75,16 @@ const NoteScreen = () => {
     }).start(() => to === 0 && setVisibleOption(false))
   }
 
+  function resizeBoxUpdate(to) {
+    to === 1 && setShowModalUpdate(true)
+    Animated.timing(scaleUpdate, {
+      toValue: to,
+      useNativeDriver: true,
+      duration: 200,
+      easing: Easing.linear
+    }).start(() => to === 0 && setShowModalUpdate(false))
+  }
+
   const handleSubmit = async (data) => {
     setLoading(true)
     await updateNote(data, headers).then((res) => {
@@ -82,23 +93,23 @@ const NoteScreen = () => {
     })
   }
 
+  //Modal update note
   const PopUpdate = () => {
     return (
       <Modal transparent visible={showModalUpdate}>
         <SafeAreaView
           style={{ flex: 1 }}
-          onTouchStart={() => resizeBox(0)}
+          onTouchStart={() => resizeBoxUpdate(0)}
         >
           <Animated.View style={[
             styles.popupUpdate, 
-            {opacity: scale.interpolate({inputRange: [0, 1], outputRange: [0, 1]})},
+            {opacity: scaleUpdate.interpolate({inputRange: [0, 1], outputRange: [0, 1]})},
             {
-              transform: [{scale: scale}]
+              transform: [{scale: scaleUpdate}]
             }]}>
               <Text>{note.nom_student +' '+ note.prenom_student}</Text>
               <TextInput
                 placeholder='Entrer la nouvelle note'
-                //style={}
                 numberOfLines={1} multiline={false}
                 onChangeText={(text) => console.log(text)}
               />
@@ -114,6 +125,7 @@ const NoteScreen = () => {
     )
   }
 
+  //Modal popup option note
   const Popup = ({data}) => {
     return (
       <Modal transparent visible={visibleOption}>
@@ -181,27 +193,29 @@ const NoteScreen = () => {
           showsVerticalScrollIndicator={false}
           horizontal={false}
           renderItem={({item, index}) => (
-            <View>
+            <View key={index}>
               <View style={styles.note}>
-                <View style={styles.noteImage}>
-                  <Image source={require("@/assets/images/matiere.png")} style={{width: 30, height: 30}} />
-                </View>
-                <View style={styles.noteDesc}>
-                  <Text style={[styles.text, {fontSize: 18}]}>{item.nom_student +' '+ item.prenom_student}</Text>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={[styles.text]}>{longueurTexte(item.nom_matiere, 35)}</Text>
-                    <Text style={styles.text}>{item.note} / 20</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                  <View style={styles.noteImage}>
+                    <Image source={require("@/assets/images/matiere.png")} style={{width: 30, height: 30}} />
                   </View>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={[styles.text]}>Séquence : {item.sequence}</Text>
-                    <Text style={styles.text}>{item.annee_scolaire}</Text>
+                  <View style={styles.noteDesc}>
+                    <Text style={[styles.text, {fontSize: 20}]}>{item.nom_student +' '+ item.prenom_student}</Text>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                      <Text style={[styles.text]}>{longueurTexte(item.nom_matiere, 25)}</Text>
+                      <Text style={styles.text}>{item.note} / 20</Text>
+                    </View>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                      <Text style={[styles.text]}>Séquence : {item.sequence}</Text>
+                      <Text style={styles.text}>{item.annee_scolaire}</Text>
+                    </View>
                   </View>
+                  <TouchableOpacity onPress={() => resizeBox(1)}>
+                    <SimpleLineIcons name="options-vertical" size={20} color="black" />
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={() => resizeBox(1)}>
-                  <SimpleLineIcons name="options-vertical" size={24} color="black" />
-                </TouchableOpacity>
+                <Text>Enregistré le {dateParser(item.created_at)}</Text>
               </View>
-              <Text >Enregistré le {dateParser(item.created_at)}</Text>
               <Popup data={item} />
               <PopUpdate />
             </View>
@@ -226,7 +240,7 @@ const NoteScreen = () => {
                   colorMode='light'
                 />
               </View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
                 <Skeleton 
                   show={true}
                   width={100}
@@ -240,7 +254,7 @@ const NoteScreen = () => {
                   colorMode='light'
                 />
               </View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
                 <Skeleton 
                   show={true}
                   width={100}
@@ -271,6 +285,7 @@ const NoteScreen = () => {
 
       </View>
 
+      {/* Modal pour voir la note */}
       <Modal
         animationType='slide'
         visible={showModal}
@@ -283,30 +298,31 @@ const NoteScreen = () => {
 
           <View>
             <View style={{marginBottom: 10}}>
-                <Text style={styles.title}>Noms et prénoms :</Text>
-                <Text style={styles.titleContent}>{note.nom_student +' '+ note.prenom_student}</Text>
+              <Text style={styles.title}>Noms et prénoms :</Text>
+              <Text style={styles.titleContent}>{note.nom_student +' '+ note.prenom_student}</Text>
             </View>
             <View style={{marginBottom: 10}}>
-                <Text style={styles.title}>Matière :</Text>
-                <Text style={styles.titleContent}>{note.nom_matiere}</Text>
+              <Text style={styles.title}>Matière :</Text>
+              <Text style={styles.titleContent}>{note.nom_matiere}</Text>
             </View>
             <View style={{marginBottom: 10}}>
-                <Text style={styles.title}>Note :</Text>
-                <Text style={styles.titleContent}>{note.note} / 20</Text>
+              <Text style={styles.title}>Note :</Text>
+              <Text style={styles.titleContent}>{note.note} / 20</Text>
             </View>
             <View style={{marginBottom: 10}}>
-                <Text style={styles.title}>Séquence :</Text>
-                <Text style={styles.titleContent}>{note.sequence}</Text>
+              <Text style={styles.title}>Séquence :</Text>
+              <Text style={styles.titleContent}>{note.sequence}</Text>
             </View>
             <View style={{marginBottom: 10}}>
-                <Text style={styles.title}>Année scolaire :</Text>
-                <Text style={styles.titleContent}>{note.annee_scolaire}</Text>
+              <Text style={styles.title}>Année scolaire :</Text>
+              <Text style={styles.titleContent}>{note.annee_scolaire}</Text>
             </View>
             <Text style={{fontFamily: 'Regular', fontSize: 20}}>Enregistré le {dateParser(note.created_at)}</Text>
           </View>
         </View>
       </Modal>
 
+      {/* Modal pour ajouter une note */}
       <Modal
         animationType='slide'
         visible={visible}
@@ -342,9 +358,6 @@ const styles = StyleSheet.create({
   },
   note: {
     backgroundColor: '#f2f2f2',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: 15,
     padding: 10,
     borderRadius: 15,
@@ -408,7 +421,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 10,
     position: 'absolute',
-    bottom : 0
+    bottom : 35,
+    width: '100%'
   },
   btnSave: {
     textAlign: 'center',

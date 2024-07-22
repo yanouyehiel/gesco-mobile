@@ -144,7 +144,7 @@ const HomeScreen = () => {
           />
 
           <View>
-            <Heading style={styles.headerEvent} text="Les prochains évènements" />
+            <Heading style={styles.headerEvent} text="Notre agenda scolaire" />
             {!loadingEvent ? <FlatList
               showsHorizontalScrollIndicator={false}
               data={events}
@@ -172,7 +172,7 @@ const HomeScreen = () => {
                     <View style={{marginBottom: 10}}>
                       <Skeleton 
                         show={true}
-                        width={150}
+                        width={200}
                         height={15}
                         colorMode='light'
                       />
@@ -180,7 +180,7 @@ const HomeScreen = () => {
                     <View style={{marginBottom: 10}}>
                       <Skeleton 
                         show={true}
-                        width={230}
+                        width={150}
                         height={10}
                         colorMode='light'
                       />
@@ -188,7 +188,7 @@ const HomeScreen = () => {
                     <View style={{marginBottom: 10}}>
                       <Skeleton 
                         show={true}
-                        width={230}
+                        width={130}
                         height={10}
                         colorMode='light'
                       />

@@ -10,7 +10,7 @@ import { showToast } from '@/utils/fonctions'
 
 const StudentScreen = () => {
   const route = useRoute()
-  const { classe, headers } = route.params
+  const { classe, user, headers } = route.params
   const [loading, setLoading] = useState(true)
   const [students, setStudents] = useState([])
   const [refreshing, setRefreshing] = useState(false);
@@ -21,7 +21,7 @@ const StudentScreen = () => {
 
   async function getStudents() {
     try {
-      const res = await axios.get(`https://test.comtheplug.com/api/students/classe_id=${classe.id}&ecole_id=${ecole}`, {
+      const res = await axios.get(`https://test.comtheplug.com/api/students/classe_id=${classe.id}&ecole_id=${user.ecole_id}`, {
         headers: headers
       })
       setStudents(res.data)

@@ -20,7 +20,6 @@ const DevoirScreen = () => {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    handleClosePress()
     getDevoirs().then(() => setLoading(false))
   }, [classe])
 

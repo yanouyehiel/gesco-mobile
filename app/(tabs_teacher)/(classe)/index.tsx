@@ -74,10 +74,10 @@ const ClasseScreen = () => {
             </Skeleton>
             <View style={styles.subcontainer}>
               <Skeleton show={true} colorMode='light'>
-                <Text style={[styles.text, {width: 50, height: 1, marginBottom: 20}]}></Text>
+                <Text style={[styles.text, {width: 50, marginBottom: 20}]}></Text>
               </Skeleton>
               <Skeleton show={true} colorMode='light'>
-                <Text style={[styles.text, {width: 150, height: 1, marginBottom: 20}]}></Text>
+                <Text style={[styles.text, {width: 150, marginBottom: 20}]}></Text>
               </Skeleton>
               <View style={{flexDirection: 'row', gap: 20}}>
                 <Skeleton show={true} colorMode='light'>
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 15
   },
   text: {
-    height: 20
+    height: 10
   }
 })
 
