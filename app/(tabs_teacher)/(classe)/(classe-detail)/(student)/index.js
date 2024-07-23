@@ -21,7 +21,7 @@ const StudentScreen = () => {
 
   async function getStudents() {
     try {
-      const res = await axios.get(`https://test.comtheplug.com/api/students/classe_id=${classe.id}&ecole_id=${user.ecole_id}`, {
+      const res = await axios.get(`https://gesco-app.com/gesco/api/students/classe_id=${classe.id}&ecole_id=${user.ecole_id}`, {
         headers: headers
       })
       setStudents(res.data)

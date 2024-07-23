@@ -5,7 +5,7 @@ import { colors } from '../utils/colors'
 const NoData = () => {
   return (
     <View style={{marginTop: 15}}>
-      <Text style={styles.textNoData}>Il n'y a aucune donnée enregistrée</Text>
+      <Text style={styles.textNoData}>Il n'y a aucune donnée retrouvée</Text>
     </View>
   )
 }

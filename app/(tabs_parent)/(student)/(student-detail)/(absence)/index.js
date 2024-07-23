@@ -20,7 +20,7 @@ const AbsenceScreen = () => {
   }, [])
 
   async function getPresences() {
-    const res = await axios.get('https://test.comtheplug.com/api/get-absences-children/' + student.id, {
+    const res = await axios.get('https://gesco-app.com/gesco/api/get-absences-children/' + student.id, {
       headers: headers
     })
     setAbsences(res.data.absences)

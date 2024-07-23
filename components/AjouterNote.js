@@ -25,7 +25,7 @@ const AjouterNote = ({user, headers, classe, close}) => {
 
     async function getMatieres() {
         try {
-            const res = await axios.get('https://test.comtheplug.com/api/get-matieres/' + ecole, {
+            const res = await axios.get('https://gesco-app.com/gesco/api/get-matieres/' + ecole, {
                 headers: headers
             })
             setMatieres(res.data)

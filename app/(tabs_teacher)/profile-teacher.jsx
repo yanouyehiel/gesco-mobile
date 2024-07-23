@@ -40,19 +40,18 @@ const ProfileTeacher = () => {
             token_id: tokenId
         }
         try {
-            const res = await axios.post("https://test.comtheplug.com/api/auth/logout", data, {
+            const res = await axios.post("https://gesco-app.com/gesco/api/auth/logout", data, {
                 headers: headers
             })
             showToast(res.data.message)
             setTimeout(() => {
                 removeStorge('tokenGesco').then(() => console.log('Tokens supprimes'))
-                setLoading(false)
                 navigation.navigate("connexion")
             }, 2000)
         } catch (error) {
-            setLoading(false)
             showToast(error.message)
         }
+        setLoading(false)
     }
 
     return (

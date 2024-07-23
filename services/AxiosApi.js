@@ -1,5 +1,5 @@
 import axios from 'axios';
 
 export default axios.create({
-    baseURL: "https://test.comtheplug.com/api"
+    baseURL: "https://gesco-app.com/gesco/api"
 });

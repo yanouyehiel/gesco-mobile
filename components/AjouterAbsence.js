@@ -43,7 +43,7 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
     }, [])
 
     async function getStudents() {
-        const res = await axios.get(`https://test.comtheplug.com/api/students/classe_id=${parseInt(classe.id)}&ecole_id=${parseInt(user.ecole_id)}`, {
+        const res = await axios.get(`https://gesco-app.com/gesco/api/students/classe_id=${parseInt(classe.id)}&ecole_id=${parseInt(user.ecole_id)}`, {
             headers: headers
         })
         setStudents(res.data)

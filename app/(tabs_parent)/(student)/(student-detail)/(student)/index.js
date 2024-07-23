@@ -21,7 +21,7 @@ const StudentScreen = () => {
   }, [])
 
   async function getFeesStudent() {
-    const res = await axios.get(`https://test.comtheplug.com/api/get-fees-student/${parseInt(student.id)}`, {
+    const res = await axios.get(`https://gesco-app.com/gesco/api/get-fees-student/${parseInt(student.id)}`, {
       headers: headers
     })
     setFeesStudent(res.data)

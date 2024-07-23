@@ -27,7 +27,7 @@ const CourseScreen = () => {
 
   const getCours = async () => {
     try {
-      const res = await axios.get('https://test.comtheplug.com/api/get-cours-classe/' + classe.id, {headers: headers});
+      const res = await axios.get('https://gesco-app.com/gesco/api/get-cours-classe/' + classe.id, {headers: headers});
       setCours(res.data.cours);
     } catch (error) {
       console.error('Erreur lors de la récupération des cours:', error);

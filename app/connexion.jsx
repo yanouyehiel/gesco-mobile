@@ -15,25 +15,7 @@ const LoginScreen = () => {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState(false)
-  const [headers, setHeaders] = useState(null)
 
-  useEffect(() => {
-    const fetchHeaders = async () => {
-      try {
-        const headersData = await getHeaders();
-        setHeaders(headersData)
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchHeaders().then()
-  }, [])
-
-  useEffect(() => {
-    if (!headers) {
-      navigation.goBack()
-    }
-  }, [headers])
 
   function isEmailValid(email) {
     var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -56,7 +38,6 @@ const LoginScreen = () => {
         setLoading(true) 
         try {
           login(data).then((res) => {
-            setLoading(false)
             if (res.status_code === 401) {
               showToast(res.message)
             } else {
@@ -70,19 +51,17 @@ const LoginScreen = () => {
               } 
             }          
           }, (err) => {
-            setLoading(false);
             showToast(err.response.data.message)
           })
         } catch (err) {
-          setLoading(false);
           showToast(err.response?.data.message);
         }
       } else {
-        setLoading(false);
         setError(true)
         showToast("L'email est incorrect")
       }
     }
+    setLoading(false);
   }
 
   const toggleShowPassword = () => { 

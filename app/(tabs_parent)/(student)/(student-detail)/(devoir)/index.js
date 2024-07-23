@@ -21,7 +21,7 @@ const DevoirScreen = () => {
 
   const getDevoirs = async () => {
     try {
-      const res = await axios.get('https://test.comtheplug.com/api/get-devoirs-children/' + student.classe_id, {headers: headers});
+      const res = await axios.get('https://gesco-app.com/gesco/api/get-devoirs-children/' + student.classe_id, {headers: headers});
       setDevoirs(res.data)
     } catch (error) {
       showToast(error.response.message)

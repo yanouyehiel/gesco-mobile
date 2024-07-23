@@ -3,15 +3,32 @@ import React, { useState } from 'react'
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated'
 import { colors } from '@/utils/colors'
 import { useNavigation } from '@react-navigation/native'
+import { showToast } from '@/utils/fonctions'
+import { sendLinkResetPassword } from '@/services/MainService'
 
 const PasswordForgot = () => {
   const navigate = useNavigation()
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState("")
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setLoading(true)
-    navigate.navigate('otp-code')
+    try {
+      const data = {
+        email: email
+      }
+      await sendLinkResetPassword(data).then((res) => {
+        showToast(res.message)
+      }, (err) => {
+        setError(true)
+        showToast(err.response.data.message)
+      })
+    } catch (error: any) {
+      setError(true)
+      showToast(error.response?.data.message);
+    }
+    setLoading(false)
   }
     
   return (
@@ -35,6 +52,7 @@ const PasswordForgot = () => {
                 placeholder='Email' 
                 placeholderTextColor={'gray'} 
                 style={[error ? styles.containerError : styles.input]}
+                onChangeText={(text) => setEmail(text)}
               />
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(600).duration(1000).springify()}>
@@ -46,7 +64,7 @@ const PasswordForgot = () => {
                   {!loading ?
                     <Text 
                       style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 20}}
-                    >Envoyer le code</Text>
+                    >Envoyer le lien</Text>
                     : <ActivityIndicator color={colors.BLANC} size='large' />
                   }
                 </TouchableOpacity>

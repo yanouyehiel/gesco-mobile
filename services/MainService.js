@@ -65,6 +65,16 @@ export async function login(data) {
     return response.data;
 }
 
+export async function register(data) {
+    const response = await axios.post(`${API_URL}/register-mobile`, data)
+    return response.data;
+}
+
+export async function sendLinkResetPassword(data) {
+    const response = await axios.post(`${API_URL}/${AUTH}/password/email`, data)
+    return response.data;
+}
+
 export async function logout(headers) {
     const response = await axios.post(`${API_URL}/${AUTH}/logout`, {}, {headers: headers})
     return response.data;

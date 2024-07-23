@@ -5,13 +5,15 @@ import OnboardingItem from '@/components/OnboardingItem'
 import Paginator from '@/components/Paginator'
 import NextButton from '@/components/NextButton'
 import { colors } from '@/utils/colors'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 
 const Onboarding = () => {
   const scrollX = useRef(new Animated.Value(0)).current
   const [currentIndex, setCurrentIndex] = useState(0)
   const slidesRef = useRef<any>(null)
   const navigate = useNavigation()
+  const route = useRoute()
+  const { user }: any = route.params
 
   const viewableItemsChanged = useRef(({ viewableItems }: any) => {
     setCurrentIndex(viewableItems[0].index)
@@ -51,7 +53,10 @@ const Onboarding = () => {
 
       <NextButton scrollTo={scrollTo} percentage={(currentIndex + 1) * (100 / slidesOnboarding.length)} />
       
-      <TouchableOpacity onPress={() => navigate.navigate('(tabs_teacher)')}>
+      <TouchableOpacity onPress={() => {
+        if (user.role_id === 2) navigate.navigate('(tabs_teacher)')
+        else if (user.role_id === 3) navigate.navigate('(tabs_parent)')
+      }}>
         <Text 
           style={styles.slideEnd}
         >Passer</Text>

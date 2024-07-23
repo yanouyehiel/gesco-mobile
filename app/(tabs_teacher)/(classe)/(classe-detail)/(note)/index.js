@@ -36,10 +36,10 @@ const NoteScreen = () => {
 
   const getNotes = async () => {
     try {
-      const res = await axios.get('https://test.comtheplug.com/api/get-notes-classe/' + classe.id, {headers: headers});
+      const res = await axios.get('https://gesco-app.com/gesco/api/get-notes-classe/' + classe.id, {headers: headers});
       setNotes(res.data.notes)
     } catch (error) {
-      showToast(error.response.message)
+      showToast(error.response.data.message)
     }
   }
 

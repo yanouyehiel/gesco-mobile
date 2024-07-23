@@ -5,6 +5,8 @@ import PageHeading from '@/components/PageHeading'
 import SingleStudentItem from '@/components/SingleStudentItem'
 import { Skeleton } from 'moti/skeleton'
 import { getHeaders, getMyChildren, getUser } from '@/services/MainService'
+import { showToast } from '@/utils/fonctions'
+import NoData from '@/components/NoData'
 
 const ClasseScreen = () => {
   const [students, setStudents] = useState<any[]>([])
@@ -48,9 +50,13 @@ const ClasseScreen = () => {
   };
 
   const fetchStudents = async () => {
-    if (user) {
-      const res = await getMyChildren(user.id, headers);
-      setStudents(res.students);
+    try {
+      if (user) {
+        const res = await getMyChildren(user.id, headers);
+        setStudents(res.students);
+      }
+    } catch (error: any) {
+      showToast(error.message)
     }
   };
 
@@ -74,7 +80,7 @@ const ClasseScreen = () => {
             </Skeleton>
             <View style={styles.subcontainer}>
               <Skeleton show={true} colorMode='light'>
-                <Text style={[styles.text, {width: 130, marginBottom: 20}]}></Text>
+                <Text style={[styles.text, {width: 200, marginBottom: 20}]}></Text>
               </Skeleton>
               <View style={{flexDirection: 'row', gap: 20}}>
                 <Skeleton show={true} colorMode='light'>
@@ -90,6 +96,9 @@ const ClasseScreen = () => {
             </View>
           </View>
         ))
+      }
+      {(!loading && students.length === 0) &&
+        <NoData />
       }
     </View>
   )

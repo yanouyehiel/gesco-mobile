@@ -2,11 +2,14 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Activi
 import React, { useState } from 'react'
 import { colors } from '@/utils/colors'
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated'
-import { useNavigation } from '@react-navigation/native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { Picker } from '@react-native-picker/picker'
+import { register, storeData } from '@/services/MainService'
+import { showToast } from '@/utils/fonctions'
+import { useNavigation } from 'expo-router'
 
 const SignupScreen = () => {
-  const navigate = useNavigation()
+  const navigation = useNavigation()
   const [error, setError] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [password, setPassword] = useState("")
@@ -16,20 +19,44 @@ const SignupScreen = () => {
   const [tel, setTel] = useState("")
   const [ID, setID] = useState("")
   const [loading, setLoading] = useState(false)
+  const [selectedRole, setSelectedRole] = useState(null)
 
   const toggleShowPassword = () => { 
     setShowPassword(!showPassword); 
   }; 
 
-  function handleSubmit() {
+  async function handleSubmit() {
     setLoading(true)
     if (nom === "" || prenom === "" || email === "" || tel === "" || ID === "" || password === "") {
       setError(true)
-      setLoading(false)
     } else {
-      console.log(nom, prenom, tel, ID, password, email)
-      navigate.navigate('onboarding')
+      const data = {
+        nom: nom,
+        prenom: prenom,
+        email: email,
+        telephone: tel,
+        matricule: ID,
+        password: password,
+        role_id: selectedRole
+      }
+      console.log(data)
+      try {
+        await register(data).then((res) => {
+          showToast(res.message)
+          storeData('tokenGesco', res).then()
+          setTimeout(() => {
+            navigation.navigate('onboarding', { user: res.user })
+          }, 2500)
+        }, (err) => {
+          setError(true)
+          showToast(err.response.data.message)
+        })
+      } catch (error: any) {
+        setError(true)
+        showToast(error.response?.data.message);
+      }
     }
+    setLoading(false)
   }
 
   return (
@@ -104,6 +131,18 @@ const SignupScreen = () => {
                 style={[error ? styles.error : styles.input]}
                 onChangeText={setID}
               />
+            </Animated.View>
+            <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()}>
+              <Picker
+                selectedValue={selectedRole}
+                onValueChange={(itemValue) => setSelectedRole(itemValue)}
+                itemStyle={{color: colors.BLEU}}
+              >
+                <Picker.Item label={"Sélectionner votre rôle"} value={""} />
+                <Picker.Item label={"Administrateur"} value={4} />
+                <Picker.Item label={"Enseignant"} value={2} />
+                <Picker.Item label={"Parent"} value={3} />
+              </Picker>
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(600).duration(1000).springify()}>
               <TouchableOpacity
