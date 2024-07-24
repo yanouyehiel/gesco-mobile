@@ -19,7 +19,7 @@ const SplashScreenView = () => {
           console.error(error);
         }
       };
-      AsyncStorage.removeItem('tokenGesco').then()
+      
       fetchHeaders().then((res: any) => {
         if (res !== "Pas de donnée stockée") {
           setTimeout(() => {
