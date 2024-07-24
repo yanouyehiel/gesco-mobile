@@ -25,6 +25,7 @@ const NoteScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false)
   const [note, setNote] = useState({})
+  const [newData, setNewData] = useState({})
   const [newNote, setNewNote] = useState(0)
   const [showModal, setShowModal] = useState(false)
   const [showModalUpdate, setShowModalUpdate] = useState(false)
@@ -59,7 +60,7 @@ const NoteScreen = () => {
   }
 
   function handleUpdateNote(data) {
-    setNote(data)
+    setNewData(data)
     setShowModalUpdate(true)
   }
 
@@ -79,7 +80,7 @@ const NoteScreen = () => {
     setLoading(true)
     if (newNote > 0) {
       const data = {
-        id: note.id,
+        id: newData.id,
         note: newNote
       }
       await updateNote(data, headers).then((res) => {
@@ -314,7 +315,7 @@ const NoteScreen = () => {
           </TouchableOpacity>
 
           <Animated.View style={styles.popupUpdate}>
-            <Text style={{fontFamily: 'Bold', fontSize: 20, marginBottom: 10}}>{note.nom_student +' '+ note.prenom_student}</Text>
+            <Text style={{fontFamily: 'Bold', fontSize: 20, marginBottom: 10}}>{newData.nom_student +' '+ newData.prenom_student}</Text>
             <TextInput
               placeholder='Entrer la nouvelle note'
               numberOfLines={1} multiline={false}
