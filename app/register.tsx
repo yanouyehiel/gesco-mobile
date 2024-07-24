@@ -39,7 +39,7 @@ const SignupScreen = () => {
         password: password,
         role_id: selectedRole
       }
-      console.log(data)
+      
       try {
         await register(data).then((res) => {
           showToast(res.message)
