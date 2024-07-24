@@ -40,8 +40,8 @@ const NoteScreen = () => {
     <ScrollView>
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
-          <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
-            <Text style={{color: colors.NOIR, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>La gestion des devoirs permet de tenir au courant les parents des devoirs qu'ont leurs enfants et ainsi de les y aider mais aussi à l'enseignant de suivre de près l'évolution de ses élèves.</Text>
+          <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
+            <Text style={{color: colors.NOIR, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>La gestion des notes assure une transparence totale auprès de l'administration et des parents d'élèves de l'exactitude des notes enregistrées.</Text>
           </View>
           <View style={{width: "30%"}}>
             <Image source={require("@/assets/images/ob4.png")} style={{width: 80, height: 80}} />
@@ -99,7 +99,7 @@ const NoteScreen = () => {
                   colorMode='light'
                 />
               </View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
                 <Skeleton 
                   show={true}
                   width={100}
@@ -113,7 +113,7 @@ const NoteScreen = () => {
                   colorMode='light'
                 />
               </View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
                 <Skeleton 
                   show={true}
                   width={100}
@@ -190,7 +190,8 @@ const styles = StyleSheet.create({
     marginRight: 10
   },
   text: {
-    fontFamily: 'Regular'
+    fontFamily: 'Regular',
+    fontSize: 17
   }
 })
 

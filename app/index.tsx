@@ -4,6 +4,7 @@ import { colors } from '@/utils/colors';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useNavigation } from "@react-navigation/native";
 import { getHeaders, getUser } from '@/services/MainService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SplashScreenView = () => {
     const navigation = useNavigation();
@@ -18,7 +19,7 @@ const SplashScreenView = () => {
           console.error(error);
         }
       };
-      
+      AsyncStorage.removeItem('tokenGesco').then()
       fetchHeaders().then((res: any) => {
         if (res !== "Pas de donnée stockée") {
           setTimeout(() => {

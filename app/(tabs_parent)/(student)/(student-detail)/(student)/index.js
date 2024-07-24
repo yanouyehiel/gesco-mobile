@@ -38,7 +38,7 @@ const StudentScreen = () => {
           <View style={{flexDirection: 'row', gap: 30, marginTop: 15}}>
             <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular'}}>{student.sexe}</Text>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular'}}>{student.nom_classe}</Text>
-            <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular'}}>{dateParserTime(student.date_naissance)}</Text>
+            <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular'}}>{student.date_naissance}</Text>
           </View>
         </View>
       </View>

@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native'
 import { getHeaders, login, storeData } from '@/services/MainService'
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { showToast } from '@/utils/fonctions'
+import axios from 'axios'
+import { API_URL, AUTH } from '@/utils/global'
 
 
 const LoginScreen = () => {
@@ -22,7 +24,7 @@ const LoginScreen = () => {
     return emailRegex.test(email);
   }
 
-  function handleSubmit() {  
+  async function handleSubmit() {  
     setError(false)
     if (email === '' || password === '') {
       setError(true)
@@ -37,7 +39,7 @@ const LoginScreen = () => {
         }
         setLoading(true) 
         try {
-          login(data).then((res) => {
+          await login(data).then((res) => {
             if (res.status_code === 401) {
               showToast(res.message)
             } else {
@@ -51,7 +53,7 @@ const LoginScreen = () => {
               } 
             }          
           }, (err) => {
-            showToast(err.response.data.message)
+            showToast(err.response?.data.message)
           })
         } catch (err) {
           showToast(err.response?.data.message);

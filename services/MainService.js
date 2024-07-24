@@ -56,27 +56,27 @@ export const getData = (key) => {
 
 
 export async function getMatieresSchool(id, headers) {
-    const response = await axios.get(`${API_URL}/get-matieres/${parseInt(id)}`, {headers: headers})
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-matieres/${parseInt(id)}`, {headers: headers})
     return response.data;
 }
 
 export async function login(data) {
-    const response = await axios.post(`${API_URL}/${AUTH}/login`, data)
+    const response = await axios.post('https://gesco-app.com/gesco/api/auth/login', data)
     return response.data;
 }
 
 export async function register(data) {
-    const response = await axios.post(`${API_URL}/register-mobile`, data)
+    const response = await axios.post(`https://gesco-app.com/gesco/api/register-mobile`, data)
     return response.data;
 }
 
 export async function sendLinkResetPassword(data) {
-    const response = await axios.post(`${API_URL}/${AUTH}/password/email`, data)
+    const response = await axios.post(`https://gesco-app.com/gesco/api/auth/password/email`, data)
     return response.data;
 }
 
 export async function logout(headers) {
-    const response = await axios.post(`${API_URL}/${AUTH}/logout`, {}, {headers: headers})
+    const response = await axios.post(`https://gesco-app.com/gesco/api/auth/logout`, {}, {headers: headers})
     return response.data;
 }
 
@@ -92,76 +92,76 @@ export async function getUser() {
 }
 
 export async function getMyClasses(id, headers) {
-    const response = await axios.get(`${API_URL}/get-classes-school/${parseInt(id)}`, {headers})
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-classes-school/${parseInt(id)}`, {headers})
     return response.data;
 }
 
 export async function getAllClasses(id, headers) {
-    const response = await axios.get(`${API_URL}/get-classes-school/${parseInt(id)}`, {headers: headers})
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-classes-school/${parseInt(id)}`, {headers: headers})
     return response.data;
 }
 
 export async function getAllEvents(id, headers) {
-    const response = await axios.get(`${API_URL}/get-events/${parseInt(id)}`, {headers: headers})
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-events/${parseInt(id)}`, {headers: headers})
     return response.data;
 }
 
 export async function getAllCalendars(id, headers) {
-    const response = await axios.get(`${API_URL}/get-calendars/${parseInt(id)}`, {headers: headers})
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-calendars/${parseInt(id)}`, {headers: headers})
     return response.data;
 }
 
 export async function getAllMatieres(id, headers) {
-    const response = await axios.get(`${API_URL}/get-matieres/${parseInt(id)}`, {headers: headers});
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-matieres/${parseInt(id)}`, {headers: headers});
     return response.data;
 }
 
 export async function addCours(cours, headers) {
-    const response = await axios.post(`${API_URL}/add-cours`, cours, {headers});
+    const response = await axios.post(`https://gesco-app.com/gesco/api/add-cours`, cours, {headers});
     return response.data;
 }
 
 export async function getAllCoursClasse(id, headers) {
-    const response = await axios.get(`${API_URL}/get-cours-classe/${parseInt(id)}`, headers);
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-cours-classe/${parseInt(id)}`, headers);
     return response.data;
 }
 
 export async function getStudentsOfClasse(idSalle, idEcole, headers) {
-    const response = await axios.get(`${API_URL}/my-students/classe_id=${parseInt(idSalle)}&ecole_id=${parseInt(idEcole)}`, {headers});
+    const response = await axios.get(`https://gesco-app.com/gesco/api/my-students/classe_id=${parseInt(idSalle)}&ecole_id=${parseInt(idEcole)}`, {headers});
     return response.data;
 }
 
 export async function getAllPresences(id, headers) {
-    const response = await axios.get(`${API_URL}/get-absences-classe/${parseInt(id)}`, {headers});
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-absences-classe/${parseInt(id)}`, {headers});
     return response.data;
 }
 
 export async function addAbsence(absence, headers) {
-    const response = await axios.post(`${API_URL}/add-absence`, absence, {headers});
+    const response = await axios.post(`https://gesco-app.com/gesco/api/add-absence`, absence, {headers});
     return response.data;
 }
 
 export async function getAbsencesChildren(id, headers) {
-    const response = await axios.get(`${API_URL}/get-absences-children/${parseInt(id)}`, {headers});
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-absences-children/${parseInt(id)}`, {headers});
     return response.data;
 }
 
 export async function getNotesChildren(id, headers) {
-    const response = await axios.get(`${API_URL}/get-notes-children/${parseInt(id)}`, {headers});
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-notes-children/${parseInt(id)}`, {headers});
     return response.data;
 }
 
 export async function getDevoirsChildren(id, headers) {
-    const response = await axios.get(`${API_URL}/get-devoirs-children/${parseInt(id)}`, {headers});
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-devoirs-children/${parseInt(id)}`, {headers});
     return response.data;
 }
 
 export async function getMyChildren(id, headers) {
-    const response = await axios.get(`${API_URL}/get-my-children/${parseInt(id)}`, {headers});
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-my-children/${parseInt(id)}`, {headers});
     return response.data;
 }
 
 export async function updateNote(data, headers) {
-    const response = await axios.put(`${API_URL}/update-note`, data, {headers});
+    const response = await axios.put(`https://gesco-app.com/gesco/api/update-note`, data, {headers});
     return response.data;
 }

@@ -82,9 +82,9 @@ const StudentScreen = () => {
                     <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{item.nom + ' ' + item.prenom}</Text>
                     <Text style={{fontSize: 13, marginLeft: 5}}>{item.matricule}</Text>
                   </View>
-                  <Text>{item.sexe}</Text>
+                  <Text>Sexe : {item.sexe}</Text>
                   <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <Text>Parent : <Text style={{fontFamily: 'Bold', fontSize: 17}}>{item.nom_parent + ' ' + item.prenom_parent}</Text></Text>
+                    <Text>Date de naissance : {item.date_naissance}</Text>
                     <Text>{item.tel_parent}</Text>
                   </View>
                 </View>

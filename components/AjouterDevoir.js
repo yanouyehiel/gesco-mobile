@@ -36,7 +36,7 @@ const AjouterDevoir = ({user, headers, classe, hideModal}) => {
 
     async function getLivres() {
         try {
-            const res = await axios.get('https://test.comtheplug.com/api/get-livres/' + ecole, {
+            const res = await axios.get('https://gesco-app.com/gesco/api/get-livres/' + ecole, {
                 headers: headers
             })
             setLivres(res.data)
@@ -55,12 +55,12 @@ const AjouterDevoir = ({user, headers, classe, hideModal}) => {
                 matiere_id: parseInt(selectMatiere),
                 ecole_id: ecole,
                 classe_id: classe.id,
-                num_exo: parseInt(numExo),
-                num_page: parseInt(numPage)
+                num_exo: numExo,
+                num_page: numPage
             }
     
             try {
-                const res = await axios.post('https://test.comtheplug.com/api/add-devoir', data, {
+                const res = await axios.post('https://gesco-app.com/gesco/api/add-devoir', data, {
                     headers: headers
                 })
                 showToast(res.data.message)
@@ -129,9 +129,9 @@ const AjouterDevoir = ({user, headers, classe, hideModal}) => {
                     />
                     {error && <Text style={styles.errorText}>Veuillez entrer le numéro de l'exercice</Text>}
 
-                    <TouchableOpacity onPress={handleSubmit} disabled={loading}>
+                    <TouchableOpacity onPress={handleSubmit} disabled={loading} style={styles.btn}>
                         {loading ? <ActivityIndicator color={colors.BLANC} /> :
-                            <Text style={styles.btnSave}>Enregistrer</Text>
+                            <Text style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 23}}>Enregistrer</Text>
                         }
                     </TouchableOpacity>
                 </View>
@@ -172,16 +172,16 @@ const styles = StyleSheet.create({
         borderColor: colors.ROUGE,
         marginBottom: 15
     },
-    btnSave: {
-        textAlign: 'center',
-        fontFamily: 'Regular',
-        fontSize: 20,
+    btn: {
+        height: 50,
+        width: "100%",
+        marginTop: 20,
+        marginBottom: 20,
+        borderRadius: 10,
         backgroundColor: colors.BLEU,
-        color: colors.BLANC,
-        padding: 13,
-        borderRadius: 99,
-        elevation: 2,
-        marginTop: 10
+        display: 'flex',
+        justifyContent:'center',
+        alignItems: 'center'
     },
     errorText: {
         color: colors.ROUGE, 

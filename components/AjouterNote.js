@@ -36,7 +36,7 @@ const AjouterNote = ({user, headers, classe, close}) => {
 
     async function getStudents() {
         try {
-            const res = await axios.get(`https://test.comtheplug.com/api/students/classe_id=${classe.id}&ecole_id=${ecole}`, {
+            const res = await axios.get(`https://gesco-app.com/gesco/api/students/classe_id=${classe.id}&ecole_id=${ecole}`, {
                 headers: headers
             })
             setStudents(res.data)
@@ -61,7 +61,7 @@ const AjouterNote = ({user, headers, classe, close}) => {
     
             try {
                 if (selectMatiere !== "" && note !== "" && selectSequence !== "" && selectStudent !== "") {
-                    const res = await axios.post('https://test.comtheplug.com/api/add-note', data, {
+                    const res = await axios.post('https://gesco-app.com/gesco/api/add-note', data, {
                         headers: headers
                     })
                     showToast(res.data.message)
@@ -141,9 +141,9 @@ const AjouterNote = ({user, headers, classe, close}) => {
                     />
                     {error && <Text style={{color: colors.ROUGE, fontSize: 15}}>Veuillez entrer une note</Text>}
 
-                    <TouchableOpacity onPress={handleSubmit}>
+                    <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
                         {loading ? <ActivityIndicator color={colors.BLANC} /> :
-                            <Text style={styles.btnSave}>Enregistrer</Text>
+                            <Text style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 23}}>Enregistrer</Text>
                         }
                     </TouchableOpacity>
                 </View>
@@ -190,16 +190,16 @@ const styles = StyleSheet.create({
         marginTop: -15,
         marginBottom: 15
     },
-    btnSave: {
-        textAlign: 'center',
-        fontFamily: 'Regular',
-        fontSize: 20,
+    btn: {
+        height: 50,
+        width: "100%",
+        marginTop: 20,
+        marginBottom: 20,
+        borderRadius: 10,
         backgroundColor: colors.BLEU,
-        color: colors.BLANC,
-        padding: 13,
-        borderRadius: 99,
-        elevation: 2,
-        marginTop: 10
+        display: 'flex',
+        justifyContent:'center',
+        alignItems: 'center'
     }
 })
 

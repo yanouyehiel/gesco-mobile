@@ -46,7 +46,7 @@ const AjouterCours = ({user, headers, classe, close}) => {
             }
     
             try {
-                const res = await axios.post('https://test.comtheplug.com/api/add-cours', data, {
+                const res = await axios.post('https://gesco-app.com/gesco/api/add-cours', data, {
                     headers: headers
                 })
                 showToast(res.data.message)
@@ -100,9 +100,9 @@ const AjouterCours = ({user, headers, classe, close}) => {
                             {error && <Text style={styles.errorText}>Veuillez sélectionner une matière</Text>}
                         </View>
 
-                        <TouchableOpacity onPress={handleSubmit}>
-                            {loading ? <ActivityIndicator color={colors.BLANC} /> :
-                                <Text style={styles.btnSave}>Enregistrer</Text>
+                        <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
+                            {loading ? <ActivityIndicator color={colors.BLANC} size='large' /> :
+                                <Text style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 23}}>Enregistrer</Text>
                             }
                         </TouchableOpacity>
                     </View>
@@ -148,16 +148,16 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginBottom: 15
     },
-    btnSave: {
-        textAlign: 'center',
-        fontFamily: 'Regular',
-        fontSize: 20,
+    btn: {
+        height: 50,
+        width: "100%",
+        marginTop: 20,
+        marginBottom: 20,
+        borderRadius: 10,
         backgroundColor: colors.BLEU,
-        color: colors.BLANC,
-        padding: 13,
-        borderRadius: 99,
-        elevation: 2,
-        marginTop: 10
+        display: 'flex',
+        justifyContent:'center',
+        alignItems: 'center'
     }
 })
 

@@ -139,7 +139,6 @@ const SignupScreen = () => {
                 itemStyle={{color: colors.BLEU}}
               >
                 <Picker.Item label={"Sélectionner votre rôle"} value={""} />
-                <Picker.Item label={"Administrateur"} value={4} />
                 <Picker.Item label={"Enseignant"} value={2} />
                 <Picker.Item label={"Parent"} value={3} />
               </Picker>
@@ -158,7 +157,7 @@ const SignupScreen = () => {
               <Text 
                 style={{fontFamily: 'Regular', fontSize: 20, textAlign: 'center'}}
               >Vous avez déjà un compte ?</Text>
-              <TouchableOpacity onPress={() => navigate.navigate('connexion')}>
+              <TouchableOpacity onPress={() => navigation.navigate('connexion')}>
                 <Text  
                   style={{color: colors.BLEU, fontFamily: 'Regular', fontSize: 20, textAlign: 'center'}}
                 >Se connecter</Text>

@@ -104,21 +104,21 @@ const AbsenceScreen = () => {
                 <View style={{marginBottom: 10}}>
                   <Skeleton
                     show={true}
-                    width={150}
+                    width={230}
                     height={10} 
                     colorMode='light'
                   />
                 </View>
                 <Skeleton
                   show={true}
-                  width={100}
+                  width={190}
                   height={10} 
                   colorMode='light'
                 />
                 <View style={{marginTop: 10}}>
                   <Skeleton
                     show={true}
-                    width={80}
+                    width={150}
                     height={10} 
                     colorMode='light'
                   />

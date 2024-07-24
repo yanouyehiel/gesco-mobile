@@ -25,6 +25,7 @@ const NoteScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false)
   const [note, setNote] = useState({})
+  const [newNote, setNewNote] = useState(0)
   const [showModal, setShowModal] = useState(false)
   const [showModalUpdate, setShowModalUpdate] = useState(false)
   const [visibleOption, setVisibleOption] = useState(false)
@@ -63,7 +64,6 @@ const NoteScreen = () => {
   }
 
   const scale = useRef(new Animated.Value(0)).current
-  const scaleUpdate = useRef(new Animated.Value(0)).current
 
   function resizeBox(to) {
     to === 1 && setVisibleOption(true)
@@ -75,54 +75,17 @@ const NoteScreen = () => {
     }).start(() => to === 0 && setVisibleOption(false))
   }
 
-  function resizeBoxUpdate(to) {
-    to === 1 && setShowModalUpdate(true)
-    Animated.timing(scaleUpdate, {
-      toValue: to,
-      useNativeDriver: true,
-      duration: 200,
-      easing: Easing.linear
-    }).start(() => to === 0 && setShowModalUpdate(false))
-  }
-
-  const handleSubmit = async (data) => {
+  const handleSubmit = async () => {
     setLoading(true)
+    const data = {
+      id: note.id,
+      note: newNote
+    }
     await updateNote(data, headers).then((res) => {
       setLoading(false)
       showToast(res.message)
     })
-  }
-
-  //Modal update note
-  const PopUpdate = () => {
-    return (
-      <Modal transparent visible={showModalUpdate}>
-        <SafeAreaView
-          style={{ flex: 1 }}
-          onTouchStart={() => resizeBoxUpdate(0)}
-        >
-          <Animated.View style={[
-            styles.popupUpdate, 
-            {opacity: scaleUpdate.interpolate({inputRange: [0, 1], outputRange: [0, 1]})},
-            {
-              transform: [{scale: scaleUpdate}]
-            }]}>
-              <Text>{note.nom_student +' '+ note.prenom_student}</Text>
-              <TextInput
-                placeholder='Entrer la nouvelle note'
-                numberOfLines={1} multiline={false}
-                onChangeText={(text) => console.log(text)}
-              />
-
-              <TouchableOpacity onPress={handleSubmit}>
-                {loading ? <ActivityIndicator color={colors.BLANC} /> :
-                  <Text style={styles.btnSave}>Modifier</Text>
-                }
-              </TouchableOpacity>
-          </Animated.View>
-        </SafeAreaView>
-      </Modal>
-    )
+    setLoading(false)
   }
 
   //Modal popup option note
@@ -169,11 +132,11 @@ const NoteScreen = () => {
     >
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
-          <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
-            <Text style={{color: colors.NOIR, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>La gestion des devoirs permet de tenir au courant les parents des devoirs qu'ont leurs enfants et ainsi de les y aider mais aussi à l'enseignant de suivre de près l'évolution de ses élèves.</Text>
-            <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 100}}>
+          <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
+            <Text style={{color: colors.NOIR, fontSize: 17, fontFamily: 'Regular', marginBottom: 10}}>La gestion des notes assure une transparence totale auprès de l'administration et des parents d'élèves de l'exactitude des notes enregistrées.</Text>
+            {/* <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 100}}>
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-            </View>
+            </View> */}
           </View>
           <View style={{width: "30%"}}>
             <Image source={require("@/assets/images/ob4.png")} style={{width: 80, height: 80}} />
@@ -197,7 +160,7 @@ const NoteScreen = () => {
               <View style={styles.note}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                   <View style={styles.noteImage}>
-                    <Image source={require("@/assets/images/matiere.png")} style={{width: 30, height: 30}} />
+                    <Image source={require("@/assets/images/matiere.png")} style={{width: 50, height: 50}} />
                   </View>
                   <View style={styles.noteDesc}>
                     <Text style={[styles.text, {fontSize: 20}]}>{item.nom_student +' '+ item.prenom_student}</Text>
@@ -205,7 +168,7 @@ const NoteScreen = () => {
                       <Text style={[styles.text]}>{longueurTexte(item.nom_matiere, 25)}</Text>
                       <Text style={styles.text}>{item.note} / 20</Text>
                     </View>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 30}}>
                       <Text style={[styles.text]}>Séquence : {item.sequence}</Text>
                       <Text style={styles.text}>{item.annee_scolaire}</Text>
                     </View>
@@ -214,67 +177,68 @@ const NoteScreen = () => {
                     <SimpleLineIcons name="options-vertical" size={20} color="black" />
                   </TouchableOpacity>
                 </View>
-                <Text>Enregistré le {dateParser(item.created_at)}</Text>
+                <Text style={{marginLeft: 15}}>Enregistré le {dateParser(item.created_at)}</Text>
               </View>
               <Popup data={item} />
-              <PopUpdate />
             </View>
           )}
         /> :
         [0, 1, 2, 3, 4].map((t, i) => (
           <View style={styles.note} key={i}>
-            <View style={{marginRight: 10}}>
-              <Skeleton 
-                show={true}
-                width={50}
-                height={50} 
-                colorMode='light'
-              />
-            </View>
-            <View style={styles.noteDesc}>
-              <View style={{marginBottom: 10}}>
-                <Skeleton 
-                  show={true}
-                  width={150}
-                  height={10} 
-                  colorMode='light'
-                />
-              </View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
-                <Skeleton 
-                  show={true}
-                  width={100}
-                  height={10} 
-                  colorMode='light'
-                />
-                <Skeleton 
-                  show={true}
-                  width={70}
-                  height={10} 
-                  colorMode='light'
-                />
-              </View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
-                <Skeleton 
-                  show={true}
-                  width={100}
-                  height={10} 
-                  colorMode='light'
-                />
-                <Skeleton 
-                  show={true}
-                  width={70}
-                  height={10} 
-                  colorMode='light'
-                />
-              </View>
+            <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
               <View style={{marginRight: 10}}>
                 <Skeleton 
                   show={true}
-                  width={100}
-                  height={10} 
+                  width={50}
+                  height={50} 
                   colorMode='light'
                 />
+              </View>
+              <View style={styles.noteDesc}>
+                <View style={{marginBottom: 10}}>
+                  <Skeleton 
+                    show={true}
+                    width={250}
+                    height={10} 
+                    colorMode='light'
+                  />
+                </View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
+                  <Skeleton 
+                    show={true}
+                    width={140}
+                    height={10} 
+                    colorMode='light'
+                  />
+                  <Skeleton 
+                    show={true}
+                    width={80}
+                    height={10} 
+                    colorMode='light'
+                  />
+                </View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
+                  <Skeleton 
+                    show={true}
+                    width={140}
+                    height={10} 
+                    colorMode='light'
+                  />
+                  <Skeleton 
+                    show={true}
+                    width={80}
+                    height={10} 
+                    colorMode='light'
+                  />
+                </View>
+                <View style={{marginRight: 10}}>
+                  <Skeleton 
+                    show={true}
+                    width={200}
+                    height={10} 
+                    colorMode='light'
+                  />
+                </View>
               </View>
             </View>
           </View>
@@ -330,6 +294,39 @@ const NoteScreen = () => {
         <AjouterNote close={() => setVisible(false)} user={user} headers={headers} classe={classe} />
       </Modal>
 
+      {/* Pop modal update */}
+      <Modal 
+        visible={showModalUpdate}
+        animationType='slide'
+        style={{ height: 300 }}
+      >
+        <View
+          style={{ flex: 1, height: 300 }}
+          //onTouchStart={() => resizeBoxUpdate(0)}
+        >
+          <TouchableOpacity style={styles.header} onPress={() => setShowModalUpdate(false)}>
+            <Ionicons name='arrow-back-outline' size={30} color="black" />
+            <Text style={styles.titleHeader}>Modifier une note</Text>
+          </TouchableOpacity>
+
+          <Animated.View style={styles.popupUpdate}>
+            <Text style={{fontFamily: 'Bold', fontSize: 20, marginBottom: 10}}>{note.nom_student +' '+ note.prenom_student}</Text>
+            <TextInput
+              placeholder='Entrer la nouvelle note'
+              numberOfLines={1} multiline={false}
+              onChangeText={(text) =>setNewNote(text)}
+              style={styles.textArea}
+            />
+
+            <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
+              {loading ? <ActivityIndicator color={colors.BLANC} /> :
+                <Text style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 23}}>Modifier</Text>
+              }
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </Modal>
+
     </ScrollView>
   )
 }
@@ -342,7 +339,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    height: 150, 
+    height: 200, 
     borderRadius: 15
   },
   addButton: {
@@ -368,7 +365,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column'
   },
   noteImage: {
-    marginRight: 10
+    marginTop: 10
   },
   text: {
     fontFamily: 'Regular',
@@ -380,7 +377,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',
-    marginBottom: 20
+    marginBottom: 20,
+    margin: 10
   },
   titleHeader: {
     fontSize: 25,
@@ -405,7 +403,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 10,
     position: 'absolute',
-    top: 45,
+    top: '45%',
     right: 20
   },
   option: {
@@ -415,6 +413,15 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderBottomColor: '#ccc'
   },
+  textArea: {
+    borderWidth: 1,
+    borderRadius: 15,
+    textAlignVertical: 'top',
+    padding: 10,
+    fontSize: 16,
+    borderColor: colors.BLEU,
+    marginBottom: 15
+  },
   popupUpdate: {
     borderColor: '#f2f2f2',
     borderWidth: 1,
@@ -422,19 +429,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     position: 'absolute',
     bottom : 35,
-    width: '100%'
+    width: '100%',
+    height: 300
   },
-  btnSave: {
-    textAlign: 'center',
-    fontFamily: 'Regular',
-    fontSize: 20,
+  btn: {
+    height: 50,
+    width: "100%",
+    marginTop: 20,
+    marginBottom: 20,
+    borderRadius: 10,
     backgroundColor: colors.BLEU,
-    color: colors.BLANC,
-    padding: 13,
-    borderRadius: 99,
-    elevation: 2,
-    marginTop: 10
-  }
+    display: 'flex',
+    justifyContent:'center',
+    alignItems: 'center'
+  },
 })
 
 export default NoteScreen

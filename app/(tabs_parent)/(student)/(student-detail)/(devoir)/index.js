@@ -32,7 +32,7 @@ const DevoirScreen = () => {
     <ScrollView>
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
-          <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
+          <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
             <Text style={{color: colors.NOIR, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>La gestion des devoirs permet de tenir au courant les parents des devoirs qu'ont leurs enfants et ainsi de les y aider mais aussi à l'enseignant de suivre de près l'évolution de ses élèves.</Text>
           </View>
           <View style={{width: "30%"}}>
@@ -55,9 +55,9 @@ const DevoirScreen = () => {
                 <View style={styles.devoirDesc}>
                   <Text style={{fontSize: 20, fontFamily: 'SemiBold'}}>{longueurTexte(item.nom_matiere, 35)}</Text>
                   <Text style={[styles.text, {fontSize: 18}]} numberOfLines={2} ellipsizeMode="tail">{item.nom_livre}</Text>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 20}}>
                     <Text style={[styles.text, {fontFamily: 'Bold'}]}>Num page : {item.num_page}</Text>
-                    <Text style={styles.text}>Num exo : {item.num_exo}</Text>
+                    <Text style={[styles.text, {fontFamily: 'Bold'}]}>Num exo : {item.num_exo}</Text>
                   </View>
                   <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
                 </View>
@@ -166,7 +166,8 @@ const styles = StyleSheet.create({
     marginRight: 10
   },
   text: {
-    fontFamily: 'Regular'
+    fontFamily: 'Regular',
+    fontSize: 17
   }
 })
 
