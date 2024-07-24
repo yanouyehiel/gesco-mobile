@@ -43,11 +43,10 @@ const LoginScreen = () => {
             if (res.status_code === 401) {
               showToast(res.message)
             } else {
-              storeData('tokenGesco', res).then((res) => console.log(res))
               if (res.user.role_id === 2) {
-                navigation.navigate("(tabs_teacher)")
+                storeData('tokenGesco', res).then(() => navigation.navigate("(tabs_teacher)"))
               } else if (res.user.role_id === 3) {
-                navigation.navigate("(tabs_parent)")
+                storeData('tokenGesco', res).then(() => navigation.navigate("(tabs_parent)"))         
               }  else {
                 showToast("Vous n'avez pas les accès.")
               } 

@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import { settings } from '@/utils/settings'
 import { Feather } from '@expo/vector-icons';
+import { Linking } from 'react-native';
+import { showToast } from '@/utils/fonctions';
 
 const Settings = () => {
     const [form, setForm] = useState<any>({
@@ -10,6 +12,17 @@ const Settings = () => {
         darkMode: false,
         wifi: true
     })
+
+    const handleSubmit = (label: string) => {
+        if (label === 'contact') {
+            const objet = "Contact Gesco App"
+            const url = `mailto:contact@gesco-app.com?subject=${objet}`
+            Linking.openURL(url).catch(err => showToast("Erreur : " + err))
+        } else if (label === 'bug') {
+            const url = "tel:+237694750509"
+            Linking.openURL(url).catch(err => showToast("Erreur : " + err))
+        }
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f6f6f6', marginTop: 30 }}>
@@ -31,10 +44,7 @@ const Settings = () => {
                                     styles.rowWrapper,
                                     index === 0 && {borderBottomWidth: 0}
                                 ]} key={id}>
-                                    <TouchableOpacity
-                                        onPress={() => {
-
-                                        }}>
+                                    <TouchableOpacity onPress={() => handleSubmit(id)}>
                                         <View style={styles.row}>
                                             <Feather 
                                                 name={icon} 

@@ -77,14 +77,18 @@ const NoteScreen = () => {
 
   const handleSubmit = async () => {
     setLoading(true)
-    const data = {
-      id: note.id,
-      note: newNote
+    if (newNote > 0) {
+      const data = {
+        id: note.id,
+        note: newNote
+      }
+      await updateNote(data, headers).then((res) => {
+        setLoading(false)
+        showToast(res.message)
+      })
+    } else {
+      showToast("Entrer une note supérieure à 0")
     }
-    await updateNote(data, headers).then((res) => {
-      setLoading(false)
-      showToast(res.message)
-    })
     setLoading(false)
   }
 

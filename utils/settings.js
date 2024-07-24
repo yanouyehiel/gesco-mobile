@@ -28,7 +28,7 @@ export const settings = [
         items: [
             {
                 id: 'bug',
-                icon: 'flag',
+                icon: 'phone',
                 label: 'Rapporter les bugs',
                 type: 'link'
             },

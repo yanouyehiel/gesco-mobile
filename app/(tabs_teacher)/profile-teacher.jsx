@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, ScrollView, Linking } from 'react-native';
 import { colors } from '@/utils/colors'
 import { AntDesign, Feather, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -54,6 +54,17 @@ const ProfileTeacher = () => {
         setLoading(false)
     }
 
+    const handleSubmit = (label) => {
+        if (label === 'don') {
+            const code = "150*1*1*694750509"
+            const url = `tel:${code}`
+            Linking.openURL(url).catch(err => showToast("Erreur : " + err))
+        } else if (label === "aide") {
+            const url = "tel:+237694750509"
+            Linking.openURL(url).catch(err => showToast("Erreur : " + err))
+        }
+    }
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.header}></View>
@@ -94,9 +105,7 @@ const ProfileTeacher = () => {
                 </View>
                 <View style={styles.rowWrapper}>
                     <TouchableOpacity
-                        onPress={() => {
-
-                        }}>
+                        onPress={() => handleSubmit("aide")}>
                         <View style={styles.row}>
                             <MaterialIcons name="support-agent" size={24} color="black" />
                             <Text style={styles.rowLabel}>Aide et support</Text>
@@ -130,7 +139,7 @@ const ProfileTeacher = () => {
                 </View>
                 <View style={styles.rowWrapper}>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate("settings")}>
+                        onPress={() => handleSubmit("don")}>
                         <View style={styles.row}>
                             <FontAwesome5 name="donate" size={24} color="black" />
                             <Text style={styles.rowLabel}>Faire un don</Text>
