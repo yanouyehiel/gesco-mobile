@@ -33,7 +33,7 @@ const DevoirScreen = () => {
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
           <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
-            <Text style={{color: colors.NOIR, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>La gestion des devoirs permet de tenir au courant les parents des devoirs qu'ont leurs enfants et ainsi de les y aider mais aussi à l'enseignant de suivre de près l'évolution de ses élèves.</Text>
+            <Text style={{color: colors.NOIR, fontSize: 16, fontFamily: 'Regular', marginBottom: 10}}>La gestion des devoirs permet de tenir au courant les parents des devoirs qu'ont leurs enfants, de les y aider mais aussi de suivre de près leur évolution.</Text>
           </View>
           <View style={{width: "30%"}}>
             <Image source={require("@/assets/images/ob3.png")} style={{width: 80, height: 80}} />

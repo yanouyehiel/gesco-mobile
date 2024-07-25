@@ -9,6 +9,7 @@ import { useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import "react-native-gesture-handler"
 import ModalCours from '../../../../../components/ModalCour';
+import { showToast } from '../../../../../utils/fonctions';
 
 const CourseScreen = () => {
   const route = useRoute()
@@ -27,7 +28,7 @@ const CourseScreen = () => {
       const res = await axios.get('https://gesco-app.com/gesco/api/get-cours-children/' + student.classe_id, {headers: headers});
       setCours(res.data.cours);
     } catch (error) {
-      console.error('Erreur lors de la récupération des cours:', error);
+      showToast(error.message)
     }
   }
 
@@ -42,8 +43,8 @@ const CourseScreen = () => {
         <ScrollView>
           <View style={styles.banner}>
             <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
-              <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
-                <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace</Text>
+              <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
+                <Text style={{color: colors.NOIR, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace</Text>
               </View>
               <View style={{width: "30%"}}>
                 <Image source={require("@/assets/images/ob5.png")} style={{width: 80, height: 80}} />

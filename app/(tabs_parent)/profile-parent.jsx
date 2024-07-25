@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getHeaders, removeStorge, getUser, getTokenId } from '@/services/MainService';
 import { showToast } from '@/utils/fonctions';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileTeacher = () => {
     const navigation = useNavigation()
@@ -13,6 +14,7 @@ const ProfileTeacher = () => {
     const [loading, setLoading] = useState(false)
     const [user, setUser] = useState(null)
     const tokenId = getTokenId()
+    const ecole = getEcole().then()
 
     useEffect(() => {
         const fetchHeaders = async () => {
@@ -33,6 +35,16 @@ const ProfileTeacher = () => {
           setUser(res);
         });
     };
+
+    async function getEcole() {
+        const data = await AsyncStorage.getItem('tokenGesco')
+        if (data === null) {
+            return "Pas de donnée stockée"
+        } else {
+            const json = JSON.parse(data)
+            return json.ecole
+        }
+    }
 
     const deconnexion = async () => {
         setLoading(true)
@@ -62,6 +74,14 @@ const ProfileTeacher = () => {
         } else if (label === "aide") {
             const url = "tel:+237694750509"
             Linking.openURL(url).catch(err => showToast("Erreur : " + err))
+        } else if (label === "mail") {
+            if (ecole.email !== "" || ecole.email !== null) {
+                const objet = "Contact Parent"
+                const url = `mailto:${ecole.email}?subject=${objet}`
+                Linking.openURL(url).catch(err => showToast("Erreur : " + err))
+            } else {
+                showToast("Votre école ne possède pas d'email")
+            }
         }
     }
 
@@ -92,6 +112,23 @@ const ProfileTeacher = () => {
                         <View style={styles.row}>
                             <AntDesign name="edit" size={24} color="black" />
                             <Text style={styles.rowLabel}>Modifier le profil</Text>
+
+                            <View style={styles.rowSpacer} />
+
+                            <Feather 
+                                name='chevron-right'
+                                color='#ababab'
+                                size={22}
+                            />
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.rowWrapper}>
+                    <TouchableOpacity
+                        onPress={() => handleSubmit("mail")}>
+                        <View style={styles.row}>
+                            <Feather name="mail" size={24} color="black" />
+                            <Text style={styles.rowLabel}>Contactez votre école</Text>
 
                             <View style={styles.rowSpacer} />
 

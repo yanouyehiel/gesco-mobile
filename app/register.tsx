@@ -45,6 +45,12 @@ const SignupScreen = () => {
           showToast(res.message)
           storeData('tokenGesco', res).then()
           setTimeout(() => {
+            setNom("")
+            setPrenom("")
+            setEmail("")
+            setTel("")
+            setPassword("")
+            setID("")
             navigation.navigate('onboarding', { user: res.user })
           }, 2500)
         }, (err) => {
@@ -82,6 +88,7 @@ const SignupScreen = () => {
                 placeholderTextColor={'gray'}
                 style={[error ? styles.error : styles.input]}
                 onChangeText={(text) => setNom(text)}
+                value={nom}
               />
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()}>
@@ -90,6 +97,7 @@ const SignupScreen = () => {
                 placeholderTextColor={'gray'} 
                 style={[error ? styles.error : styles.input]}
                 onChangeText={(text) => setPrenom(text)}
+                value={prenom}
               />
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()}>
@@ -98,6 +106,7 @@ const SignupScreen = () => {
                 placeholderTextColor={'gray'}
                 style={[error ? styles.error : styles.input]}
                 onChangeText={(text) => setEmail(text)}
+                value={email}
               />
             </Animated.View>
             <Animated.View
@@ -109,6 +118,7 @@ const SignupScreen = () => {
                 secureTextEntry={!showPassword}
                 onChangeText={setPassword}
                 style={{fontSize: 18, fontFamily: 'Regular'}}
+                value={password}
               />
               <MaterialCommunityIcons 
                 name={showPassword ? 'eye-off' : 'eye'} 
@@ -122,6 +132,7 @@ const SignupScreen = () => {
                 placeholderTextColor={'gray'}
                 style={[error ? styles.error : styles.input]}
                 onChangeText={setTel}
+                value={tel}
               />
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()}>
@@ -130,6 +141,7 @@ const SignupScreen = () => {
                 placeholderTextColor={'gray'}
                 style={[error ? styles.error : styles.input]}
                 onChangeText={setID}
+                value={ID}
               />
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()}>

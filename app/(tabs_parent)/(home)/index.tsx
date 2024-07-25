@@ -10,6 +10,7 @@ import NoData from '@/components/NoData'
 import { showToast } from '@/utils/fonctions'
 import "react-native-gesture-handler"
 import ShowCalendar from '@/components/ShowCalendar'
+import { BackHandler } from 'react-native'
 
 const HomeScreen = () => {
   const [headers, setHeaders] = useState<any>(null)
@@ -32,7 +33,6 @@ const HomeScreen = () => {
     };
 
     fetchUser()
-
     fetchHeaders().then(() => setIsLoading(false));
   }, []);
 
@@ -41,6 +41,20 @@ const HomeScreen = () => {
       fetchCalendars().then(() => setLoadingEvent(false))
     }
   }, [isLoading])
+
+  useEffect(() => {
+    const backAction = () => {
+      BackHandler.exitApp();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   const fetchCalendars = async () => {
     try {
@@ -156,6 +170,7 @@ const HomeScreen = () => {
       <Modal
         animationType='slide'
         visible={showEvent}
+        onTouchStart={() => setShowEvent(false)}
       >
         <ShowCalendar hideModal={() => setShowEvent(false)} calendar={event} />
       </Modal>

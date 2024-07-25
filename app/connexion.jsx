@@ -40,6 +40,8 @@ const LoginScreen = () => {
         setLoading(true) 
         try {
           await login(data).then((res) => {
+            setEmail("")
+            setPassword("")
             if (res.status_code === 401) {
               showToast(res.message)
             } else {
@@ -96,6 +98,7 @@ const LoginScreen = () => {
                 placeholderTextColor={'gray'} 
                 onChangeText={setEmail}
                 style={[error ? styles.containerError : styles.input]}
+                value={email}
               />
             </Animated.View>
             <Animated.View
@@ -107,6 +110,7 @@ const LoginScreen = () => {
                 secureTextEntry={!showPassword}
                 onChangeText={setPassword}
                 style={{fontSize: 18, fontFamily: 'Regular'}}
+                value={password}
               />
               <MaterialCommunityIcons 
                 name={showPassword ? 'eye-off' : 'eye'} 
@@ -121,7 +125,6 @@ const LoginScreen = () => {
                 onPress={handleSubmit}
                 disabled={loading}
               >
-                
                 {!loading ?
                   <Text style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 23}}>
                     Se connecter

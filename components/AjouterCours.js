@@ -4,8 +4,8 @@ import { Ionicons } from '@expo/vector-icons'
 import Heading from '@/components/Heading'
 import { colors } from '@/utils/colors'
 import { Picker } from '@react-native-picker/picker'
-import axios from 'axios'
 import { showToast } from '@/utils/fonctions'
+import { addCours, getMatieresSchool } from '@/services/MainService'
 
 const AjouterCours = ({user, headers, classe, close}) => {
     const [selectedValue, setSelectedValue] = useState('');
@@ -22,10 +22,8 @@ const AjouterCours = ({user, headers, classe, close}) => {
 
     async function getMatieres() {
         try {
-            const res = await axios.get('https://gesco-app.com/gesco/api/get-matieres/' + ecole, {
-                headers: headers
-            })
-            setMatieres(res.data)
+            const res = await getMatieresSchool(ecole, headers)
+            setMatieres(res)
         } catch (error) {
             showToast(error.message)
         }
@@ -46,10 +44,8 @@ const AjouterCours = ({user, headers, classe, close}) => {
             }
     
             try {
-                const res = await axios.post('https://gesco-app.com/gesco/api/add-cours', data, {
-                    headers: headers
-                })
-                showToast(res.data.message)
+                const res = await addCours(data, headers)
+                showToast(res.message)
             } catch (error) {
                 showToast(error.message)
             }

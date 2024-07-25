@@ -5,6 +5,7 @@ import PageHeading from '@/components/PageHeading'
 import SingleClassItem from '@/components/SingleClassItem'
 import { Skeleton } from 'moti/skeleton'
 import { getAllClasses, getHeaders, getUser } from '@/services/MainService'
+import { showToast } from '@/utils/fonctions'
 
 const ClasseScreen = () => {
   const [classes, setClasses] = useState<any[]>([])
@@ -49,8 +50,12 @@ const ClasseScreen = () => {
 
   const fetchClasses = async () => {
     if (user) {
-      const res = await getAllClasses(user.ecole_id, headers);
-      setClasses(res);
+      try {
+        const res = await getAllClasses(user.ecole_id, headers);
+        setClasses(res);
+      } catch (error: any) {
+        showToast(error.message)
+      }
     }
   };
 

@@ -6,6 +6,7 @@ import { Picker } from '@react-native-picker/picker'
 import Heading from '@/components/Heading'
 import { Ionicons } from '@expo/vector-icons'
 import { showToast } from '@/utils/fonctions'
+import { addNote, getStudents, getMatieresSchool } from "@/services/MainService";
 
 const AjouterNote = ({user, headers, classe, close}) => {
     const [matieres, setMatieres] = useState([])
@@ -20,26 +21,22 @@ const AjouterNote = ({user, headers, classe, close}) => {
 
     useEffect(() => {
         getMatieres().then()
-        getStudents().then(() => setLoading(false))
+        getStudentsClasse().then(() => setLoading(false))
     }, [classe])
 
     async function getMatieres() {
         try {
-            const res = await axios.get('https://gesco-app.com/gesco/api/get-matieres/' + ecole, {
-                headers: headers
-            })
-            setMatieres(res.data)
+            const res = await getMatieresSchool(ecole, headers)
+            setMatieres(res)
         } catch (error) {
             showToast(error.message)
         }
     }
 
-    async function getStudents() {
+    async function getStudentsClasse() {
         try {
-            const res = await axios.get(`https://gesco-app.com/gesco/api/students/classe_id=${classe.id}&ecole_id=${ecole}`, {
-                headers: headers
-            })
-            setStudents(res.data)
+            const res = await getStudents(classe.id, ecole, headers)
+            setStudents(res)
         } catch (error) {
             showToast(error.message)
         }
@@ -49,6 +46,8 @@ const AjouterNote = ({user, headers, classe, close}) => {
         setLoading(true)
         if (selectMatiere === "" || selectSequence === "" || selectStudent === "" || note === "") {
             setError(true)
+        } if (parseInt(note) > 0) {
+            showToast("Entrer une note inférieure ou égale à 20")
         } else {
             const data = {
                 classe_id: classe.id,
@@ -61,10 +60,8 @@ const AjouterNote = ({user, headers, classe, close}) => {
     
             try {
                 if (selectMatiere !== "" && note !== "" && selectSequence !== "" && selectStudent !== "") {
-                    const res = await axios.post('https://gesco-app.com/gesco/api/add-note', data, {
-                        headers: headers
-                    })
-                    showToast(res.data.message)
+                    const res = await addNote(data, headers)
+                    showToast(res.message)
                 } else {
                     setError(true)
                 }

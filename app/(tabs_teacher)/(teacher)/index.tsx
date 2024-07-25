@@ -13,6 +13,7 @@ import NoData from '@/components/NoData'
 import { showToast } from '@/utils/fonctions'
 import "react-native-gesture-handler"
 import ShowEvent from "@/components/ShowEvent";
+import { BackHandler } from 'react-native'
 
 const HomeScreen = () => {
   const [matieres, setMatieres] = useState<any[]>([])
@@ -50,6 +51,20 @@ const HomeScreen = () => {
       fetchMatieres().then(() => setLoadingMatiere(false))
     }
   }, [isLoading])
+
+  useEffect(() => {
+    const backAction = () => {
+      BackHandler.exitApp();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   const fetchUser = async () => {
     await getUser().then(res => {
@@ -211,6 +226,7 @@ const HomeScreen = () => {
       <Modal
         animationType='slide'
         visible={showEvent}
+        onTouchStart={() => setShowEvent(false)}
       >
         <ShowEvent hideModal={() => setShowEvent(false)} event={event} />
       </Modal>

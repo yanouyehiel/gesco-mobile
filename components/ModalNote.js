@@ -9,6 +9,7 @@ const ModalNote = ({note, visible, setVisible}) => {
         <Modal
             animationType='slide'
             visible={visible}
+            onTouchStart={() => setVisible(false)}
         >
             <View style={{flex: 1, margin: 15}}>
                 <TouchableOpacity style={styles.header} onPress={() => setVisible(false)}>

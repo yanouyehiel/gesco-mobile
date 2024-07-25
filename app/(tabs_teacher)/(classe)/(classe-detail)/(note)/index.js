@@ -11,7 +11,7 @@ import { AntDesign, Ionicons } from '@expo/vector-icons'
 import AjouterNote from '../../../../../components/AjouterNote'
 import Heading from '@/components/Heading'
 import { SimpleLineIcons } from '@expo/vector-icons';
-import { updateNote } from "@/services/MainService";
+import { updateNote, getNotesClasse } from "@/services/MainService";
 import { Easing } from 'react-native'
 import { ActivityIndicator } from 'react-native'
 
@@ -38,8 +38,8 @@ const NoteScreen = () => {
 
   const getNotes = async () => {
     try {
-      const res = await axios.get('https://gesco-app.com/gesco/api/get-notes-classe/' + classe.id, {headers: headers});
-      setNotes(res.data.notes)
+      const res = await getNotesClasse(classe.id, headers);
+      setNotes(res.notes)
     } catch (error) {
       showToast(error.response.data.message)
     }
@@ -139,9 +139,6 @@ const NoteScreen = () => {
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
           <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
             <Text style={{color: colors.NOIR, fontSize: 17, fontFamily: 'Regular', marginBottom: 10}}>La gestion des notes assure une transparence totale auprès de l'administration et des parents d'élèves de l'exactitude des notes enregistrées.</Text>
-            {/* <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 100}}>
-              <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-            </View> */}
           </View>
           <View style={{width: "30%"}}>
             <Image source={require("@/assets/images/ob4.png")} style={{width: 80, height: 80}} />
@@ -258,6 +255,7 @@ const NoteScreen = () => {
       <Modal
         animationType='slide'
         visible={showModal}
+        onTouchStart={() => setShowModal(false)}
       >
         <View style={{flex: 1, margin: 15}}>
           <TouchableOpacity style={styles.header} onPress={() => setShowModal(false)}>
@@ -295,6 +293,7 @@ const NoteScreen = () => {
       <Modal
         animationType='slide'
         visible={visible}
+        onTouchStart={() => setVisible(false)}
       >
         <AjouterNote close={() => setVisible(false)} user={user} headers={headers} classe={classe} />
       </Modal>
@@ -307,7 +306,6 @@ const NoteScreen = () => {
       >
         <View
           style={{ flex: 1, height: 300 }}
-          //onTouchStart={() => resizeBoxUpdate(0)}
         >
           <TouchableOpacity style={styles.header} onPress={() => setShowModalUpdate(false)}>
             <Ionicons name='arrow-back-outline' size={30} color="black" />

@@ -45,9 +45,6 @@ const HomeDetail = () => {
       <View style={[styles.card, {backgroundColor: colors.VERT_CLAIR}]}>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
           <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Gérer efficacement votre classe</Text>
-          <View style={styles.textView}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
         </View>
         <View style={{width: "30%"}}>
           <Image source={require("@/assets/images/ob3.png")} style={{width: 80, height: 80}} />
@@ -59,17 +56,11 @@ const HomeDetail = () => {
         </View>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%'}}>
           <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des élèves essentielle pour suivre leurs progrès</Text>
-          <View style={styles.textView}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
         </View>
       </View>
       <View style={[styles.card, {backgroundColor: colors.VERT_CLAIR}]}>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
           <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des présences permet de surveiller l'assiduité des élèves</Text>
-          <View style={styles.textView}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
         </View>
         <View style={{width: "30%"}}>
           <Image source={require("@/assets/images/presence-remove.png")} style={{width: 80, height: 80}} />
@@ -81,17 +72,11 @@ const HomeDetail = () => {
         </View>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%'}}>
           <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des notes permet de suivre les performances des élèves</Text>
-          <View style={styles.textView}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
         </View>
       </View>
       <View style={[styles.card, {backgroundColor: colors.VERT_CLAIR}]}>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
           <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace</Text>
-          <View style={styles.textView}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
         </View>
         <View style={{width: "30%"}}>
           <Image source={require("@/assets/images/ob5.png")} style={{width: 80, height: 80}} />
@@ -102,53 +87,53 @@ const HomeDetail = () => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#f0f0f0',
-      marginTop: 10
-    },
-    header: {
-      padding: 20,
-      alignItems: 'center',
-    },
-    item: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      maxWidth: 200,
-      marginRight: 15,
-      backgroundColor: colors.BLEU_CLAIR,
-      borderRadius: 40,
-      padding: 10
-    },
-    itemImage: {
-      width: 40,
-      height: 40,
-      borderRadius: 50,
-      marginRight: 10,
-    },
-    itemText: {
-      fontSize: 20,
-      color: colors.BLANC, 
-      fontFamily: 'Regular'
-    },
-    card: {
-      margin: 15,
-      display: 'flex',
-      justifyContent: 'center',
-      flexDirection: 'row',
-      alignItems: 'center',
-      height: 150, 
-      borderRadius: 15
-    },
-    textView: {
-        backgroundColor: colors.BLANC, 
-        color: colors.NOIR, 
-        padding: 8, 
-        borderRadius: 10, 
-        width: 100
-    }
-  });
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    marginTop: 10
+  },
+  header: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  item: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    maxWidth: 200,
+    marginRight: 15,
+    backgroundColor: colors.BLEU_CLAIR,
+    borderRadius: 40,
+    padding: 10
+  },
+  itemImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    marginRight: 10,
+  },
+  itemText: {
+    fontSize: 20,
+    color: colors.BLANC, 
+    fontFamily: 'Regular'
+  },
+  card: {
+    margin: 15,
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 150, 
+    borderRadius: 15
+  },
+  textView: {
+    backgroundColor: colors.BLANC, 
+    color: colors.NOIR, 
+    padding: 8, 
+    borderRadius: 10, 
+    width: 100
+  }
+});
 
 export default HomeDetail

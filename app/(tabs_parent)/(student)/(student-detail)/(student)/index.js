@@ -7,7 +7,7 @@ import NoData from '@/components/NoData'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { FontAwesome } from '@expo/vector-icons'
-import { dateParser, dateParserTime } from '@/utils/fonctions'
+import { dateParser } from '@/utils/fonctions'
 
 const StudentScreen = () => {
   const route = useRoute()
@@ -17,13 +17,10 @@ const StudentScreen = () => {
 
   useEffect(() => {
     getFeesStudent().then(() => setLoading(false))
-    console.log(student)
   }, [])
 
   async function getFeesStudent() {
-    const res = await axios.get(`https://gesco-app.com/gesco/api/get-fees-student/${parseInt(student.id)}`, {
-      headers: headers
-    })
+    const res = await axios.get(`https://gesco-app.com/gesco/api/get-fees-student/${parseInt(student.id)}`, {headers: headers});
     setFeesStudent(res.data)
   }
 
@@ -49,17 +46,19 @@ const StudentScreen = () => {
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Inscription</Text>
             <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
+              {!feesStudent?.tarifs.inscription ? <Skeleton colorMode='dark' show={true} height={8} width={100} /> :
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
                 {feesStudent?.tarifs.inscription} XAF
-              </Text>
+              </Text>}
             </View>
           </View>
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Première tranche</Text>
             <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
+              {!feesStudent?.tarifs.premiere_tranche ? <Skeleton colorMode='dark' show={true} height={8} width={100} /> :
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
                 {feesStudent?.tarifs.premiere_tranche} XAF
-              </Text>
+              </Text>}
             </View>
           </View>
         </View>
@@ -67,17 +66,19 @@ const StudentScreen = () => {
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Deuxième tranche</Text>
             <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
+              {!feesStudent?.tarifs.deuxieme_tranche ? <Skeleton colorMode='dark' show={true} height={8} width={100} /> : 
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
                 {feesStudent?.tarifs.deuxieme_tranche} XAF
-              </Text>
+              </Text>}
             </View>
           </View>
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Troisième tranche</Text>
             <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
+              {!feesStudent?.tarifs.troisieme_tranche ? <Skeleton colorMode='dark' show={true} height={8} width={100} /> :
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
                 {feesStudent?.tarifs.troisieme_tranche} XAF
-              </Text>
+              </Text>}
             </View>
           </View>
         </View>
@@ -90,25 +91,28 @@ const StudentScreen = () => {
             <Text style={{color: colors.BLANC, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>
               Total
             </Text>
+            {!feesStudent?.total ? <Skeleton colorMode='light' show={true} height={8} width={80} /> :
             <Text style={{fontSize: 20, fontFamily: 'Regular'}}>
               {feesStudent?.total}
-            </Text>
+            </Text>}
           </View>
           <View style={styles.cardResume}>
             <Text style={{color: colors.BLANC, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>
               Déjà payé
             </Text>
+            {!feesStudent?.paye ? <Skeleton colorMode='light' show={true} height={8} width={80} /> :
             <Text style={{fontSize: 20, fontFamily: 'Regular'}}>
               {feesStudent?.paye}
-            </Text>
+            </Text>}
           </View>
           <View style={styles.cardResume}>
             <Text style={{color: colors.BLANC, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>
               Reste à payer
             </Text>
+            {!feesStudent?.reste ? <Skeleton colorMode='light' show={true} height={8} width={80} /> :
             <Text style={{fontSize: 20, fontFamily: 'Regular'}}>
               {feesStudent?.reste}
-            </Text>
+            </Text>}
           </View>
         </View>
       </View>

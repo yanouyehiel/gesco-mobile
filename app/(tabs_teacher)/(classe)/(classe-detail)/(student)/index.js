@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, ScrollView, FlatList, RefreshControl } from 'react-native'
+import { View, Text, StyleSheet, Image, ScrollView, FlatList, RefreshControl, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import Heading from '@/components/Heading'
@@ -7,6 +7,8 @@ import NoData from '@/components/NoData'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { showToast } from '@/utils/fonctions'
+import { useNavigation } from 'expo-router'
+import ModalStudent from '../../../../../components/ModalStudent'
 
 const StudentScreen = () => {
   const route = useRoute()
@@ -14,6 +16,8 @@ const StudentScreen = () => {
   const [loading, setLoading] = useState(true)
   const [students, setStudents] = useState([])
   const [refreshing, setRefreshing] = useState(false);
+  const [student, setStudent] = useState({})
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     getStudents().then(() => setLoading(false))
@@ -28,6 +32,11 @@ const StudentScreen = () => {
     } catch (error) {
       showToast(error.message)
     }
+  }
+
+  function viewStudent(item) {
+    setStudent(item)
+    setVisible(true)
   }
 
   const onRefresh = React.useCallback(() => {
@@ -56,9 +65,6 @@ const StudentScreen = () => {
         </View>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%'}}>
           <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des élèves essentielle pour suivre leurs progrès</Text>
-          <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 100}}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-          </View>
         </View>
       </View>
 
@@ -70,25 +76,27 @@ const StudentScreen = () => {
             horizontal={false}
             showsVerticalScrollIndicator={false}
             renderItem={({item, i}) => (
-              <View key={i} style={styles.student}>
-                <View style={styles.studentImage}>
-                  <Image 
-                    source={require("@/assets/images/user.jpeg")} 
-                    style={{width: 50, height: 50}}
-                  />
-                </View>
-                <View style={styles.studentDesc}>
-                  <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{item.nom + ' ' + item.prenom}</Text>
-                    <Text style={{fontSize: 13, marginLeft: 5}}>{item.matricule}</Text>
+              <TouchableOpacity onPress={() => viewStudent(item)}>
+                <View key={i} style={styles.student}>
+                  <View style={styles.studentImage}>
+                    <Image 
+                      source={require("@/assets/images/user.jpeg")} 
+                      style={{width: 50, height: 50}}
+                    />
                   </View>
-                  <Text>Sexe : {item.sexe}</Text>
-                  <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <Text>Date de naissance : {item.date_naissance}</Text>
-                    <Text>{item.tel_parent}</Text>
+                  <View style={styles.studentDesc}>
+                    <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                      <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{item.nom + ' ' + item.prenom}</Text>
+                      <Text style={{fontSize: 13, marginLeft: 5}}>{item.matricule}</Text>
+                    </View>
+                    <Text>Sexe : {item.sexe}</Text>
+                    <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                      <Text>Date de naissance : {item.date_naissance}</Text>
+                      <Text>{item.tel_parent}</Text>
+                    </View>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             )}
           /> :
           [0, 1, 2, 3, 4].map((t, i) => (
@@ -143,6 +151,8 @@ const StudentScreen = () => {
         {(!loading && students.length) === 0 &&
           <NoData />
         }
+
+        <ModalStudent headers={headers} visible={visible} setVisible={setVisible} student={student} />
       </View>
     </ScrollView>
   )

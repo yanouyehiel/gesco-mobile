@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import AjouterCours from '@/components/AjouterCours';
-import { dateParser, longueurTexte } from '@/utils/fonctions';
+import { dateParser, longueurTexte, showToast } from '@/utils/fonctions';
 import Heading from '@/components/Heading';
 import { Skeleton } from 'moti/skeleton';
 import NoData from '@/components/NoData';
 import { useRoute } from '@react-navigation/native';
-import axios from 'axios';
 import "react-native-gesture-handler"
+import { getAllCoursClasse } from '@/services/MainService';
 
 const CourseScreen = () => {
   const route = useRoute()
@@ -23,14 +23,15 @@ const CourseScreen = () => {
 
   useEffect(() => {
     getCours().then(() => setLoading(false))
+    console.log(headers)
   }, [classe, user, headers])
 
   const getCours = async () => {
     try {
-      const res = await axios.get('https://gesco-app.com/gesco/api/get-cours-classe/' + classe.id, {headers: headers});
-      setCours(res.data.cours);
+      const res = await getAllCoursClasse(classe.id, headers)
+      setCours(res.cours);
     } catch (error) {
-      console.error('Erreur lors de la récupération des cours:', error);
+      showToast(error.message)
     }
   }
 
@@ -61,9 +62,6 @@ const CourseScreen = () => {
             <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
               <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
                 <Text style={{color: colors.NOIR, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace</Text>
-                {/* <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 100}}>
-                  <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>Ici !</Text>
-                </View> */}
               </View>
               <View style={{width: "30%"}}>
                 <Image source={require("@/assets/images/ob5.png")} style={{width: 80, height: 80}} />
@@ -164,6 +162,7 @@ const CourseScreen = () => {
           <Modal 
             animationType='slide'
             visible={visibleC}
+            onTouchStart={() => setVisibleC(false)}
           >
             <View style={{flex: 1, margin: 15}}>
               <TouchableOpacity style={styles.header} onPress={() => setVisibleC(false)}>
@@ -194,10 +193,10 @@ const CourseScreen = () => {
           <Modal
             animationType='slide'
             visible={visible}
+            onTouchStart={() => setVisible(false)}
           >
             <AjouterCours close={() => setVisible(false)} user={user} headers={headers} classe={classe} />
           </Modal>
-         
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

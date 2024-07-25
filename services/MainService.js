@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
-import { API_URL, AUTH } from "@/utils/global"
 
 export async function getHeaders() {
     const data = await AsyncStorage.getItem('tokenGesco')
@@ -91,6 +90,16 @@ export async function getUser() {
     }
 }
 
+export async function getEcole() {
+    const data = await AsyncStorage.getItem('tokenGesco')
+    if (data === null) {
+        return "Pas de donnée stockée"
+    } else {
+        const json = JSON.parse(data)
+        return json.ecole
+    }
+}
+
 export async function getMyClasses(id, headers) {
     const response = await axios.get(`https://gesco-app.com/gesco/api/get-classes-school/${parseInt(id)}`, {headers})
     return response.data;
@@ -116,13 +125,38 @@ export async function getAllMatieres(id, headers) {
     return response.data;
 }
 
+export async function getAllLivres(id, headers) {
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-livres/${parseInt(id)}`, {headers: headers});
+    return response.data;
+}
+
+export async function getFees(id, headers) {
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-fees-student/${parseInt(id)}`, {headers: headers});
+    return response.data;
+}
+
 export async function addCours(cours, headers) {
     const response = await axios.post(`https://gesco-app.com/gesco/api/add-cours`, cours, {headers});
     return response.data;
 }
 
+export async function addDevoir(devoir, headers) {
+    const response = await axios.post(`https://gesco-app.com/gesco/api/add-devoir`, devoir, {headers});
+    return response.data;
+}
+
+export async function addNote(note, headers) {
+    const response = await axios.post(`https://gesco-app.com/gesco/api/add-note`, note, {headers});
+    return response.data;
+}
+
 export async function getAllCoursClasse(id, headers) {
-    const response = await axios.get(`https://gesco-app.com/gesco/api/get-cours-classe/${parseInt(id)}`, headers);
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-cours-classe/${parseInt(id)}`, {headers});
+    return response.data;
+}
+
+export async function getStudents(idClasse, idEcole, headers) {
+    const response = await axios.get(`https://gesco-app.com/gesco/api/students/classe_id=${idClasse}&ecole_id=${idEcole}`, {headers});
     return response.data;
 }
 
@@ -141,13 +175,28 @@ export async function addAbsence(absence, headers) {
     return response.data;
 }
 
+export async function getAbsencesClasse(id, headers) {
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-absences-classe/${parseInt(id)}`, {headers});
+    return response.data;
+}
+
 export async function getAbsencesChildren(id, headers) {
     const response = await axios.get(`https://gesco-app.com/gesco/api/get-absences-children/${parseInt(id)}`, {headers});
     return response.data;
 }
 
+export async function getNotesClasse(id, headers) {
+    const response = await axios.get(`https://gesco-app.com/gesco/api/get-notes-classe/${parseInt(id)}`, {headers});
+    return response.data;
+}
+
 export async function getNotesChildren(id, headers) {
     const response = await axios.get(`https://gesco-app.com/gesco/api/get-notes-children/${parseInt(id)}`, {headers});
+    return response.data;
+}
+
+export async function getDevoirsClasse(id, headers) {
+    const response = await axios.get(`https://gesco-app.com/gesco/api/devoirs-classe/${parseInt(id)}`, {headers});
     return response.data;
 }
 

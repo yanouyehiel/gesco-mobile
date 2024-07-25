@@ -5,8 +5,7 @@ import CalendarPicker from 'react-native-calendar-picker'
 import Heading from '@/components/Heading'
 import { colors } from '@/utils/colors'
 import { Picker } from '@react-native-picker/picker'
-import { addAbsence } from '@/services/MainService'
-import axios from 'axios'
+import { addAbsence, getStudents } from '@/services/MainService'
 import { showToast } from '@/utils/fonctions'
 
 const AjouterAbsence = ({hideModal, user, headers, classe}) => {
@@ -39,14 +38,12 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
 
     useEffect(() => {
         getTime()
-        getStudents().then(() => setLoading(false))
+        getStudentsClasse().then(() => setLoading(false))
     }, [])
 
-    async function getStudents() {
-        const res = await axios.get(`https://gesco-app.com/gesco/api/students/classe_id=${parseInt(classe.id)}&ecole_id=${parseInt(user.ecole_id)}`, {
-            headers: headers
-        })
-        setStudents(res.data)
+    async function getStudentsClasse() {
+        const res = await getStudents(classe.id, user.ecole_id, headers)
+        setStudents(res)
     }
 
     async function handleSubmit() {

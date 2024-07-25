@@ -1,7 +1,6 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useRoute } from '@react-navigation/native'
-import axios from 'axios'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData';
 import { colors } from '@/utils/colors'
@@ -9,6 +8,8 @@ import { dateParser, longueurTexte } from '@/utils/fonctions';
 import { showToast } from '@/utils/fonctions'
 import Heading from '@/components/Heading'
 import ModalNote from '../../../../../components/ModalNote'
+import axios from 'axios';
+
 
 const NoteScreen = () => {
   const [loading, setLoading] = useState(true)
@@ -24,10 +25,10 @@ const NoteScreen = () => {
 
   const getNotes = async () => {
     try {
-      const res = await axios.get('https://gesco-app.com/gesco/api/get-notes-children/' + student.id, {headers: headers});
+      const res = await axios.get(`https://gesco-app.com/gesco/api/get-notes-children/${parseInt(student.id)}`, {headers});
       setNotes(res.data.notes)
     } catch (error) {
-      showToast(error.response.data.message)
+      showToast(error.message)
     }
   }
 
