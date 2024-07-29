@@ -29,7 +29,7 @@ const AbsenceScreen = () => {
   return (
     <ScrollView>
       <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
-        <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
+        <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
           <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des présences permet de surveiller l'assiduité des élèves</Text>
         </View>
         <View style={{width: "30%"}}>
@@ -74,14 +74,14 @@ const AbsenceScreen = () => {
                 </View>
                 <Skeleton
                   show={true}
-                  width={100}
+                  width={180}
                   height={10} 
                   colorMode='light'
                 />
                 <View style={{marginTop: 10}}>
                   <Skeleton
                     show={true}
-                    width={150}
+                    width={190}
                     height={10} 
                     colorMode='light'
                   />

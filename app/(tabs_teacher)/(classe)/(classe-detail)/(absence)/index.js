@@ -53,7 +53,7 @@ const AbsenceScreen = () => {
       }
     >
       <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
-        <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
+        <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
           <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des présences permet de surveiller l'assiduité des élèves</Text>
         </View>
         <View style={{width: "30%"}}>
@@ -101,14 +101,14 @@ const AbsenceScreen = () => {
                 <View style={{marginBottom: 10}}>
                   <Skeleton
                     show={true}
-                    width={230}
+                    width={200}
                     height={10} 
                     colorMode='light'
                   />
                 </View>
                 <Skeleton
                   show={true}
-                  width={190}
+                  width={170}
                   height={10} 
                   colorMode='light'
                 />

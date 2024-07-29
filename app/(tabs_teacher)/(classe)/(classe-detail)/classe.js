@@ -43,7 +43,7 @@ const HomeDetail = () => {
         />
       </View>
       <View style={[styles.card, {backgroundColor: colors.VERT_CLAIR}]}>
-        <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
+        <View style={{flexDirection: 'column', marginRight: 10, width: '60%', margin: '10%'}}>
           <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Gérer efficacement votre classe</Text>
         </View>
         <View style={{width: "30%"}}>
@@ -59,11 +59,11 @@ const HomeDetail = () => {
         </View>
       </View>
       <View style={[styles.card, {backgroundColor: colors.VERT_CLAIR}]}>
-        <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
+        <View style={{flexDirection: 'column', marginRight: 10, width: '60%', margin: '5%'}}>
           <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des présences permet de surveiller l'assiduité des élèves</Text>
         </View>
         <View style={{width: "30%"}}>
-          <Image source={require("@/assets/images/presence-remove.png")} style={{width: 80, height: 80}} />
+          <Image source={require("@/assets/images/presence-remove.png")} style={{width: 90, height: 90}} />
         </View>
       </View>
       <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
@@ -75,8 +75,8 @@ const HomeDetail = () => {
         </View>
       </View>
       <View style={[styles.card, {backgroundColor: colors.VERT_CLAIR}]}>
-        <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '10%'}}>
-          <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace</Text>
+        <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
+          <Text style={{color: colors.NOIR, fontSize: 16, fontFamily: 'Regular', marginBottom: 10}}>La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace</Text>
         </View>
         <View style={{width: "30%"}}>
           <Image source={require("@/assets/images/ob5.png")} style={{width: 80, height: 80}} />

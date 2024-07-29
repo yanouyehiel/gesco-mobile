@@ -15,7 +15,7 @@ const ModalStudent = ({ student, headers, visible, setVisible }) => {
 
   useEffect(() => {
     getFeesStudent().then(() => setLoading(false))
-  }, [student.id])
+  }, [student, visible])
 
   async function getFeesStudent() {
     const res = await axios.get(`https://gesco-app.com/gesco/api/get-fees-student/${parseInt(student.id)}`, {
@@ -120,7 +120,7 @@ const ModalStudent = ({ student, headers, visible, setVisible }) => {
               </Text>
               {!feesStudent?.reste ? <Skeleton colorMode='light' show={true} height={8} width={80} /> :
               <Text style={{fontSize: 20, fontFamily: 'Regular'}}>
-                {feesStudent?.reste}
+                {feesStudent?.reste === 0 ? 0 : feesStudent?.reste}
               </Text>}
             </View>
           </View>

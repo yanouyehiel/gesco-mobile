@@ -80,11 +80,11 @@ const ClasseScreen = () => {
             </Skeleton>
             <View style={styles.subcontainer}>
               <Skeleton show={true} colorMode='light' height={20}>
-                <Text style={{width: 200, marginBottom: 20}}></Text>
+                <Text style={{width: 190, marginBottom: 20}}></Text>
               </Skeleton>
               <View style={{flexDirection: 'row', gap: 20}}>
                 <Skeleton show={true} colorMode='light' height={20}>
-                  <Text style={{width: 120}}></Text>
+                  <Text style={{width: 180}}></Text>
                 </Skeleton>
                 <Skeleton show={true} colorMode='light' height={20}>
                   <Text style={{width: 70}}></Text>
@@ -126,8 +126,8 @@ const styles = StyleSheet.create({
     gap: 8
   },
   image: {
-    height: 80,
-    width: 80,
+    height: 50,
+    width: 50,
     borderRadius: 15
   },
   text: {

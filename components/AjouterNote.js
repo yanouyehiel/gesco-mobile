@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { colors } from '@/utils/colors'
@@ -73,7 +73,7 @@ const AjouterNote = ({user, headers, classe, close}) => {
     }
 
     return (
-        <View style={{margin: 10}}>
+        <ScrollView style={{margin: 10}}>
             <TouchableOpacity style={styles.header} onPress={() => close()}>
                 <Ionicons name='arrow-back-outline' size={30} color="black" />
                 <Text style={styles.titleHeader}>Enregistrer une note</Text>
@@ -145,7 +145,7 @@ const AjouterNote = ({user, headers, classe, close}) => {
                     </TouchableOpacity>
                 </View>
             </View>
-        </View>
+        </ScrollView>
     )
 }
 

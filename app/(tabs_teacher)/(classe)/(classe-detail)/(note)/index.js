@@ -200,7 +200,7 @@ const NoteScreen = () => {
                 <View style={{marginBottom: 10}}>
                   <Skeleton 
                     show={true}
-                    width={250}
+                    width={190}
                     height={10} 
                     colorMode='light'
                   />
@@ -208,13 +208,13 @@ const NoteScreen = () => {
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
                   <Skeleton 
                     show={true}
-                    width={140}
+                    width={100}
                     height={10} 
                     colorMode='light'
                   />
                   <Skeleton 
                     show={true}
-                    width={80}
+                    width={50}
                     height={10} 
                     colorMode='light'
                   />
@@ -222,13 +222,13 @@ const NoteScreen = () => {
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
                   <Skeleton 
                     show={true}
-                    width={140}
+                    width={90}
                     height={10} 
                     colorMode='light'
                   />
                   <Skeleton 
                     show={true}
-                    width={80}
+                    width={70}
                     height={10} 
                     colorMode='light'
                   />

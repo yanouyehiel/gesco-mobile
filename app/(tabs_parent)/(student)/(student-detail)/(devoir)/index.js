@@ -86,21 +86,21 @@ const DevoirScreen = () => {
                 <View style={{marginBottom: 10}}>
                   <Skeleton 
                     show={true}
-                    width={250}
+                    width={170}
                     height={10} 
                     colorMode='light'
                   />
                 </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
+                <View style={{flexDirection: 'row', gap: 20, justifyContent: 'space-between', marginBottom: 10}}>
                   <Skeleton 
                     show={true}
-                    width={100}
+                    width={90}
                     height={10} 
                     colorMode='light'
                   />
                   <Skeleton 
                     show={true}
-                    width={70}
+                    width={90}
                     height={10} 
                     colorMode='light'
                   />
@@ -108,7 +108,7 @@ const DevoirScreen = () => {
                 <View>
                   <Skeleton 
                     show={true}
-                    width={100}
+                    width={190}
                     height={10} 
                     colorMode='light'
                   />

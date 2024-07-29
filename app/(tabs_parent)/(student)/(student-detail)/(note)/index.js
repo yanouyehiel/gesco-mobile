@@ -95,7 +95,7 @@ const NoteScreen = () => {
               <View style={{marginBottom: 10}}>
                 <Skeleton 
                   show={true}
-                  width={150}
+                  width={190}
                   height={10} 
                   colorMode='light'
                 />
@@ -131,7 +131,7 @@ const NoteScreen = () => {
               <View>
                 <Skeleton 
                   show={true}
-                  width={100}
+                  width={190}
                   height={10} 
                   colorMode='light'
                 />

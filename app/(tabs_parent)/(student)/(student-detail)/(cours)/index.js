@@ -94,7 +94,7 @@ const CourseScreen = () => {
                   <View style={{marginBottom: 10}}>
                     <Skeleton 
                       show={true}
-                      width={150}
+                      width={190}
                       height={10} 
                       colorMode='light'
                     />
@@ -102,7 +102,7 @@ const CourseScreen = () => {
                   <View style={{marginBottom: 10}}>
                     <Skeleton 
                       show={true}
-                      width={250}
+                      width={180}
                       height={10} 
                       colorMode='light'
                     />
@@ -124,7 +124,7 @@ const CourseScreen = () => {
                   <View>
                     <Skeleton 
                       show={true}
-                      width={150}
+                      width={190}
                       height={10} 
                       colorMode='light'
                     />

@@ -110,7 +110,7 @@ const StudentScreen = () => {
                 />
               </View>
               <View style={styles.studentDesc}>
-                <View style={{display: 'flex', gap: 30, flexDirection: 'row', alignItems: 'center', marginBottom: 10}}>
+                <View style={{display: 'flex', gap: 15, flexDirection: 'row', alignItems: 'center', marginBottom: 10}}>
                   <Skeleton 
                     show={true}
                     width={100}
@@ -119,7 +119,7 @@ const StudentScreen = () => {
                   />
                   <Skeleton 
                     show={true}
-                    width={100}
+                    width={70}
                     height={10} 
                     colorMode='light'
                   />
@@ -130,7 +130,7 @@ const StudentScreen = () => {
                   height={10} 
                   colorMode='light'
                 />
-                <View style={{display: 'flex', flexDirection: 'row', gap: 30, marginTop: 10, alignItems: 'center'}}>
+                <View style={{display: 'flex', flexDirection: 'row', gap: 15, marginTop: 10, alignItems: 'center'}}>
                   <Skeleton 
                     show={true}
                     width={100}
@@ -139,7 +139,7 @@ const StudentScreen = () => {
                   />
                   <Skeleton 
                     show={true}
-                    width={100}
+                    width={70}
                     height={10} 
                     colorMode='light'
                   />

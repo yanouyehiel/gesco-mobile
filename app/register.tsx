@@ -27,8 +27,9 @@ const SignupScreen = () => {
 
   async function handleSubmit() {
     setLoading(true)
-    if (nom === "" || prenom === "" || email === "" || tel === "" || ID === "" || password === "") {
+    if (nom === "" || prenom === "" || email === "" || tel === "" || ID === "" || password === "" || selectedRole < 0) {
       setError(true)
+      showToast("Veuillez remplir tous les champs.")
     } else {
       const data = {
         nom: nom,
@@ -117,13 +118,14 @@ const SignupScreen = () => {
                 placeholderTextColor={'gray'}
                 secureTextEntry={!showPassword}
                 onChangeText={setPassword}
-                style={{fontSize: 18, fontFamily: 'Regular'}}
+                style={{fontSize: 18, fontFamily: 'Regular', width: '90%'}}
                 value={password}
               />
               <MaterialCommunityIcons 
                 name={showPassword ? 'eye-off' : 'eye'} 
                 size={18}
                 onPress={toggleShowPassword} 
+                style={{width: '10%'}}
               /> 
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()}>

@@ -46,7 +46,7 @@ const StudentScreen = () => {
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Inscription</Text>
             <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
-              {!feesStudent?.tarifs.inscription ? <Skeleton colorMode='dark' show={true} height={8} width={100} /> :
+              {!feesStudent?.tarifs.inscription ? <Skeleton colorMode='light' show={true} height={8} width={100} /> :
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
                 {feesStudent?.tarifs.inscription} XAF
               </Text>}
@@ -55,7 +55,7 @@ const StudentScreen = () => {
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Première tranche</Text>
             <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
-              {!feesStudent?.tarifs.premiere_tranche ? <Skeleton colorMode='dark' show={true} height={8} width={100} /> :
+              {!feesStudent?.tarifs.premiere_tranche ? <Skeleton colorMode='light' show={true} height={8} width={100} /> :
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
                 {feesStudent?.tarifs.premiere_tranche} XAF
               </Text>}
@@ -66,7 +66,7 @@ const StudentScreen = () => {
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Deuxième tranche</Text>
             <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
-              {!feesStudent?.tarifs.deuxieme_tranche ? <Skeleton colorMode='dark' show={true} height={8} width={100} /> : 
+              {!feesStudent?.tarifs.deuxieme_tranche ? <Skeleton colorMode='light' show={true} height={8} width={100} /> : 
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
                 {feesStudent?.tarifs.deuxieme_tranche} XAF
               </Text>}
@@ -75,7 +75,7 @@ const StudentScreen = () => {
           <View style={styles.cardTarif}>
             <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>Troisième tranche</Text>
             <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 120}}>
-              {!feesStudent?.tarifs.troisieme_tranche ? <Skeleton colorMode='dark' show={true} height={8} width={100} /> :
+              {!feesStudent?.tarifs.troisieme_tranche ? <Skeleton colorMode='light' show={true} height={8} width={100} /> :
               <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>
                 {feesStudent?.tarifs.troisieme_tranche} XAF
               </Text>}

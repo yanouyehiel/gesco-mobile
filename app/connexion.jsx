@@ -109,13 +109,13 @@ const LoginScreen = () => {
                 placeholderTextColor={'gray'}
                 secureTextEntry={!showPassword}
                 onChangeText={setPassword}
-                style={{fontSize: 18, fontFamily: 'Regular'}}
+                style={{fontSize: 18, fontFamily: 'Regular', width: '90%'}}
                 value={password}
               />
               <MaterialCommunityIcons 
                 name={showPassword ? 'eye-off' : 'eye'} 
                 size={18}
-                style={styles.icon}
+                style={{width: '10%'}}
                 onPress={toggleShowPassword} 
               /> 
             </Animated.View>
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     height: 50,
-    marginTop: 10
+    marginTop: 10,
   },
   containerError: {
     flexDirection: 'row',

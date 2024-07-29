@@ -116,7 +116,7 @@ const CourseScreen = () => {
                   <View style={{marginBottom: 10}}>
                     <Skeleton 
                       show={true}
-                      width={150}
+                      width={180}
                       height={10} 
                       colorMode='light'
                     />
@@ -124,15 +124,15 @@ const CourseScreen = () => {
                   <View style={{marginBottom: 10}}>
                     <Skeleton 
                       show={true}
-                      width={250}
+                      width={190}
                       height={10} 
                       colorMode='light'
                     />
                   </View>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
+                  <View style={{flexDirection: 'row', gap: 20, justifyContent: 'space-between', marginBottom: 10}}>
                     <Skeleton 
                       show={true}
-                      width={100}
+                      width={90}
                       height={10} 
                       colorMode='light'
                     />
@@ -146,7 +146,7 @@ const CourseScreen = () => {
                   <View style={{marginBottom: 10}}>
                     <Skeleton 
                       show={true}
-                      width={200}
+                      width={160}
                       height={10} 
                       colorMode='light'
                     />

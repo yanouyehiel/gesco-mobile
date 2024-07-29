@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import { MaterialIcons } from '@expo/vector-icons'
-import { dateParser } from "@/utils/fonctions"
+import { dateParser, longueurTexte } from "@/utils/fonctions"
 import { colors } from "@/utils/colors"
 
 const Calendar = ({calendar}) => {
@@ -16,7 +16,7 @@ const Calendar = ({calendar}) => {
       </View>
       
       <View style={styles.eventItem}>
-        <Text style={{fontSize: 20}}>{calendar.titre}</Text>
+        <Text style={{fontSize: 17}}>{longueurTexte(calendar.titre, 25)}</Text>
         <View>
           <Text style={{color: colors.NOIR}}>Date : {calendar.date}</Text>
           <Text style={{color: colors.NOIR}}>Enregistré le {dateParser(calendar.created_at)}</Text>
