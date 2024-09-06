@@ -8,6 +8,7 @@ import NoData from '@/components/NoData'
 import { dateParser } from '@/utils/fonctions'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
+import { showToast } from '../../../../../utils/fonctions';
 
 const AbsenceScreen = () => {
   const route = useRoute()
@@ -20,14 +21,18 @@ const AbsenceScreen = () => {
   }, [])
 
   async function getPresences() {
-    const res = await axios.get('https://gesco-app.com/gesco/api/get-absences-children/' + student.id, {
-      headers: headers
-    })
-    setAbsences(res.data.absences)
+    try {
+      const res = await axios.get('https://gesco-app.com/gesco/api/get-absences-children/' + student.id, {
+        headers: headers
+      })
+      setAbsences(res.data.absences)
+    } catch (error) {
+      showToast(error.message)
+    }
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{backgroundColor: colors.BLANC}}>
       <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
           <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des présences permet de surveiller l'assiduité des élèves</Text>

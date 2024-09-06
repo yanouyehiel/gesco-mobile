@@ -7,7 +7,7 @@ import NoData from '@/components/NoData'
 import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { FontAwesome } from '@expo/vector-icons'
-import { dateParser } from '@/utils/fonctions'
+import { dateParser, showTost } from '@/utils/fonctions'
 
 const StudentScreen = () => {
   const route = useRoute()
@@ -20,12 +20,16 @@ const StudentScreen = () => {
   }, [])
 
   async function getFeesStudent() {
-    const res = await axios.get(`https://gesco-app.com/gesco/api/get-fees-student/${parseInt(student.id)}`, {headers: headers});
-    setFeesStudent(res.data)
+    try {
+      const res = await axios.get(`https://gesco-app.com/gesco/api/get-fees-student/${parseInt(student.id)}`, {headers: headers});
+      setFeesStudent(res.data)
+    } catch (error) {
+      showTost(error.message)
+    }
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{backgroundColor: '#f2f2f2',}}>
       <View style={styles.card}>
         <View style={{flexDirection: 'column', marginRight: 15}}>
           <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>{student.nom +' '+ student.prenom}</Text>
@@ -149,7 +153,7 @@ const StudentScreen = () => {
                   colorMode='light'
                 />
               </View>
-              <View style={styles.studentDesc}>
+              <View style={[styles.studentDesc, {marginTop: 10}]}>
                 <View style={{marginBottom: 10}}>
                   <Skeleton 
                     show={true}

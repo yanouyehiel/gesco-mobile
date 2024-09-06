@@ -11,6 +11,7 @@ const SplashScreenView = () => {
     const user: any = getUser().then()
 
     useEffect(() => {
+      //AsyncStorage.removeItem('tokenGesco').then()
       const fetchHeaders = async () => {
         try {
           const headersData = await getHeaders();

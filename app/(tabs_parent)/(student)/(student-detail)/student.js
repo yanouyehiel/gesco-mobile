@@ -1,34 +1,53 @@
-import { View, Text, Image, StyleSheet, FlatList, ScrollView } from 'react-native'
+import { View, Text, Image, StyleSheet, FlatList, ScrollView, TouchableOpacity, BackHandler } from 'react-native'
 import React, { useEffect } from 'react'
 import { colors } from '@/utils/colors';
 import { useRoute } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 
 const items = [
   {
     icon: require("@/assets/images/cours.png"),
-    text: 'Cours'
+    text: 'Cours',
+    link: '(cours)/index'
   },
   {
     icon: require("@/assets/images/presence.jpg"),
-    text: 'Devoirs'
+    text: 'Devoirs',
+    link: '(devoir)/index'
   },
   {
     icon: require("@/assets/images/presence-remove.png"),
-    text: 'Présences'
+    text: 'Présences',
+    link: '(absence)/index'
   },
   {
     icon: require("@/assets/images/note.png"),
-    text: 'Notes'
+    text: 'Notes',
+    link: '(note)/index'
   },
   {
     icon: require("@/assets/images/classe.png"),
-    text: 'Elèves'
+    text: 'Elèves',
+    link: '(student)/index'
   }
 ]
 
 const HomeDetail = () => {
-  const route = useRoute()
-  const { user, classe, headers } = route.params
+  const navigation = useNavigation()
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate("(tabs_parent)")
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   return (
     <ScrollView style={styles.container}>
@@ -38,10 +57,12 @@ const HomeDetail = () => {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={(({item, index}) => (
-            <View style={styles.item} key={index}>
-              <Image source={item.icon} style={styles.itemImage} />
-              <Text style={styles.itemText}>{item.text}</Text>
-            </View>
+            <TouchableOpacity onPress={() => navigation.navigate(item.link)}>
+              <View style={styles.item} key={index}>
+                <Image source={item.icon} style={styles.itemImage} />
+                <Text style={styles.itemText}>{item.text}</Text>
+              </View>
+            </TouchableOpacity>
           ))}
         />
       </View>
@@ -92,7 +113,7 @@ const HomeDetail = () => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#f0f0f0',
+      backgroundColor: colors.BLANC,
       marginTop: 10
     },
     header: {

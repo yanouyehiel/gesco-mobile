@@ -1,10 +1,11 @@
-import { View, Text, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, Switch, ActivityIndicator } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, Switch, ActivityIndicator, BackHandler } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import { settings } from '@/utils/settings'
 import { Feather } from '@expo/vector-icons';
 import { Linking } from 'react-native';
 import { showToast } from '@/utils/fonctions';
+import { useNavigation } from '@react-navigation/native';
 
 const Settings = () => {
     const [form, setForm] = useState<any>({
@@ -12,6 +13,21 @@ const Settings = () => {
         darkMode: false,
         wifi: true
     })
+    const navigation = useNavigation()
+
+    useEffect(() => {
+        const backAction = () => {
+          navigation.navigate("(home)")
+          return true;
+        };
+    
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          backAction
+        );
+    
+        return () => backHandler.remove();
+    }, []);
 
     const handleSubmit = (label: string) => {
         if (label === 'contact') {

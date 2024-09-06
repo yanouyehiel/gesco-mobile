@@ -78,7 +78,7 @@ const NoteScreen = () => {
 
   const handleSubmit = async () => {
     setLoading(true)
-    if (newNote > 0) {
+    if (parseInt(newNote) > 0 && parseInt(newNote) < 20) {
       const data = {
         id: newData.id,
         note: newNote
@@ -88,7 +88,7 @@ const NoteScreen = () => {
         showToast(res.message)
       })
     } else {
-      showToast("Entrer une note supérieure à 0")
+      showToast("Entrer une note supérieure à 0 et inférieure à 20")
     }
     setLoading(false)
   }
@@ -134,6 +134,7 @@ const NoteScreen = () => {
           progressBackgroundColor={colors.BLANC}
         />
       }
+      style={{backgroundColor: colors.BLANC}}
     >
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
@@ -147,7 +148,7 @@ const NoteScreen = () => {
       </View>
 
       <View style={{margin: 15}}> 
-        <Heading text={"Tous les notes"} style={{marginBottom: 20}} />
+        <Heading text={"Toutes les notes"} style={{marginBottom: 20}} />
         
         <TouchableOpacity onPress={() => setVisible(true)} style={styles.addButton}>
           <AntDesign name="plus" size={24} color={colors.BLANC} />
@@ -171,7 +172,7 @@ const NoteScreen = () => {
                       <Text style={styles.text}>{item.note} / 20</Text>
                     </View>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 30}}>
-                      <Text style={[styles.text]}>Séquence : {item.sequence}</Text>
+                      <Text style={[styles.text]}>{item.sequence}</Text>
                       <Text style={styles.text}>{item.annee_scolaire}</Text>
                     </View>
                   </View>
@@ -317,7 +318,7 @@ const NoteScreen = () => {
             <TextInput
               placeholder='Entrer la nouvelle note'
               numberOfLines={1} multiline={false}
-              onChangeText={(text) =>setNewNote(text)}
+              onChangeText={(text) => setNewNote(text)}
               style={styles.textArea}
             />
 

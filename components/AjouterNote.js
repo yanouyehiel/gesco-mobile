@@ -1,12 +1,11 @@
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import { colors } from '@/utils/colors'
 import { Picker } from '@react-native-picker/picker'
 import Heading from '@/components/Heading'
 import { Ionicons } from '@expo/vector-icons'
 import { showToast } from '@/utils/fonctions'
-import { addNote, getStudents, getMatieresSchool } from "@/services/MainService";
+import { addNote, getStudents, getMatieresSchool, getSequences } from "@/services/MainService";
 
 const AjouterNote = ({user, headers, classe, close}) => {
     const [matieres, setMatieres] = useState([])
@@ -18,11 +17,18 @@ const AjouterNote = ({user, headers, classe, close}) => {
     const [selectSequence, setSelectSequence] = useState('');
     const [error, setError] = useState(false)
     const [note, setNote] = useState('')
+    const [sequences, setSequences] = useState([])
 
     useEffect(() => {
         getMatieres().then()
         getStudentsClasse().then(() => setLoading(false))
+        getAllSequences().then(() => setLoading(false))
     }, [classe])
+
+    async function getAllSequences() {
+        const res = await getSequences(ecole, headers)
+        setSequences(res)
+    }
 
     async function getMatieres() {
         try {
@@ -46,7 +52,9 @@ const AjouterNote = ({user, headers, classe, close}) => {
         setLoading(true)
         if (selectMatiere === "" || selectSequence === "" || selectStudent === "" || note === "") {
             setError(true)
-        } if (parseInt(note) > 0) {
+            showToast("Veuillez remplir tous les champs.")
+        } else if (parseInt(note) > 20) {
+            setError(true)
             showToast("Entrer une note inférieure ou égale à 20")
         } else {
             const data = {
@@ -55,16 +63,12 @@ const AjouterNote = ({user, headers, classe, close}) => {
                 matiere_id: parseInt(selectMatiere),
                 note: parseInt(note),
                 student_id: parseInt(selectStudent),
-                sequence: parseInt(selectSequence)
+                sequence_id: parseInt(selectSequence)
             }
     
             try {
-                if (selectMatiere !== "" && note !== "" && selectSequence !== "" && selectStudent !== "") {
-                    const res = await addNote(data, headers)
-                    showToast(res.message)
-                } else {
-                    setError(true)
-                }
+                const res = await addNote(data, headers)
+                showToast(res.message)
             } catch (error) {
                 showToast(error.response.message)
             }
@@ -106,12 +110,9 @@ const AjouterNote = ({user, headers, classe, close}) => {
                             itemStyle={{color: colors.BLEU}}
                         >
                             <Picker.Item label={"Sélectionner ici..."} value={""} />
-                            <Picker.Item label="Séquence 1" value={1} />
-                            <Picker.Item label="Séquence 2" value={2} />
-                            <Picker.Item label="Séquence 3" value={3} />
-                            <Picker.Item label="Séquence 4" value={4} />
-                            <Picker.Item label="Séquence 5" value={5} />
-                            <Picker.Item label="Séquence 6" value={6} />
+                            {sequences.length > 0 && sequences.map((seq, i) => (
+                                <Picker.Item key={i} label={seq.intitule} value={seq.id} />
+                            ))}
                         </Picker>
                         {error && <Text style={styles.errorText}>Veuillez sélectionner une séquence</Text>}
                     </View>

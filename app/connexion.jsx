@@ -45,6 +45,7 @@ const LoginScreen = () => {
             if (res.status_code === 401) {
               showToast(res.message)
             } else {
+              storeData('ecoleGesco', res.ecole).then()
               if (res.user.role_id === 2) {
                 storeData('tokenGesco', res).then(() => navigation.navigate("(tabs_teacher)"))
               } else if (res.user.role_id === 3) {

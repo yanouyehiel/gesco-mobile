@@ -1,11 +1,12 @@
-import { View, Text, StyleSheet, FlatList, Image } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Image, BackHandler, ScrollView, RefreshControl } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import PageHeading from '@/components/PageHeading'
 import SingleClassItem from '@/components/SingleClassItem'
 import { Skeleton } from 'moti/skeleton'
-import { getAllClasses, getHeaders, getUser } from '@/services/MainService'
+import { getAllClasses, getEcole, getHeaders, getUser } from '@/services/MainService'
 import { showToast } from '@/utils/fonctions'
+import { useNavigation } from '@react-navigation/native'
 
 const ClasseScreen = () => {
   const [classes, setClasses] = useState<any[]>([])
@@ -14,6 +15,9 @@ const ClasseScreen = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const navigation = useNavigation()
+  const [refreshing, setRefreshing] = useState(false);
+  const [ecole, setEcole] = useState(null)
   
   useEffect(() => {
     setIsLoading(true);
@@ -33,6 +37,20 @@ const ClasseScreen = () => {
     }
   }, [isLoading])
 
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack()
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   const fetchHeaders = async () => {
     try {
       const response: any | string = await getHeaders()
@@ -45,6 +63,7 @@ const ClasseScreen = () => {
   const fetchUser = async () => {
     await getUser().then(res => {
       setUser(res);
+      setEcole(res.ecole)
     });
   };
 
@@ -59,15 +78,34 @@ const ClasseScreen = () => {
     }
   };
 
+  const onRefresh = React.useCallback(() => {
+    setLoading(true)
+    setRefreshing(true);
+    fetchClasses().then(() => setLoading(false))
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   return (
-    <View style={{padding: 20, paddingTop: 40}}>
+    <ScrollView 
+      style={{padding: 20, paddingTop: 40}}
+      refreshControl={
+        <RefreshControl 
+          refreshing={refreshing} 
+          onRefresh={onRefresh}
+          colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
+          progressBackgroundColor={colors.BLANC}
+        />
+      }
+    >
       <PageHeading title={'Toutes les classes'} />
 
       {(classes.length > 0 && !loading) ?
         <FlatList 
           data={classes}
           renderItem={({item, index}) => (
-            <SingleClassItem headers={headers} user={user} classe={item} key={index} />
+            <SingleClassItem headers={headers} ecole={ecole} user={user} classe={item} key={index} />
           )}
           style={{marginTop: 20}}
           showsVerticalScrollIndicator={false}
@@ -78,17 +116,17 @@ const ClasseScreen = () => {
               <Image style={styles.image} />
             </Skeleton>
             <View style={styles.subcontainer}>
-              <Skeleton show={true} colorMode='light'>
+              <Skeleton show={true} colorMode='light' height={20}>
                 <Text style={[styles.text, {width: 50, marginBottom: 20}]}></Text>
               </Skeleton>
-              <Skeleton show={true} colorMode='light'>
+              <Skeleton show={true} colorMode='light' height={20}>
                 <Text style={[styles.text, {width: 150, marginBottom: 20}]}></Text>
               </Skeleton>
               <View style={{flexDirection: 'row', gap: 20}}>
-                <Skeleton show={true} colorMode='light'>
+                <Skeleton show={true} colorMode='light' height={15}>
                   <Text style={[styles.text, {width: 80}]}></Text>
                 </Skeleton>
-                <Skeleton show={true} colorMode='light'>
+                <Skeleton show={true} colorMode='light' height={15}>
                   <Text style={[styles.text, {width: 120}]}></Text>
                 </Skeleton>
               </View>
@@ -96,7 +134,7 @@ const ClasseScreen = () => {
           </View>
         ))
       }
-    </View>
+    </ScrollView>
   )
 }
 
@@ -119,7 +157,8 @@ const styles = StyleSheet.create({
   },
   subcontainer: {
     display: 'flex',
-    gap: 8
+    gap: 8,
+    marginRight: 20
   },
   image: {
     height: 80,

@@ -7,12 +7,12 @@ import { useRoute } from '@react-navigation/native';
 
 export default function HomeLayout({}) {
   const route = useRoute()
-  const { user, classe, headers } = route.params
+  const { user, classe, headers, ecole } = route.params
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer 
-        drawerContent={(props) => <SideBar classe={classe} {...props} />}
+        drawerContent={(props) => <SideBar classe={classe} ecole={ecole} {...props} />}
         screenOptions={{
           headerStyle: {
             backgroundColor: colors.BLEU

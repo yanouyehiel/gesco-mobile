@@ -29,7 +29,7 @@ const ModalStudent = ({ student, headers, visible, setVisible }) => {
       visible={visible}
       animationType='slide'
     >
-      <ScrollView style={{backgroundColor: "#f2f2f2"}}>
+      <ScrollView style={{backgroundColor: colors.BLANC}}>
         <TouchableOpacity style={styles.header} onPress={() => setVisible(false)}>
           <Ionicons name='arrow-back-outline' size={30} color="black" />
           <Text style={styles.titleHeader}>Détail de l'élève</Text>

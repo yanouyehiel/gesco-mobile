@@ -91,7 +91,7 @@ export async function getUser() {
 }
 
 export async function getEcole() {
-    const data = await AsyncStorage.getItem('tokenGesco')
+    const data = await AsyncStorage.getItem('ecoleGesco')
     if (data === null) {
         return "Pas de donnée stockée"
     } else {
@@ -212,5 +212,10 @@ export async function getMyChildren(id, headers) {
 
 export async function updateNote(data, headers) {
     const response = await axios.put(`https://gesco-app.com/gesco/api/update-note`, data, {headers});
+    return response.data;
+}
+
+export async function getSequences(id, headers) {
+    const response = await axios.get('https://gesco-app.com/gesco/api/get-sequences/'+parseInt(id), {headers});
     return response.data;
 }

@@ -23,7 +23,6 @@ const CourseScreen = () => {
 
   useEffect(() => {
     getCours().then(() => setLoading(false))
-    console.log(headers)
   }, [classe, user, headers])
 
   const getCours = async () => {
@@ -45,7 +44,7 @@ const CourseScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{backgroundColor: colors.BLANC}}>
       <StatusBar />
       <KeyboardAvoidingView>
         <ScrollView
@@ -124,7 +123,7 @@ const CourseScreen = () => {
                   <View style={{marginBottom: 10}}>
                     <Skeleton 
                       show={true}
-                      width={190}
+                      width={210}
                       height={10} 
                       colorMode='light'
                     />

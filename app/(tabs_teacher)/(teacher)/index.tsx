@@ -14,6 +14,7 @@ import { showToast } from '@/utils/fonctions'
 import "react-native-gesture-handler"
 import ShowEvent from "@/components/ShowEvent";
 import { BackHandler } from 'react-native'
+import { useRoute } from '@react-navigation/native'
 
 const HomeScreen = () => {
   const [matieres, setMatieres] = useState<any[]>([])
@@ -28,6 +29,8 @@ const HomeScreen = () => {
   const [loadingMatiere, setLoadingMatiere] = useState<any>(true)
   const [showEvent, setShowEvent] = useState<any>(false)
   const [refreshing, setRefreshing] = useState(false);
+  const route = useRoute();
+  const routeName = route.name;
 
   useEffect(() => {
     const fetchHeaders = async () => {

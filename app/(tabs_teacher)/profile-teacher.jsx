@@ -7,6 +7,7 @@ import { getHeaders, removeStorge, getUser, getTokenId } from '@/services/MainSe
 import { showToast } from '@/utils/fonctions';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BackHandler } from 'react-native';
 
 const ProfileTeacher = () => {
     const navigation = useNavigation()
@@ -29,6 +30,20 @@ const ProfileTeacher = () => {
         fetchHeaders()
         fetchUser(() => console.log(user))
     }, [])
+
+    useEffect(() => {
+        const backAction = () => {
+          navigation.navigate("(teacher)")
+          return true;
+        };
+    
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          backAction
+        );
+    
+        return () => backHandler.remove();
+    }, []);
 
     const fetchUser = async () => {
         await getUser().then(res => {

@@ -38,7 +38,7 @@ const CourseScreen = () => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{backgroundColor: colors.BLANC}}>
       <KeyboardAvoidingView>
         <ScrollView>
           <View style={styles.banner}>

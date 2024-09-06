@@ -24,12 +24,12 @@ const DevoirScreen = () => {
       const res = await axios.get('https://gesco-app.com/gesco/api/get-devoirs-children/' + student.classe_id, {headers: headers});
       setDevoirs(res.data)
     } catch (error) {
-      showToast(error.response.message)
+      showToast(error.message)
     }
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{backgroundColor: colors.BLANC}}>
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
           <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>

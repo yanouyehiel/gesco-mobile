@@ -9,15 +9,13 @@ const SideBar = (props) => {
   return (
     <DrawerContentScrollView {...props}>
       <ScrollView>
-        <ImageBackground 
-            style={{padding: 16, paddingTop: 10, display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center'}}
-        >
+        <View style={styles.imageBloc}>
             <Image source={require("@/assets/images/classe.png")} style={styles.image} />
             <View>
                 <Text style={styles.name}>{props.classe.nom}</Text>
-                <Text>{props.classe.nom_ecole}</Text>
+                <Text style={{fontSize: 17}}>{props.ecole.nom}</Text>
             </View>
-        </ImageBackground>
+        </View>
 
         <View style={{ borderBottomColor: colors.BLEU, borderBottomWidth: 1 }} />
 
@@ -56,6 +54,15 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "600",
         marginVertical: 8
+    },
+    imageBloc: {
+        padding: 16, 
+        paddingTop: 10, 
+        display: 'flex', 
+        flexDirection: 'row', 
+        gap: 10, 
+        alignItems: 'center',
+        borderRadius: 50
     }
 })
 

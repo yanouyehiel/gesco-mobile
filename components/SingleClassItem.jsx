@@ -1,16 +1,16 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { colors } from '@/utils/colors'
 import { useNavigation } from 'expo-router'
 
-const SingleClassItem = ({classe, headers, user}) => {
+const SingleClassItem = ({classe, headers, user, ecole}) => {
     const navigation = useNavigation()
 
     return (
         <TouchableOpacity 
             style={styles.container} 
             onPress={() => navigation.navigate('(classe-detail)', {
-                classe: classe, user: user, headers: headers
+                classe: classe, user: user, headers: headers, ecole: ecole
             })}
         >
             <Image 
@@ -28,7 +28,7 @@ const SingleClassItem = ({classe, headers, user}) => {
                 </View>
                 <View style={{display: 'flex', flexDirection: 'row', gap: 10}}>
                     <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{classe.effectif} élèves</Text>
-                    <Text style={{color: colors.BLANC, backgroundColor: colors.BLEU, fontSize: 15, borderRadius: 5, padding: 5, fontFamily: 'Bold'}}>{classe.nom_ecole}</Text>
+                    <Text style={{color: colors.BLANC, backgroundColor: colors.BLEU, fontSize: 15, borderRadius: 5, padding: 5, fontFamily: 'Bold'}}>{ecole.nom}</Text>
                 </View>
             </View>
         </TouchableOpacity>

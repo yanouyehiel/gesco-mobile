@@ -51,6 +51,7 @@ const DevoirScreen = () => {
           progressBackgroundColor={colors.BLANC}
         />
       }
+      style={{backgroundColor: colors.BLANC}}
     >
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>

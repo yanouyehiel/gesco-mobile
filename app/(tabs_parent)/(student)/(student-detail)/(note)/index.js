@@ -27,6 +27,7 @@ const NoteScreen = () => {
     try {
       const res = await axios.get(`https://gesco-app.com/gesco/api/get-notes-children/${parseInt(student.id)}`, {headers});
       setNotes(res.data.notes)
+      console.log(res.data.notes)
     } catch (error) {
       showToast(error.message)
     }
@@ -38,7 +39,7 @@ const NoteScreen = () => {
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{backgroundColor: colors.BLANC}}>
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
           <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
@@ -51,7 +52,7 @@ const NoteScreen = () => {
       </View>
 
       <View style={{margin: 15}}> 
-        <Heading text={"Tous les notes"} />
+        <Heading text={"Toutes les notes"} />
         {!loading ? <FlatList
           data={notes}
           showsVerticalScrollIndicator={false}
@@ -72,7 +73,7 @@ const NoteScreen = () => {
                     <Text style={styles.text}>{item.note} / 20</Text>
                   </View>
                   <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={[styles.text, {fontFamily: 'Bold'}]}>Séquence : {item.sequence}</Text>
+                    <Text style={[styles.text, {fontFamily: 'Bold'}]}>{item.sequence}</Text>
                     <Text style={[styles.text, {marginRight: 20}]}>{item.annee_scolaire}</Text>
                   </View>
                   <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>

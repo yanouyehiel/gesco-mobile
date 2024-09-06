@@ -51,6 +51,7 @@ const AbsenceScreen = () => {
           progressBackgroundColor={colors.BLANC}
         />
       }
+      style={{backgroundColor: colors.BLANC}}
     >
       <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
