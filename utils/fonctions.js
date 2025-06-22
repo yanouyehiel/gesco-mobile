@@ -1,4 +1,5 @@
 import { ToastAndroid } from "react-native";
+import Toast from 'react-native-toast-message';
 
 export function dateParser(date) {
     let newDate = new Date(date).toLocaleDateString('fr-FR', {
@@ -51,6 +52,16 @@ export function getTimeElapsed(dateStr) {
     return `${days}jour ${hours}h ${minutes}min`
 }
 
-export const showToast = (text) => {
+/*export const showToast = (text) => {
     ToastAndroid.show(text, ToastAndroid.LONG);
+};*/
+
+export const showToast = (text, type = 'success', position = 'top') => {
+  Toast.show({
+    type: type, // 'success', 'error', 'info'
+    text1: text,
+    position,
+    visibilityTime: 4000,
+    autoHide: true,
+  });
 };

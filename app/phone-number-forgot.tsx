@@ -2,13 +2,14 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, Modal, Touc
 import React, { useEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { colors } from '@/utils/colors';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+
 
 const PhoneNumberForgot = () => {
     const [areas, setAreas] = useState([])
     const [selectedArea, setSelectedArea] = useState<any>({})
     const [modalVisible, setModalVisible] = useState(false)
-    const navigation = useNavigation()
+    const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
     const [tel, setTel] = useState("")
@@ -19,7 +20,7 @@ const PhoneNumberForgot = () => {
             setError(true)
             setLoading(false)
         } else {
-            navigation.navigate("otp-code")
+            router.push("/otp-code")
         }
     }
 
@@ -116,7 +117,7 @@ const PhoneNumberForgot = () => {
                             >
                                 <AntDesign 
                                     name="close" 
-                                    style={{tintColor: colors.BLEU}}
+                                    color={colors.BLEU}
                                     size={20}
                                 />
                             </TouchableOpacity>
@@ -125,7 +126,7 @@ const PhoneNumberForgot = () => {
                                 data={areas}
                                 renderItem={renderItem}
                                 horizontal={false}
-                                keyExtractor={item => item.code.toString()}
+                                keyExtractor={(item: any) => item.code.toString()}
                                 style={{ padding: 20, marginBottom: 20 }}
                             />
                         </View>

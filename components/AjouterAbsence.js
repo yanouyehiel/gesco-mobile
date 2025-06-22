@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import CalendarPicker from 'react-native-calendar-picker'
 import Heading from '@/components/Heading'
 import { colors } from '@/utils/colors'
-import { Picker } from '@react-native-picker/picker'
+import DropDownPicker from 'react-native-dropdown-picker';
 import { addAbsence, getStudents } from '@/services/MainService'
 import { showToast } from '@/utils/fonctions'
 
@@ -18,6 +18,8 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
     const [students, setStudents] = useState([])
     const [selectedStudent, setSelectedStudent] = useState()
     const [error, setError] = useState(false)
+    const [open, setOpen] = useState(false);
+    const [studentItems, setStudentItems] = useState([]);
 
     const getTime = () => {
         const timeList1 = []
@@ -38,8 +40,16 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
 
     useEffect(() => {
         getTime()
-        getStudentsClasse().then(() => setLoading(false))
-    }, [])
+        getStudentsClasse().then(() => {
+            setStudentItems(
+                students.map(student => ({
+                    label: `${student.nom} ${student.prenom}`,
+                    value: student.id
+                }))
+            );
+            setLoading(false)
+        })
+    }, [students])
 
     async function getStudentsClasse() {
         const res = await getStudents(classe.id, user.ecole_id, headers)
@@ -134,17 +144,19 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
 
                     <View style={{marginTop: 20}}>
                         <Text style={{fontFamily: 'SemiBold', fontSize: 20}}>Sélectionner un élève</Text>
-                        <Picker
-                            selectedValue={selectedStudent}
-                            onValueChange={(itemValue) => setSelectedStudent(itemValue)}
-                            style={styles.textArea} 
-                            itemStyle={{color: colors.BLEU}}
-                        >
-                            <Picker.Item label={"Sélectionner ici..."} value={""} />
-                            {students.map((student, i) => (
-                            <Picker.Item label={student.nom + ' ' + student.prenom} value={student.id} key={i} />
-                            ))}
-                        </Picker>
+                        <DropDownPicker
+                            open={open}
+                            value={selectedStudent}
+                            items={studentItems}
+                            setOpen={setOpen}
+                            setValue={setSelectedStudent}
+                            setItems={setStudentItems}
+                            placeholder="Sélectionner un élève"
+                            style={[styles.textArea, {marginTop: 10}]}
+                            dropDownContainerStyle={{borderColor: colors.BLEU}}
+                            listItemLabelStyle={{color: colors.BLEU}}
+                            zIndex={1000}
+                        />
                         {error && <Text style={styles.errorText}>Veuillez sélectionner un élève</Text>}
                     </View>
 

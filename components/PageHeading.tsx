@@ -1,14 +1,18 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
+import { useRouter } from 'expo-router'
 
-const PageHeading = ({title}) => {
-    const navigation = useNavigation()
+type PageHeadingProps = {
+    title: string;
+};
+
+const PageHeading: React.FC<PageHeadingProps> = ({ title }) => {
+    const router = useRouter()
     
     return (
         <View>
-            <TouchableOpacity style={styles.header} onPress={() => navigation.goBack()}>
+            <TouchableOpacity style={styles.header} onPress={() => router.back()}>
                 <Ionicons name='arrow-back-outline' size={30} color="black" />
                 <Text style={styles.titleHeader}>{title}</Text>
             </TouchableOpacity>

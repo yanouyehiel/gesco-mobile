@@ -1,15 +1,15 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
-import { useNavigation } from 'expo-router'
 import { colors } from '@/utils/colors'
+import { useRouter } from 'expo-router'
 
 const SingleStudentItem = ({student, headers, user}) => {
-    const navigation = useNavigation()
+    const router = useRouter()
 
     return (
         <TouchableOpacity 
             style={styles.container} 
-            onPress={() => navigation.navigate('(student-detail)', {
+            onPress={() => router.push('/(tabs_parent)/(student)/(student-detail)/student', {
                 student: student, user: user, headers: headers
             })}
         >

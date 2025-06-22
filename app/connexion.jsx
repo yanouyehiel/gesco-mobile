@@ -2,16 +2,14 @@ import { View, Text,  TextInput, TouchableOpacity, ActivityIndicator, StyleSheet
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated'
-import { useNavigation } from '@react-navigation/native'
+import { useRouter } from 'expo-router';
 import { getHeaders, login, storeData } from '@/services/MainService'
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { showToast } from '@/utils/fonctions'
-import axios from 'axios'
-import { API_URL, AUTH } from '@/utils/global'
 
 
 const LoginScreen = () => {
-  const navigation = useNavigation()
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -25,6 +23,7 @@ const LoginScreen = () => {
   }
 
   async function handleSubmit() {  
+    console.log('handleSubmit appelé');
     setError(false)
     if (email === '' || password === '') {
       setError(true)
@@ -39,26 +38,28 @@ const LoginScreen = () => {
         }
         setLoading(true) 
         try {
+          console.log('Envoi de la requête de connexion');
           await login(data).then((res) => {
             setEmail("")
             setPassword("")
             if (res.status_code === 401) {
-              showToast(res.message)
+              showToast(res.message, 'error')
             } else {
               storeData('ecoleGesco', res.ecole).then()
               if (res.user.role_id === 2) {
-                storeData('tokenGesco', res).then(() => navigation.navigate("(tabs_teacher)"))
+                storeData('tokenGesco', res).then(() => router.push("(tabs_teacher)"))
               } else if (res.user.role_id === 3) {
-                storeData('tokenGesco', res).then(() => navigation.navigate("(tabs_parent)"))         
+                storeData('tokenGesco', res).then(() => router.push("(tabs_parent)"))         
               }  else {
-                showToast("Vous n'avez pas les accès.")
+                showToast("Vous n'avez pas les accès.", 'error')
               } 
             }          
           }, (err) => {
-            showToast(err.response?.data.message)
+            showToast(err.response?.data.message, 'error')
           })
         } catch (err) {
-          showToast(err.response?.data.message);
+          console.error('Erreur lors de la connexion:', err.response?.data.message);
+          showToast(err.response?.data.message, 'error');
         }
       } else {
         setError(true)
@@ -134,14 +135,14 @@ const LoginScreen = () => {
                 }
               </TouchableOpacity>
             </Animated.View>
-            <TouchableOpacity onPress={() => navigation.navigate('password-forgot')}>
+            <TouchableOpacity onPress={() => router.push('password-forgot')}>
               <Text 
                 style={{color: colors.BLEU, fontFamily: 'Regular', fontSize: 20, textAlign: 'center'}}
               >Mot de passe oublié ?</Text>
             </TouchableOpacity>
             <View>
               <Text style={{fontFamily: 'Regular', fontSize: 20, textAlign: 'center'}}>Vous n'avez pas de compte ?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('register')}>
+              <TouchableOpacity onPress={() => router.push('register')}>
                 <Text 
                   style={{color: colors.BLEU, fontFamily: 'Regular', fontSize: 20, textAlign: 'center'}}
                 >S'inscrire</Text>

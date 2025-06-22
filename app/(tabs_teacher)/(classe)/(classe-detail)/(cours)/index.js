@@ -7,13 +7,12 @@ import { dateParser, longueurTexte, showToast } from '@/utils/fonctions';
 import Heading from '@/components/Heading';
 import { Skeleton } from 'moti/skeleton';
 import NoData from '@/components/NoData';
-import { useRoute } from '@react-navigation/native';
 import "react-native-gesture-handler"
 import { getAllCoursClasse } from '@/services/MainService';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const CourseScreen = () => {
-  const route = useRoute()
-  const { classe, user, headers } = route.params
+  const { classe, user, headers } = useLocalSearchParams()
   const [cours, setCours] = useState([])
   const [cour, setCour] = useState({})
   const [loading, setLoading] = useState(true)
@@ -194,7 +193,12 @@ const CourseScreen = () => {
             visible={visible}
             onTouchStart={() => setVisible(false)}
           >
-            <AjouterCours close={() => setVisible(false)} user={user} headers={headers} classe={classe} />
+            <AjouterCours 
+              close={() => setVisible(false)} 
+              user={user} 
+              headers={headers} 
+              classe={classe} 
+            />
           </Modal>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -1,160 +1,182 @@
-import { View, Text, KeyboardAvoidingView, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { Ionicons } from '@expo/vector-icons'
-import Heading from '@/components/Heading'
-import { colors } from '@/utils/colors'
-import { Picker } from '@react-native-picker/picker'
-import { showToast } from '@/utils/fonctions'
-import { addCours, getMatieresSchool } from '@/services/MainService'
+import React, { useEffect, useState } from 'react';
+import { View, Text, KeyboardAvoidingView, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import Heading from '@/components/Heading';
+import { colors } from '@/utils/colors';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { showToast } from '@/utils/fonctions';
+import { addCours, getMatieresSchool } from '@/services/MainService';
 
-const AjouterCours = ({user, headers, classe, close}) => {
-    const [selectedValue, setSelectedValue] = useState('');
-    const [matieres, setMatieres] = useState([])
-    const ecole = user.ecole_id
-    const [loading, setLoading] = useState(true)
-    const [titre, setTitre] = useState("")
-    const [desc, setDesc] = useState("")
-    const [error, setError] = useState(false)
+const AjouterCours = ({ user, headers, classe, close }) => {
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [matieres, setMatieres] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [titre, setTitre] = useState('');
+  const [desc, setDesc] = useState('');
+  const [error, setError] = useState(false);
 
-    useEffect(() => {
-        getMatieres().then(() => setLoading(false))
-    }, [])
+  // Etats spécifiques à DropDownPicker
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([]);
 
-    async function getMatieres() {
-        try {
-            const res = await getMatieresSchool(ecole, headers)
-            setMatieres(res)
-        } catch (error) {
-            showToast(error.message)
-        }
+  const ecole = user.ecole_id;
+
+  useEffect(() => {
+    getMatieres().then(() => setLoading(false));
+  }, []);
+
+  async function getMatieres() {
+    try {
+      const res = await getMatieresSchool(ecole, headers);
+      setMatieres(res);
+      setItems(
+        res.map((matiere) => ({
+          label: matiere.intitule,
+          value: matiere.id,
+        }))
+      );
+    } catch (error) {
+      showToast(error.message);
     }
+  }
 
-    async function handleSubmit() {
-        setLoading(true)
-        if (titre === "" || desc === "" || selectedValue === "") {
-            setError(true)
-        } else {
-            const data = {
-                titre: titre,
-                description: desc,
-                matiere_id: selectedValue,
-                teacher_id: user.id,
-                ecole_id: ecole,
-                classe_id: classe.id
-            }
-    
-            try {
-                const res = await addCours(data, headers)
-                showToast(res.message)
-            } catch (error) {
-                showToast(error.message)
-            }
-        }
-        setLoading(false)
+  async function handleSubmit() {
+    setLoading(true);
+    if (titre === '' || desc === '' || !selectedValue) {
+      setError(true);
+      setLoading(false);
+      return;
     }
+    setError(false);
 
-    return (
-        <View style={{flex: 1, margin: 15}}>
-            <KeyboardAvoidingView>
-                <TouchableOpacity style={styles.header} onPress={() => close()}>
-                    <Ionicons name='arrow-back-outline' size={30} color="black" />
-                    <Text style={styles.titleHeader}>Enregistrer un cours</Text>
-                </TouchableOpacity>
+    const data = {
+      titre: titre,
+      description: desc,
+      matiere_id: selectedValue,
+      teacher_id: user.id,
+      ecole_id: ecole,
+      classe_id: classe.id,
+    };
 
-                <View style={{margin: 10}}>
-                    <View style={{marginTop: 20, paddingBottom: 20}}>
-                        <Heading text={"Remplissez le formulaire"} />
-                        <TextInput
-                            placeholder='Entrer le titre du cours'
-                            style={[error ? styles.error : styles.textArea]}
-                            numberOfLines={1} multiline={false}
-                            onChangeText={(text) => setTitre(text)}
-                        />
-                        {error && <Text style={styles.errorText}>Veuillez entrer le titre du cours</Text>}
+    try {
+      const res = await addCours(data, headers);
+      showToast(res.message);
+      // Tu peux éventuellement fermer ou réinitialiser le formulaire ici
+    } catch (error) {
+      showToast(error.message);
+    }
+    setLoading(false);
+  }
 
-                        <TextInput
-                            placeholder='Entrer le résumé du cours'
-                            style={[error ? styles.error : styles.textArea]}
-                            numberOfLines={5} multiline={false}
-                            onChangeText={(text) => setDesc(text)}
-                        />
-                        {error && <Text style={styles.errorText}>Veuillez entrer une description du cours</Text>}
+  return (
+    <View style={{ flex: 1, margin: 15 }}>
+      <KeyboardAvoidingView>
+        <TouchableOpacity style={styles.header} onPress={() => close()}>
+          <Ionicons name="arrow-back-outline" size={30} color="black" />
+          <Text style={styles.titleHeader}>Enregistrer un cours</Text>
+        </TouchableOpacity>
 
-                        <View>
-                            <Text style={{fontFamily: 'SemiBold', fontSize: 20}}>Sélectionner la matière</Text>
-                            <Picker
-                                selectedValue={selectedValue}
-                                onValueChange={(itemValue) => setSelectedValue(itemValue)}
-                                style={styles.textArea}
-                                itemStyle={{color: colors.BLEU}}
-                            >
-                                <Picker.Item label={"Sélectionner ici..."} value={""} />
-                                {matieres.map((matiere, i) => (
-                                <Picker.Item label={matiere.intitule} value={matiere.id} key={i} />
-                                ))}
-                            </Picker>
-                            {error && <Text style={styles.errorText}>Veuillez sélectionner une matière</Text>}
-                        </View>
+        <View style={{ margin: 10 }}>
+          <View style={{ marginTop: 20, paddingBottom: 20 }}>
+            <Heading text={'Remplissez le formulaire'} />
+            <TextInput
+              placeholder="Entrer le titre du cours"
+              style={[error && titre === '' ? styles.error : styles.textArea]}
+              numberOfLines={1}
+              multiline={false}
+              onChangeText={(text) => setTitre(text)}
+              value={titre}
+            />
+            {error && titre === '' && <Text style={styles.errorText}>Veuillez entrer le titre du cours</Text>}
 
-                        <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
-                            {loading ? <ActivityIndicator color={colors.BLANC} size='large' /> :
-                                <Text style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 23}}>Enregistrer</Text>
-                            }
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </KeyboardAvoidingView>
+            <TextInput
+              placeholder="Entrer le résumé du cours"
+              style={[error && desc === '' ? styles.error : styles.textArea]}
+              numberOfLines={5}
+              multiline={true}
+              onChangeText={(text) => setDesc(text)}
+              value={desc}
+            />
+            {error && desc === '' && <Text style={styles.errorText}>Veuillez entrer une description du cours</Text>}
+
+            <View style={{ marginTop: 10, zIndex: 1000 }}>
+              <Text style={{ fontFamily: 'SemiBold', fontSize: 20, marginBottom: 5 }}>Sélectionner la matière</Text>
+              <DropDownPicker
+                open={open}
+                value={selectedValue}
+                items={items}
+                setOpen={setOpen}
+                setValue={setSelectedValue}
+                setItems={setItems}
+                placeholder="Sélectionner ici..."
+                style={[styles.textArea, error && !selectedValue ? styles.error : null]}
+                dropDownContainerStyle={{ borderColor: colors.BLEU }}
+                listItemLabelStyle={{ color: colors.BLEU }}
+              />
+              {error && !selectedValue && <Text style={styles.errorText}>Veuillez sélectionner une matière</Text>}
+            </View>
+
+            <TouchableOpacity onPress={handleSubmit} style={styles.btn} disabled={loading}>
+              {loading ? (
+                <ActivityIndicator color={colors.BLANC} size="large" />
+              ) : (
+                <Text style={{ fontFamily: 'Regular', color: colors.BLANC, fontSize: 23 }}>Enregistrer</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-    )
-}
+      </KeyboardAvoidingView>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    header: {
-        display: 'flex',
-        flexDirection: 'row',
-        gap: 10,
-        alignItems: 'center',
-        marginBottom: 20
-    },
-    titleHeader: {
-        fontSize: 25,
-        fontFamily: 'Bold',
-        textAlign: 'center',
-        color: colors.NOIR
-    },
-    textArea: {
-        borderWidth: 1,
-        borderRadius: 15,
-        textAlignVertical: 'top',
-        padding: 10,
-        fontSize: 16,
-        borderColor: colors.BLEU,
-        marginBottom: 15
-    },
-    error: {
-        borderWidth: 1,
-        borderRadius: 15,
-        textAlignVertical: 'top',
-        padding: 10,
-        fontSize: 16,
-        borderColor: colors.ROUGE
-    },
-    errorText: {
-        color: colors.ROUGE, 
-        fontSize: 15,
-        marginBottom: 15
-    },
-    btn: {
-        height: 50,
-        width: "100%",
-        marginTop: 20,
-        marginBottom: 20,
-        borderRadius: 10,
-        backgroundColor: colors.BLEU,
-        display: 'flex',
-        justifyContent:'center',
-        alignItems: 'center'
-    }
-})
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  titleHeader: {
+    fontSize: 25,
+    fontFamily: 'Bold',
+    textAlign: 'center',
+    color: colors.NOIR,
+  },
+  textArea: {
+    borderWidth: 1,
+    borderRadius: 15,
+    textAlignVertical: 'top',
+    padding: 10,
+    fontSize: 16,
+    borderColor: colors.BLEU,
+    marginBottom: 15,
+  },
+  error: {
+    borderWidth: 1,
+    borderRadius: 15,
+    textAlignVertical: 'top',
+    padding: 10,
+    fontSize: 16,
+    borderColor: colors.ROUGE,
+  },
+  errorText: {
+    color: colors.ROUGE,
+    fontSize: 15,
+    marginBottom: 15,
+  },
+  btn: {
+    height: 50,
+    width: '100%',
+    marginTop: 20,
+    marginBottom: 20,
+    borderRadius: 10,
+    backgroundColor: colors.BLEU,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
-export default AjouterCours
+export default AjouterCours;

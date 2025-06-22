@@ -14,7 +14,7 @@ import { showToast } from '@/utils/fonctions'
 import "react-native-gesture-handler"
 import ShowEvent from "@/components/ShowEvent";
 import { BackHandler } from 'react-native'
-import { useRoute } from '@react-navigation/native'
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const HomeScreen = () => {
   const [matieres, setMatieres] = useState<any[]>([])
@@ -29,8 +29,8 @@ const HomeScreen = () => {
   const [loadingMatiere, setLoadingMatiere] = useState<any>(true)
   const [showEvent, setShowEvent] = useState<any>(false)
   const [refreshing, setRefreshing] = useState(false);
-  const route = useRoute();
-  const routeName = route.name;
+  const route = useRouter();
+  const routeName = useLocalSearchParams<{ name: string }>();
 
   useEffect(() => {
     const fetchHeaders = async () => {
@@ -149,7 +149,8 @@ const HomeScreen = () => {
             user={user}
             loading={loadingClasse}
             Component={SlideClassItem} 
-            titleHeading='Nos Classes' 
+            titleHeading='Nos Classes'
+            style={{}} 
           />
           <Slider 
             slider={matieres} 

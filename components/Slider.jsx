@@ -4,7 +4,15 @@ import SkeletonComponent from '@/components/SkeletonComponent'
 import Heading from '@/components/Heading'
 import NoData from '@/components/NoData'
 
-const Slider = ({ titleHeading, slider, Component, headers, user, style, loading }) => {
+const Slider = ({ 
+    titleHeading, 
+    slider, 
+    Component, 
+    headers, 
+    user, 
+    style, 
+    loading 
+}) => {
   
     return (
         <View style={style}>

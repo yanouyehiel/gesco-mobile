@@ -2,17 +2,18 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator 
 import React, { useState } from 'react'
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated'
 import { colors } from '@/utils/colors'
-import { useNavigation } from '@react-navigation/native'
 import { showToast } from '@/utils/fonctions'
 import { sendLinkResetPassword } from '@/services/MainService'
+import { useRouter } from 'expo-router'
 
 const PasswordForgot = () => {
-  const navigate = useNavigation()
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState("")
+  const router = useRouter()
 
   const handleSubmit = async () => {
+    console.log("Email:", email)
     setLoading(true)
     try {
       const data = {
@@ -24,6 +25,7 @@ const PasswordForgot = () => {
         setError(true)
         showToast(err.response.data.message)
       })
+      console.log('on fait la requête')
     } catch (error: any) {
       setError(true)
       showToast(error.response?.data.message);
@@ -73,7 +75,7 @@ const PasswordForgot = () => {
                 <Text 
                   style={{fontFamily: 'Regular', fontSize: 20, textAlign: 'center'}}
                 >Vous vous souvenez de vos identifiants ?</Text>
-                <TouchableOpacity onPress={() => navigate.navigate('connexion')}>
+                <TouchableOpacity onPress={() => router.push('/connexion')}>
                     <Text 
                       style={{color: colors.BLEU, fontFamily: 'Regular', fontSize: 20, textAlign: 'center'}}
                     >connectez-vous</Text>

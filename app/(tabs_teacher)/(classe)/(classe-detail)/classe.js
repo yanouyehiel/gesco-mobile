@@ -1,7 +1,7 @@
 import { View, Text, Image, StyleSheet, FlatList, ScrollView, TouchableOpacity, BackHandler } from 'react-native'
 import React, { useEffect } from 'react'
 import { colors } from '@/utils/colors';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 const items = [
   {
@@ -32,11 +32,11 @@ const items = [
 ]
 
 const HomeDetail = () => {
-  const navigation = useNavigation()
+  const router = useRouter()
 
   useEffect(() => {
     const backAction = () => {
-      navigation.goBack()
+      router.back()
       return true;
     };
 
@@ -56,7 +56,7 @@ const HomeDetail = () => {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={(({item, index}) => (
-            <TouchableOpacity onPress={() => navigation.navigate(item.link)} key={index}>
+            <TouchableOpacity onPress={() => router.push(item.link)} key={index}>
               <View style={styles.item}>
                 <Image source={item.icon} style={styles.itemImage} />
                 <Text style={styles.itemText}>{item.text}</Text>

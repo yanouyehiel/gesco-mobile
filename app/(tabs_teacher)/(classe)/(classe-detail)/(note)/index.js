@@ -1,6 +1,5 @@
 import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView, RefreshControl, Modal, Animated, TextInput } from 'react-native'
 import React, { useRef, useState, useEffect } from 'react'
-import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData';
@@ -14,12 +13,12 @@ import { SimpleLineIcons } from '@expo/vector-icons';
 import { updateNote, getNotesClasse } from "@/services/MainService";
 import { Easing } from 'react-native'
 import { ActivityIndicator } from 'react-native'
+import { useLocalSearchParams } from 'expo-router';
 
 const NoteScreen = () => {
   const [loading, setLoading] = useState(true)
   const [notes, setNotes] = useState([])
-  const route = useRoute()
-  const { classe, user, headers } = route.params
+  const { classe, user, headers } = useLocalSearchParams()
   const bottomSheetModalRef = useRef(null);
   const handleClosePress = () => bottomSheetModalRef.current?.close()
   const [refreshing, setRefreshing] = useState(false);

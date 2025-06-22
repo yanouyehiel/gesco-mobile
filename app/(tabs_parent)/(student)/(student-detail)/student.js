@@ -1,8 +1,7 @@
 import { View, Text, Image, StyleSheet, FlatList, ScrollView, TouchableOpacity, BackHandler } from 'react-native'
 import React, { useEffect } from 'react'
 import { colors } from '@/utils/colors';
-import { useRoute } from '@react-navigation/native';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 const items = [
   {
@@ -33,11 +32,11 @@ const items = [
 ]
 
 const HomeDetail = () => {
-  const navigation = useNavigation()
+  const router = useRouter()
 
   useEffect(() => {
     const backAction = () => {
-      navigation.navigate("(tabs_parent)")
+      router.push("/(tabs_parent)/home")
       return true;
     };
 
@@ -57,7 +56,7 @@ const HomeDetail = () => {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={(({item, index}) => (
-            <TouchableOpacity onPress={() => navigation.navigate(item.link)}>
+            <TouchableOpacity onPress={() => router.push(item.link)}>
               <View style={styles.item} key={index}>
                 <Image source={item.icon} style={styles.itemImage} />
                 <Text style={styles.itemText}>{item.text}</Text>

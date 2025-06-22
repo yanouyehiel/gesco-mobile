@@ -1,15 +1,14 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, FlatList } from 'react-native'
 import React, { useState } from 'react'
 import { colors } from '@/utils/colors'
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { Picker } from '@react-native-picker/picker'
 import { register, storeData } from '@/services/MainService'
 import { showToast } from '@/utils/fonctions'
-import { useNavigation } from 'expo-router'
+import { useRouter } from 'expo-router'
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const SignupScreen = () => {
-  const navigation = useNavigation()
   const [error, setError] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [password, setPassword] = useState("")
@@ -19,7 +18,13 @@ const SignupScreen = () => {
   const [tel, setTel] = useState("")
   const [ID, setID] = useState("")
   const [loading, setLoading] = useState(false)
-  const [selectedRole, setSelectedRole] = useState(null)
+  const router = useRouter()
+  const [open, setOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [items, setItems] = useState([
+    {label: 'Enseignant', value: 2},
+    {label: 'Parent', value: 3}
+  ]);
 
   const toggleShowPassword = () => { 
     setShowPassword(!showPassword); 
@@ -27,7 +32,17 @@ const SignupScreen = () => {
 
   async function handleSubmit() {
     setLoading(true)
-    if (nom === "" || prenom === "" || email === "" || tel === "" || ID === "" || password === "" || selectedRole < 0) {
+    if (
+      nom === "" ||
+      prenom === "" ||
+      email === "" ||
+      tel === "" ||
+      ID === "" ||
+      password === "" ||
+      selectedRole === null ||
+      selectedRole === "" ||
+      selectedRole < 0
+    ) {
       setError(true)
       showToast("Veuillez remplir tous les champs.")
     } else {
@@ -52,7 +67,10 @@ const SignupScreen = () => {
             setTel("")
             setPassword("")
             setID("")
-            navigation.navigate('onboarding', { user: res.user })
+            router.push({
+              pathname: '/onboarding',
+              params: { user: res.user }
+            })
           }, 2500)
         }, (err) => {
           setError(true)
@@ -67,7 +85,11 @@ const SignupScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <FlatList 
+      style={styles.container} 
+      data={[]}
+      renderItem={null as any}
+      ListHeaderComponent={
         <View>
           <View style={{marginBottom: 40}}>
             <Animated.Text 
@@ -147,15 +169,16 @@ const SignupScreen = () => {
               />
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()}>
-              <Picker
-                selectedValue={selectedRole}
-                onValueChange={(itemValue) => setSelectedRole(itemValue)}
-                itemStyle={{color: colors.BLEU}}
-              >
-                <Picker.Item label={"Sélectionner votre rôle"} value={""} />
-                <Picker.Item label={"Enseignant"} value={2} />
-                <Picker.Item label={"Parent"} value={3} />
-              </Picker>
+              <DropDownPicker
+                open={open}
+                value={selectedRole}
+                items={items}
+                setOpen={setOpen}
+                setValue={setSelectedRole}
+                setItems={setItems}
+                placeholder="Sélectionner votre rôle"
+                style={styles.select}
+              />
             </Animated.View>
             <Animated.View entering={FadeInDown.delay(600).duration(1000).springify()}>
               <TouchableOpacity
@@ -171,7 +194,7 @@ const SignupScreen = () => {
               <Text 
                 style={{fontFamily: 'Regular', fontSize: 20, textAlign: 'center'}}
               >Vous avez déjà un compte ?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('connexion')}>
+              <TouchableOpacity onPress={() => router.push('/connexion')}>
                 <Text  
                   style={{color: colors.BLEU, fontFamily: 'Regular', fontSize: 20, textAlign: 'center'}}
                 >Se connecter</Text>
@@ -181,7 +204,8 @@ const SignupScreen = () => {
 
           {/* <BottomContainer /> */}
         </View>
-    </ScrollView>
+      }
+    />
   )
 }
 
@@ -246,6 +270,16 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent:'center',
     alignItems: 'center'
+  },
+  select: {
+    height: 50,
+    width: "100%",
+    marginTop: 20,
+    borderRadius: 10,
+    backgroundColor: colors.BLANC,
+    borderColor: colors.BLEU,
+    borderWidth: 1,
+    paddingHorizontal: 10
   }
 })
 

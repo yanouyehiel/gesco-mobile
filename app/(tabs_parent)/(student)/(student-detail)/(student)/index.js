@@ -4,14 +4,13 @@ import { colors } from '@/utils/colors'
 import Heading from '@/components/Heading'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
-import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { FontAwesome } from '@expo/vector-icons'
 import { dateParser, showTost } from '@/utils/fonctions'
+import { useLocalSearchParams } from 'expo-router'
 
 const StudentScreen = () => {
-  const route = useRoute()
-  const { student, headers } = route.params
+  const { student, headers } = useLocalSearchParams()
   const [loading, setLoading] = useState(true)
   const [feesStudent, setFeesStudent] = useState(null)
 
@@ -21,7 +20,7 @@ const StudentScreen = () => {
 
   async function getFeesStudent() {
     try {
-      const res = await axios.get(`https://gesco-app.com/gesco/api/get-fees-student/${parseInt(student.id)}`, {headers: headers});
+      const res = await axios.get(`https://gesco-app.com/api/get-fees-student/${parseInt(student.id)}`, {headers: headers});
       setFeesStudent(res.data)
     } catch (error) {
       showTost(error.message)

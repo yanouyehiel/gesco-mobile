@@ -15,22 +15,22 @@ import React, { useRef, useState } from 'react'
 import {colors} from '@/utils/colors'
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { Skeleton } from 'moti/skeleton';
+import { useRouter } from 'expo-router';
 
 const Header = ({user}) => {  
     const [visible, setVisible] = useState(false)
-    const navigation = useNavigation()
+    const router = useRouter()
     const options = [
         {
             title: "Paramètres",
             icon: 'settings',
-            action: () => navigation.navigate('settings')
+            action: () => router.push('/settings')
         },
         {
             title: "Confidentialité",
             icon: 'lock',
-            action: () => navigation.navigate('settings')
+            action: () => router.push('/settings')
         },
         {
             title: "Publier un reel",

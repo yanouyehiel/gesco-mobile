@@ -4,15 +4,14 @@ import { colors } from '@/utils/colors'
 import Heading from '@/components/Heading'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
-import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { showToast } from '@/utils/fonctions'
-import { useNavigation } from 'expo-router'
 import ModalStudent from '../../../../../components/ModalStudent'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 
 const StudentScreen = () => {
-  const route = useRoute()
-  const { classe, user, headers } = route.params
+  const router = useRouter()
+  const { classe, user, headers } = useLocalSearchParams()
   const [loading, setLoading] = useState(true)
   const [students, setStudents] = useState([])
   const [refreshing, setRefreshing] = useState(false);
@@ -25,7 +24,7 @@ const StudentScreen = () => {
 
   async function getStudents() {
     try {
-      const res = await axios.get(`https://gesco-app.com/gesco/api/students/classe_id=${classe.id}&ecole_id=${user.ecole_id}`, {
+      const res = await axios.get(`https://gesco-app.com/api/students/classe_id=${classe.id}&ecole_id=${user.ecole_id}`, {
         headers: headers
       })
       setStudents(res.data)
@@ -153,7 +152,12 @@ const StudentScreen = () => {
           <NoData />
         }
 
-        <ModalStudent headers={headers} visible={visible} setVisible={setVisible} student={student} />
+        <ModalStudent 
+          headers={headers} 
+          visible={visible} 
+          setVisible={setVisible} 
+          student={student} 
+        />
       </View>
     </ScrollView>
   )

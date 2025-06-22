@@ -2,18 +2,17 @@ import { View, Text, FlatList, StyleSheet, Image, ScrollView } from 'react-nativ
 import React, { useEffect, useState } from 'react'
 import { showToast } from '@/utils/fonctions'
 import axios from 'axios'
-import { useRoute } from '@react-navigation/native'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData';
 import { colors } from '@/utils/colors'
 import { dateParser, longueurTexte } from '@/utils/fonctions';
 import Heading from '@/components/Heading'
+import { useLocalSearchParams } from 'expo-router'
 
 const DevoirScreen = () => {
   const [loading, setLoading] = useState(true)
   const [devoirs, setDevoirs] = useState([])
-  const route = useRoute()
-  const { student, headers } = route.params
+  const { student, headers } = useLocalSearchParams()
 
   useEffect(() => {
     getDevoirs().then(() => setLoading(false))
@@ -21,7 +20,7 @@ const DevoirScreen = () => {
 
   const getDevoirs = async () => {
     try {
-      const res = await axios.get('https://gesco-app.com/gesco/api/get-devoirs-children/' + student.classe_id, {headers: headers});
+      const res = await axios.get('https://gesco-app.com/api/get-devoirs-children/' + student.classe_id, {headers: headers});
       setDevoirs(res.data)
     } catch (error) {
       showToast(error.message)

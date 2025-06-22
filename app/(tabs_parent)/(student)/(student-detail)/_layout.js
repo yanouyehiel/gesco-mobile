@@ -2,13 +2,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Drawer } from 'expo-router/drawer';
 import { colors } from '@/utils/colors';
 import { AntDesign, Feather, Octicons, SimpleLineIcons } from '@expo/vector-icons';
-import { useRoute } from '@react-navigation/native';
 import SidebarStudent from '../../../../components/SidebarStudent';
+import { useLocalSearchParams } from 'expo-router';
 
 
 export default function HomeLayout({}) {
-  const route = useRoute()
-  const { user, headers, student } = route.params
+  const { user, headers, student } = useLocalSearchParams()
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

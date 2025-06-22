@@ -1,6 +1,5 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { useRoute } from '@react-navigation/native'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData';
 import { colors } from '@/utils/colors'
@@ -9,13 +8,13 @@ import { showToast } from '@/utils/fonctions'
 import Heading from '@/components/Heading'
 import ModalNote from '../../../../../components/ModalNote'
 import axios from 'axios';
+import { useLocalSearchParams } from 'expo-router';
 
 
 const NoteScreen = () => {
   const [loading, setLoading] = useState(true)
   const [notes, setNotes] = useState([])
-  const route = useRoute()
-  const { student, headers } = route.params
+  const { student, headers } = useLocalSearchParams()
   const [showModal, setShowModal] = useState(false)
   const [note, setNote] = useState({})
 
@@ -25,7 +24,7 @@ const NoteScreen = () => {
 
   const getNotes = async () => {
     try {
-      const res = await axios.get(`https://gesco-app.com/gesco/api/get-notes-children/${parseInt(student.id)}`, {headers});
+      const res = await axios.get(`https://gesco-app.com/api/get-notes-children/${parseInt(student.id)}`, {headers});
       setNotes(res.data.notes)
       console.log(res.data.notes)
     } catch (error) {

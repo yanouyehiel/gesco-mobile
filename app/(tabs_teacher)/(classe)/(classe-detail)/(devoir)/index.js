@@ -2,7 +2,6 @@ import { View, Text,  FlatList, StyleSheet, TouchableOpacity, Image, ScrollView,
 import React, { useEffect, useState } from 'react'
 import { showToast } from '@/utils/fonctions'
 import axios from 'axios'
-import { useRoute } from '@react-navigation/native'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData';
 import { colors } from '@/utils/colors'
@@ -10,12 +9,13 @@ import { dateParser, longueurTexte } from '@/utils/fonctions';
 import { AntDesign } from '@expo/vector-icons'
 import AjouterDevoir from '../../../../../components/AjouterDevoir'
 import Heading from '@/components/Heading'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 
 const DevoirScreen = () => {
   const [loading, setLoading] = useState(true)
   const [devoirs, setDevoirs] = useState([])
-  const route = useRoute()
-  const { classe, user, headers } = route.params
+  const route = useRouter()
+  const { classe, user, headers } = useLocalSearchParams()
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false)
 
@@ -25,7 +25,7 @@ const DevoirScreen = () => {
 
   const getDevoirs = async () => {
     try {
-      const res = await axios.get('https://gesco-app.com/gesco/api/devoirs-classe/' + classe.id, {headers: headers});
+      const res = await axios.get('https://gesco-app.com/api/devoirs-classe/' + classe.id, {headers: headers});
       setDevoirs(res.data)
     } catch (error) {
       showToast(error.response.message)

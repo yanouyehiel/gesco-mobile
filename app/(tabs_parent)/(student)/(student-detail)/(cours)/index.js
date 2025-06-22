@@ -5,15 +5,14 @@ import { dateParser, longueurTexte } from '@/utils/fonctions';
 import Heading from '@/components/Heading';
 import { Skeleton } from 'moti/skeleton';
 import NoData from '@/components/NoData';
-import { useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import "react-native-gesture-handler"
 import ModalCours from '../../../../../components/ModalCour';
 import { showToast } from '../../../../../utils/fonctions';
+import { useLocalSearchParams } from 'expo-router';
 
 const CourseScreen = () => {
-  const route = useRoute()
-  const { student, headers } = route.params
+  const { student, headers } = useLocalSearchParams()
   const [showModal, setShowModal] = useState(false)
   const [cours, setCours] = useState([])
   const [loading, setLoading] = useState(true)
@@ -25,7 +24,7 @@ const CourseScreen = () => {
 
   const getCours = async () => {
     try {
-      const res = await axios.get('https://gesco-app.com/gesco/api/get-cours-children/' + student.classe_id, {headers: headers});
+      const res = await axios.get('https://gesco-app.com/api/get-cours-children/' + student.classe_id, {headers: headers});
       setCours(res.data.cours);
     } catch (error) {
       showToast(error.message)

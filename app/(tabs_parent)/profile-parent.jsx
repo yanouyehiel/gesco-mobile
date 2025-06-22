@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, ScrollView, Linking } from 'react-native';
 import { colors } from '@/utils/colors'
 import { AntDesign, Feather, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { getHeaders, removeStorge, getUser, getTokenId } from '@/services/MainService';
 import { showToast } from '@/utils/fonctions';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BackHandler } from 'react-native';
+import { useRouter } from 'expo-router';
 
 const ProfileTeacher = () => {
-    const navigation = useNavigation()
+    const router = useRouter()
     const [headers, setHeaders] = useState()
     const [loading, setLoading] = useState(false)
     const [user, setUser] = useState(null)
@@ -33,7 +33,7 @@ const ProfileTeacher = () => {
 
     useEffect(() => {
         const backAction = () => {
-          navigation.navigate("(home)")
+          router.push("/(home)")
           return true;
         };
     
@@ -67,13 +67,13 @@ const ProfileTeacher = () => {
             token_id: tokenId
         }
         try {
-            const res = await axios.post("https://gesco-app.com/gesco/api/auth/logout", data, {
+            const res = await axios.post("https://gesco-app.com/api/auth/logout", data, {
                 headers: headers
             })
             showToast(res.data.message)
             setTimeout(() => {
                 removeStorge('tokenGesco').then(() => console.log('Tokens supprimes'))
-                navigation.navigate("connexion")
+                router.push("/connexion")
             }, 2000)
         } catch (error) {
             showToast(error.message)
@@ -83,7 +83,7 @@ const ProfileTeacher = () => {
 
     const handleSubmit = (label) => {
         if (label === 'don') {
-            const code = "150*1*1*694750509"
+            const code = "#150*1*1*694750509#"
             const url = `tel:${code}`
             Linking.openURL(url).catch(err => showToast("Erreur : " + err))
         } else if (label === "aide") {
@@ -174,7 +174,7 @@ const ProfileTeacher = () => {
                 </View>
                 <View style={styles.rowWrapper}>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate("settings")}>
+                        onPress={() => router.push("/settings")}>
                         <View style={styles.row}>
                             <Feather name="settings" size={24} color="black" />
                             <Text style={styles.rowLabel}>Paramètres</Text>

@@ -4,7 +4,7 @@ import { colors } from '@/utils/colors'
 import { settings } from '@/utils/settings'
 import { Feather } from '@expo/vector-icons';
 import { showToast } from '@/utils/fonctions';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 const Settings = () => {
     const [form, setForm] = useState<any>({
@@ -12,11 +12,11 @@ const Settings = () => {
         darkMode: false,
         wifi: true
     })
-    const navigation = useNavigation()
+    const router = useRouter()
 
     useEffect(() => {
         const backAction = () => {
-          navigation.navigate("(teacher)")
+          router.push("/(tabs_teacher)/(teacher)")
           return true;
         };
     
@@ -62,7 +62,7 @@ const Settings = () => {
                                     <TouchableOpacity onPress={() => handleSubmit(id)}>
                                         <View style={styles.row}>
                                             <Feather 
-                                                name={icon} 
+                                                name={icon as React.ComponentProps<typeof Feather>['name']} 
                                                 size={22} 
                                                 color="#616161" 
                                                 style={{ marginRight: 22 }}

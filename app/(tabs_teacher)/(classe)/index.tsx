@@ -6,7 +6,7 @@ import SingleClassItem from '@/components/SingleClassItem'
 import { Skeleton } from 'moti/skeleton'
 import { getAllClasses, getEcole, getHeaders, getUser } from '@/services/MainService'
 import { showToast } from '@/utils/fonctions'
-import { useNavigation } from '@react-navigation/native'
+import { useRouter } from 'expo-router';
 
 const ClasseScreen = () => {
   const [classes, setClasses] = useState<any[]>([])
@@ -15,7 +15,7 @@ const ClasseScreen = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const navigation = useNavigation()
+  const router = useRouter()
   const [refreshing, setRefreshing] = useState(false);
   const [ecole, setEcole] = useState(null)
   
@@ -39,7 +39,7 @@ const ClasseScreen = () => {
 
   useEffect(() => {
     const backAction = () => {
-      navigation.goBack()
+      router.back()
       return true;
     };
 

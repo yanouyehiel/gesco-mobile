@@ -7,7 +7,7 @@ import { Skeleton } from 'moti/skeleton'
 import { getHeaders, getMyChildren, getUser } from '@/services/MainService'
 import { showToast } from '@/utils/fonctions'
 import NoData from '@/components/NoData'
-import { useNavigation } from '@react-navigation/native'
+import { useRouter } from 'expo-router'
 
 
 const ClasseScreen = () => {
@@ -18,7 +18,7 @@ const ClasseScreen = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation()
+  const router = useRouter()
   
   useEffect(() => {
     setIsLoading(true);
@@ -40,7 +40,7 @@ const ClasseScreen = () => {
 
   useEffect(() => {
     const backAction = () => {
-      navigation.navigate("(home)")
+      router.push("/(tabs_parent)/(home)")
       return true;
     };
 

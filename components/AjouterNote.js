@@ -1,39 +1,55 @@
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
-import { Picker } from '@react-native-picker/picker'
+import DropDownPicker from 'react-native-dropdown-picker'
 import Heading from '@/components/Heading'
 import { Ionicons } from '@expo/vector-icons'
 import { showToast } from '@/utils/fonctions'
-import { addNote, getStudents, getMatieresSchool, getSequences } from "@/services/MainService";
+import { addNote, getStudents, getMatieresSchool, getSequences } from "@/services/MainService"
 
 const AjouterNote = ({user, headers, classe, close}) => {
-    const [matieres, setMatieres] = useState([])
-    const [students, setStudents] = useState([])
     const ecole = user.ecole_id
     const [loading, setLoading] = useState(true)
-    const [selectMatiere, setSelectMatiere] = useState('');
-    const [selectStudent, setSelectStudent] = useState('');
-    const [selectSequence, setSelectSequence] = useState('');
+    const [selectMatiere, setSelectMatiere] = useState(null)
+    const [selectStudent, setSelectStudent] = useState(null)
+    const [selectSequence, setSelectSequence] = useState(null)
     const [error, setError] = useState(false)
     const [note, setNote] = useState('')
-    const [sequences, setSequences] = useState([])
+    const [appreciation, setAppreciation] = useState('')
+
+    // Etats pour DropDownPicker
+    const [openMatiere, setOpenMatiere] = useState(false)
+    const [openSequence, setOpenSequence] = useState(false)
+    const [openStudent, setOpenStudent] = useState(false)
+    const [itemsMatieres, setItemsMatieres] = useState([])
+    const [itemsSequences, setItemsSequences] = useState([])
+    const [itemsStudents, setItemsStudents] = useState([])
 
     useEffect(() => {
-        getMatieres().then()
-        getStudentsClasse().then(() => setLoading(false))
-        getAllSequences().then(() => setLoading(false))
-    }, [classe])
+        getMatieres()
+        getStudentsClasse()
+        getAllSequences()
+    }, [classe.id])
 
     async function getAllSequences() {
         const res = await getSequences(ecole, headers)
-        setSequences(res)
+        setItemsSequences(
+            res.map(seq => ({
+                label: seq.intitule,
+                value: seq.id
+            }))
+        )
     }
 
     async function getMatieres() {
         try {
             const res = await getMatieresSchool(ecole, headers)
-            setMatieres(res)
+            setItemsMatieres(
+                res.map(matiere => ({
+                    label: matiere.intitule,
+                    value: matiere.id
+                }))
+            )
         } catch (error) {
             showToast(error.message)
         }
@@ -42,35 +58,47 @@ const AjouterNote = ({user, headers, classe, close}) => {
     async function getStudentsClasse() {
         try {
             const res = await getStudents(classe.id, ecole, headers)
-            setStudents(res)
+            setItemsStudents(
+                res.map(student => ({
+                    label: student.nom + ' ' + student.prenom,
+                    value: student.id
+                }))
+            )
         } catch (error) {
             showToast(error.message)
         }
+        setLoading(false)
     }
 
     async function handleSubmit() {
         setLoading(true)
-        if (selectMatiere === "" || selectSequence === "" || selectStudent === "" || note === "") {
+        if (!selectMatiere || !selectSequence || !selectStudent || note === "") {
             setError(true)
             showToast("Veuillez remplir tous les champs.")
         } else if (parseInt(note) > 20) {
             setError(true)
             showToast("Entrer une note inférieure ou égale à 20")
         } else {
+            setError(false)
             const data = {
-                classe_id: classe.id,
-                ecole_id: ecole,
+                classe_id: parseInt(classe.id),
+                ecole_id: parseInt(ecole),
                 matiere_id: parseInt(selectMatiere),
                 note: parseInt(note),
                 student_id: parseInt(selectStudent),
-                sequence_id: parseInt(selectSequence)
+                sequence_id: parseInt(selectSequence),
+                appreciation: appreciation
             }
-    
             try {
                 const res = await addNote(data, headers)
                 showToast(res.message)
+                setNote('')
+                setAppreciation('')
+                setSelectMatiere(null)
+                setSelectStudent(null)
+                setSelectSequence(null)
             } catch (error) {
-                showToast(error.response.message)
+                showToast(error.response?.message || error.message)
             }
         }
         setLoading(false)
@@ -83,63 +111,83 @@ const AjouterNote = ({user, headers, classe, close}) => {
                 <Text style={styles.titleHeader}>Enregistrer une note</Text>
             </TouchableOpacity>
 
-            <View style={{margin: 10}}>
+            <View style={{margin: 10, zIndex: 1000}}>
                 <View style={{marginTop: 20, paddingBottom: 20}}>
                     <Heading text={"Remplissez le formulaire"} />
-                    <View>
-                        <Text style={{fontFamily: 'SemiBold', fontSize: 20}}>Sélectionner la matière</Text>
-                        <Picker
-                            selectedValue={selectMatiere}
-                            onValueChange={(itemValue) => setSelectMatiere(itemValue)}
-                            style={[error ? styles.error : styles.textArea]}
-                            itemStyle={{color: colors.BLEU}}
-                        >
-                            <Picker.Item label={"Sélectionner ici..."} value={""} />
-                            {matieres.map((matiere, i) => (
-                            <Picker.Item label={matiere.intitule} value={matiere.id} key={i} />
-                            ))}
-                        </Picker>
-                        {error && <Text style={styles.errorText}>Veuillez sélectionner une matière</Text>}
-                    </View>
-                    <View>
-                        <Text style={{fontFamily: 'SemiBold', fontSize: 20}}>Sélectionner la séquence</Text>
-                        <Picker
-                            selectedValue={selectSequence}
-                            onValueChange={(itemValue) => setSelectSequence(itemValue)}
-                            style={[error ? styles.error : styles.textArea]}
-                            itemStyle={{color: colors.BLEU}}
-                        >
-                            <Picker.Item label={"Sélectionner ici..."} value={""} />
-                            {sequences.length > 0 && sequences.map((seq, i) => (
-                                <Picker.Item key={i} label={seq.intitule} value={seq.id} />
-                            ))}
-                        </Picker>
-                        {error && <Text style={styles.errorText}>Veuillez sélectionner une séquence</Text>}
-                    </View>
-                    <View>
-                        <Text style={{fontFamily: 'SemiBold', fontSize: 20}}>Sélectionner l'élève'</Text>
-                        <Picker
-                            selectedValue={selectStudent}
-                            onValueChange={(itemValue) => setSelectStudent(itemValue)}
-                            style={[error ? styles.error : styles.textArea]}
-                            itemStyle={{color: colors.BLEU}}
-                        >
-                            <Picker.Item label={"Sélectionner ici..."} value={""} />
-                            {students.map((student, i) => (
-                            <Picker.Item label={student.nom+' '+student.prenom} value={student.id} key={i} />
-                            ))}
-                        </Picker>
-                        {error && <Text style={styles.errorText}>Veuillez sélectionner un élève</Text>}
-                    </View>
+                    
+                    <Text style={{fontFamily: 'SemiBold', fontSize: 20, marginBottom: 5}}>Sélectionner la matière</Text>
+                    <DropDownPicker
+                        open={openMatiere}
+                        value={selectMatiere}
+                        items={itemsMatieres}
+                        setOpen={setOpenMatiere}
+                        setValue={setSelectMatiere}
+                        setItems={setItemsMatieres}
+                        placeholder="Sélectionner ici..."
+                        style={[styles.textArea, error && !selectMatiere ? styles.error : null]}
+                        dropDownContainerStyle={{borderColor: colors.BLEU}}
+                        listItemLabelStyle={{color: colors.BLEU}}
+                        zIndex={3000}
+                        zIndexInverse={1000}
+                    />
+                    {error && !selectMatiere && <Text style={styles.errorText}>Veuillez sélectionner une matière</Text>}
+
+                    <Text style={{fontFamily: 'SemiBold', fontSize: 20, marginBottom: 5, marginTop: 15}}>Sélectionner la séquence</Text>
+                    <DropDownPicker
+                        open={openSequence}
+                        value={selectSequence}
+                        items={itemsSequences}
+                        setOpen={setOpenSequence}
+                        setValue={setSelectSequence}
+                        setItems={setItemsSequences}
+                        placeholder="Sélectionner ici..."
+                        style={[styles.textArea, error && !selectSequence ? styles.error : null]}
+                        dropDownContainerStyle={{borderColor: colors.BLEU}}
+                        listItemLabelStyle={{color: colors.BLEU}}
+                        zIndex={2500}
+                        zIndexInverse={900}
+                    />
+                    {error && !selectSequence && <Text style={styles.errorText}>Veuillez sélectionner une séquence</Text>}
+
+                    <Text style={{fontFamily: 'SemiBold', fontSize: 20, marginBottom: 5, marginTop: 15}}>Sélectionner l'élève</Text>
+                    <DropDownPicker
+                        open={openStudent}
+                        value={selectStudent}
+                        items={itemsStudents}
+                        setOpen={setOpenStudent}
+                        setValue={setSelectStudent}
+                        setItems={setItemsStudents}
+                        placeholder="Sélectionner ici..."
+                        style={[styles.textArea, error && !selectStudent ? styles.error : null]}
+                        dropDownContainerStyle={{borderColor: colors.BLEU}}
+                        listItemLabelStyle={{color: colors.BLEU}}
+                        zIndex={2000}
+                        zIndexInverse={800}
+                    />
+                    {error && !selectStudent && <Text style={styles.errorText}>Veuillez sélectionner un élève</Text>}
+
                     <TextInput
                         placeholder='Entrer la note'
-                        style={[error ? styles.error : styles.textArea]}
-                        numberOfLines={1} multiline={false}
+                        style={[error && (note === "" || parseInt(note) > 20) ? styles.error : styles.textArea]}
+                        numberOfLines={1}
+                        multiline={false}
                         onChangeText={(text) => setNote(text)}
+                        value={note}
+                        keyboardType="numeric"
                     />
-                    {error && <Text style={{color: colors.ROUGE, fontSize: 15}}>Veuillez entrer une note</Text>}
+                    {error && note === "" && <Text style={styles.errorText}>Veuillez entrer une note</Text>}
+                    {error && note !== "" && parseInt(note) > 20 && <Text style={styles.errorText}>Entrer une note ≤ 20</Text>}
 
-                    <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
+                    <TextInput
+                        placeholder='Entrer une appréciation'
+                        style={styles.textArea}
+                        numberOfLines={1}
+                        multiline={false}
+                        onChangeText={(text) => setAppreciation(text)}
+                        value={appreciation}
+                    />
+
+                    <TouchableOpacity onPress={handleSubmit} style={styles.btn} disabled={loading}>
                         {loading ? <ActivityIndicator color={colors.BLANC} /> :
                             <Text style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 23}}>Enregistrer</Text>
                         }

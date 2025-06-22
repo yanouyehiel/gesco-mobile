@@ -5,7 +5,7 @@ import { settings } from '@/utils/settings'
 import { Feather } from '@expo/vector-icons';
 import { Linking } from 'react-native';
 import { showToast } from '@/utils/fonctions';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 const Settings = () => {
     const [form, setForm] = useState<any>({
@@ -13,11 +13,11 @@ const Settings = () => {
         darkMode: false,
         wifi: true
     })
-    const navigation = useNavigation()
+    const router = useRouter()
 
     useEffect(() => {
         const backAction = () => {
-          navigation.navigate("(home)")
+          router.push("/(tabs_parent)/(home)")
           return true;
         };
     
@@ -63,7 +63,7 @@ const Settings = () => {
                                     <TouchableOpacity onPress={() => handleSubmit(id)}>
                                         <View style={styles.row}>
                                             <Feather 
-                                                name={icon} 
+                                                name={icon as React.ComponentProps<typeof Feather>['name']} 
                                                 size={22} 
                                                 color="#616161" 
                                                 style={{ marginRight: 22 }}

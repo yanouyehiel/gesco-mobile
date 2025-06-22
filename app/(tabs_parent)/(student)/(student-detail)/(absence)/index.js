@@ -6,13 +6,12 @@ import { AntDesign } from '@expo/vector-icons';
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
 import { dateParser } from '@/utils/fonctions'
-import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { showToast } from '../../../../../utils/fonctions';
+import { useLocalSearchParams } from 'expo-router';
 
 const AbsenceScreen = () => {
-  const route = useRoute()
-  const { student, headers } = route.params
+  const { student, headers } = useLocalSearchParams()
   const [loading, setLoading] = useState(true)
   const [absences, setAbsences] = useState([])
 
@@ -22,7 +21,7 @@ const AbsenceScreen = () => {
 
   async function getPresences() {
     try {
-      const res = await axios.get('https://gesco-app.com/gesco/api/get-absences-children/' + student.id, {
+      const res = await axios.get('https://gesco-app.com/api/get-absences-children/' + student.id, {
         headers: headers
       })
       setAbsences(res.data.absences)

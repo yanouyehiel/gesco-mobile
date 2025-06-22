@@ -7,13 +7,12 @@ import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
 import { dateParserTime, dateParser } from '@/utils/fonctions'
 import AjouterAbsence from '@/components/AjouterAbsence'
-import { useRoute } from '@react-navigation/native'
 import axios from 'axios'
 import { RefreshControl } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 
 const AbsenceScreen = () => {
-  const route = useRoute()
-  const { classe, user, headers } = route.params
+  const { classe, user, headers } = useLocalSearchParams()
   const [loading, setLoading] = useState(true)
   const [absences, setAbsences] = useState([])
   const [showModal, setShowModal] = useState(false)
@@ -26,7 +25,7 @@ const AbsenceScreen = () => {
   }, [])
 
   async function getPresences() {
-    const res = await axios.get('https://gesco-app.com/gesco/api/get-absences-classe/' + classe.id, {
+    const res = await axios.get('https://gesco-app.com/api/get-absences-classe/' + classe.id, {
       headers: headers
     })
     setAbsences(res.data)

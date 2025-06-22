@@ -1,13 +1,13 @@
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, NativeSyntheticEvent, TextInputKeyPressEventData, KeyboardAvoidingView, ActivityIndicator } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { colors } from '@/utils/colors'
-import { useNavigation } from '@react-navigation/native'
+import { useRouter } from 'expo-router'
 
 
 const OTPCode = () => {
-    const inputRefs = useRef([])
-    const navigate = useNavigation()
+    const inputRefs = useRef<Array<TextInput | null>>([])
     const [loading, setLoading] = useState(false)
+    const router = useRouter()
 
     const handleChange = (text: string, index: number) => {
         if (text.length !== 0) {
@@ -27,7 +27,7 @@ const OTPCode = () => {
 
     function handleSubmit() {
         setLoading(true)
-        navigate.navigate('phone-number-forgot')
+        router.push('/phone-number-forgot')
     }
 
     return (
@@ -59,17 +59,17 @@ const OTPCode = () => {
                     ))}
                 </View>
                 <View>
-                <TouchableOpacity
-                    style={styles.btnSend}
-                    onPress={handleSubmit}
-                    disabled={loading}
-                >
-                    {!loading ?
-                        <Text style={styles.btnText}>
-                            Envoyer
-                        </Text>
-                        : <ActivityIndicator color={colors.BLANC} size='large' />
-                    }
+                    <TouchableOpacity
+                        style={styles.btnSend}
+                        onPress={handleSubmit}
+                        disabled={loading}
+                    >
+                        {!loading ?
+                            <Text style={styles.btnText}>
+                                Envoyer
+                            </Text>
+                            : <ActivityIndicator color={colors.BLANC} size='large' />
+                        }
                     </TouchableOpacity>
                 </View>
 
