@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, ScrollView, FlatList, RefreshControl, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { colors } from '@/utils/colors'
 import Heading from '@/components/Heading'
 import { Skeleton } from 'moti/skeleton'
@@ -11,27 +11,55 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 
 const StudentScreen = () => {
   const router = useRouter()
-  const { classe, user, headers } = useLocalSearchParams()
+  const params = useLocalSearchParams()
   const [loading, setLoading] = useState(true)
   const [students, setStudents] = useState([])
   const [refreshing, setRefreshing] = useState(false);
   const [student, setStudent] = useState({})
   const [visible, setVisible] = useState(false)
+   const parseDoubleJSON = (str) => {
+       if (!str) return null;
+       try {
+         const once = JSON.parse(str);
+         if (typeof once === 'string') {
+           return JSON.parse(once);
+         }
+         return once;
+       } catch {
+         return null;
+       }
+     }
+   
+     const parsedClasse = useMemo(() => parseDoubleJSON(params?.classe), [params?.classe]);
+     const parsedUser = useMemo(() => parseDoubleJSON(params?.user), [params?.user]);
+     const parsedHeaders = useMemo(() => parseDoubleJSON(params?.headers), [params?.headers]);
+     const parsedEcole = useMemo(() => parseDoubleJSON(params?.ecole), [params?.ecole]);
 
   useEffect(() => {
     getStudents().then(() => setLoading(false))
   }, [])
 
-  async function getStudents() {
-    try {
-      const res = await axios.get(`https://gesco-app.com/api/students/classe_id=${classe.id}&ecole_id=${user.ecole_id}`, {
-        headers: headers
-      })
-      setStudents(res.data)
-    } catch (error) {
-      showToast(error.message)
+ async function getStudents() {
+  try {
+    console.log("Fetching students for class:", parsedClasse.id, "and school:", parsedEcole);
+    const res = await axios.get(
+      `https://gesco-app.com/api/students/classe_id=${parsedClasse.id}&ecole_id=${parsedEcole.id}`,
+      { headers: parsedHeaders }
+    );
+    setStudents(res.data);
+  } catch (error) {
+    if (error.response) {
+    
+    } else if (error.request) {
+     // console.log("🟡 No response received:", error.request);
+    } else {
+     // console.log("🟠 Error setting up request:", error.message);
     }
+
+    showToast("Erreur serveur: " + error.message);
   }
+}
+
 
   function viewStudent(item) {
     setStudent(item)
@@ -153,7 +181,7 @@ const StudentScreen = () => {
         }
 
         <ModalStudent 
-          headers={headers} 
+           headers={parsedHeaders} 
           visible={visible} 
           setVisible={setVisible} 
           student={student} 

@@ -1,4 +1,7 @@
-import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, Modal, RefreshControl } from 'react-native'
+import {
+  View, Text, ActivityIndicator, StyleSheet,
+  FlatList, StatusBar, TouchableOpacity, Modal, RefreshControl
+} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Header from '@/components/Header'
 import Slider from '@/components/Slider'
@@ -12,9 +15,9 @@ import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData'
 import { showToast } from '@/utils/fonctions'
 import "react-native-gesture-handler"
-import ShowEvent from "@/components/ShowEvent";
+import ShowEvent from "@/components/ShowEvent"
 import { BackHandler } from 'react-native'
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router'
 
 const HomeScreen = () => {
   const [matieres, setMatieres] = useState<any[]>([])
@@ -28,24 +31,24 @@ const HomeScreen = () => {
   const [loadingEvent, setLoadingEvent] = useState(true)
   const [loadingMatiere, setLoadingMatiere] = useState<any>(true)
   const [showEvent, setShowEvent] = useState<any>(false)
-  const [refreshing, setRefreshing] = useState(false);
-  const route = useRouter();
-  const routeName = useLocalSearchParams<{ name: string }>();
+  const [refreshing, setRefreshing] = useState(false)
+
+  const route = useRouter()
+  const routeName = useLocalSearchParams<{ name: string }>()
 
   useEffect(() => {
     const fetchHeaders = async () => {
       try {
-        const { headers }: any | string = await getHeaders();
-        setHeaders(headers);
+        const { headers }: any = await getHeaders()
+        setHeaders(headers)
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
-    };
+    }
 
     fetchUser()
-
-    fetchHeaders().then(() => setIsLoading(false));
-  }, []);
+    fetchHeaders().then(() => setIsLoading(false))
+  }, [])
 
   useEffect(() => {
     if (!isLoading) {
@@ -57,184 +60,143 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const backAction = () => {
-      BackHandler.exitApp();
-      return true;
-    };
+      BackHandler.exitApp()
+      return true
+    }
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction)
 
-    return () => backHandler.remove();
-  }, []);
+    return () => backHandler.remove()
+  }, [])
 
   const fetchUser = async () => {
-    await getUser().then(res => {
-      setUser(res);
-    });
-  };
+    const res = await getUser()
+    setUser(res)
+  }
 
   const fetchClasses = async () => {
     if (user.ecole_id) {
       try {
-        const res = await getAllClasses(user.ecole_id, headers);
-        setClasses(res);
+        const res = await getAllClasses(user.ecole_id, headers)
+        setClasses(res)
       } catch (error: any) {
         showToast(error.message)
       }
     }
-  };
+  }
 
   const fetchEvents = async () => {
-    try {
-      if (user.ecole_id) {
+    if (user.ecole_id) {
+      try {
         const res = await getAllEvents(user.ecole_id, headers)
         setEvents(res)
+      } catch (error: any) {
+        showToast(error.message)
       }
-    } catch (error: any) {
-      showToast(error.message)
     }
   }
 
   const fetchMatieres = async () => {
-    try {
-      if (user.ecole_id) {
-        const res = await getMatieresSchool(user.ecole_id, headers);
-        setMatieres(res);
+    if (user.ecole_id) {
+      try {
+        const res = await getMatieresSchool(user.ecole_id, headers)
+        setMatieres(res)
+      } catch (error: any) {
+        showToast(error.message)
       }
-    } catch (error: any) {
-      showToast(error.message)
     }
-  };
-
-  function handleView(item: any) {
-    setEvent(item)
-    setShowEvent(!showEvent)
   }
 
-  const onRefresh = React.useCallback(() => {
-    setLoadingClasse(true)
-    setLoadingEvent(true)
-    setLoadingMatiere(true)
-    setRefreshing(true);
-    fetchClasses().then(() => setLoadingClasse(false))
-    fetchEvents().then(() => setLoadingEvent(false))
-    fetchMatieres().then(() => setLoadingMatiere(false))
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+  const handleView = (item: any) => {
+    setEvent(item)
+    setShowEvent(true)
+  }
+
+  const onRefresh = () => {
+    setRefreshing(true)
+    Promise.all([
+      fetchClasses().then(() => setLoadingClasse(false)),
+      fetchEvents().then(() => setLoadingEvent(false)),
+      fetchMatieres().then(() => setLoadingMatiere(false))
+    ]).finally(() => setRefreshing(false))
+  }
+
+  const renderSkeleton = () =>
+    [0, 1, 2].map((t, i) => (
+      <View key={i} style={styles.event}>
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Skeleton show={true} width={50} height={50} colorMode='light' />
+        </View>
+        <View style={styles.eventItem}>
+          <Skeleton show={true} width={200} height={15} colorMode='light' style={{ marginBottom: 10 }} />
+          <Skeleton show={true} width={150} height={10} colorMode='light' style={{ marginBottom: 10 }} />
+          <Skeleton show={true} width={130} height={10} colorMode='light' />
+        </View>
+      </View>
+    ))
 
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl 
-          refreshing={refreshing} 
-          onRefresh={onRefresh}
-          colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
-          progressBackgroundColor={colors.BLANC}
-        />
-      }
-    >
+    <View style={styles.container}>
       <StatusBar backgroundColor={colors.BLEU} />
-      
-      <Header user={user} />
-      {user ?
-        <View style={{padding: 20}}>
-          <Slider 
-            slider={classes} 
-            headers={headers}
-            user={user}
-            loading={loadingClasse}
-            Component={SlideClassItem} 
-            titleHeading='Nos Classes'
-            style={{}} 
-          />
-          <Slider 
-            slider={matieres} 
-            headers={headers}
-            user={user}
-            loading={loadingMatiere}
-            Component={SlideMatiereItem} 
-            titleHeading='Nos Matières' 
-            style={{ marginTop: 20 }}
-          />
-
-          <View>
-            <Heading style={styles.headerEvent} text="Notre agenda scolaire" />
-            {!loadingEvent ? <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={events}
-              renderItem={({item, index}) => (
-                <TouchableOpacity
-                  onPress={() => handleView(item)}
-                >
-                  <EventItem key={index} event={item} />
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item, index) => index.toString()}
-            /> :
-            <View>
-              {[0, 1, 2].map((t, i) => (
-                <View key={i} style={styles.event}>
-                  <View style={{display: 'flex',alignItems: 'center', justifyContent: 'center'}}>
-                    <Skeleton
-                      show={true}
-                      width={50}
-                      height={50} 
-                      colorMode='light'
-                    />
-                  </View>
-                  <View style={styles.eventItem}>
-                    <View style={{marginBottom: 10}}>
-                      <Skeleton 
-                        show={true}
-                        width={200}
-                        height={15}
-                        colorMode='light'
-                      />
-                    </View>
-                    <View style={{marginBottom: 10}}>
-                      <Skeleton 
-                        show={true}
-                        width={150}
-                        height={10}
-                        colorMode='light'
-                      />
-                    </View>
-                    <View style={{marginBottom: 10}}>
-                      <Skeleton 
-                        show={true}
-                        width={130}
-                        height={10}
-                        colorMode='light'
-                      />
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </View>}
-            {(!loadingEvent && events.length === 0) &&
-              <NoData />
-            }
-          </View> 
-        </View>
-        :
-        <Text style={{ fontSize: 15, textAlign: 'center' }}>
-            <ActivityIndicator color={colors.VERT} size='large' />
-        </Text>
-      }
+      {isLoading || !user ? (
+        <ActivityIndicator color={colors.VERT} size="large" style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={loadingEvent ? [] : events}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleView(item)}>
+              <EventItem event={item} />
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item, index) => index.toString()}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
+              progressBackgroundColor={colors.BLANC}
+            />
+          }
+          ListHeaderComponent={
+            <>
+              <Header user={user} />
+              <View style={{ padding: 20 }}>
+                <Slider
+                  slider={classes}
+                  headers={headers}
+                  user={user}
+                  loading={loadingClasse}
+                  Component={SlideClassItem}
+                  titleHeading='Nos Classes'
+                  style={{}}
+                />
+                <Slider
+                  slider={matieres}
+                  headers={headers}
+                  user={user}
+                  loading={loadingMatiere}
+                  Component={SlideMatiereItem}
+                  titleHeading='Nos Matières'
+                  style={{ marginTop: 20 }}
+                />
+                <Heading style={styles.headerEvent} text="Notre agenda scolaire" />
+                {loadingEvent && renderSkeleton()}
+                {!loadingEvent && events.length === 0 && <NoData />}
+              </View>
+            </>
+          }
+          ListFooterComponent={<View style={{ height: 60 }} />}
+        />
+      )}
 
       <Modal
         animationType='slide'
         visible={showEvent}
-        onTouchStart={() => setShowEvent(false)}
+        onRequestClose={() => setShowEvent(false)}
       >
         <ShowEvent hideModal={() => setShowEvent(false)} event={event} />
       </Modal>
-    </ScrollView>
+    </View>
   )
 }
 
@@ -248,7 +210,6 @@ const styles = StyleSheet.create({
   },
   event: {
     backgroundColor: '#f2f2f2',
-    display: 'flex',
     flexDirection: 'row',
     padding: 10,
     marginBottom: 10,
@@ -259,18 +220,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginLeft: 20,
     height: 50
-  },
-  popup: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    bottom: 0,
-    elevation: 5,
-    height: 400
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
+  }
 })
 
 export default HomeScreen

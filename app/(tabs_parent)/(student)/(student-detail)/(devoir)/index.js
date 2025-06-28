@@ -1,5 +1,5 @@
 import { View, Text, FlatList, StyleSheet, Image, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useMemo } from 'react'
 import { showToast } from '@/utils/fonctions'
 import axios from 'axios'
 import { Skeleton } from 'moti/skeleton'
@@ -12,15 +12,30 @@ import { useLocalSearchParams } from 'expo-router'
 const DevoirScreen = () => {
   const [loading, setLoading] = useState(true)
   const [devoirs, setDevoirs] = useState([])
-  const { student, headers } = useLocalSearchParams()
+  const params = useLocalSearchParams();
+   
+     const parseDoubleJSON = (str) => {
+       if (!str) return null;
+       try {
+         const once = JSON.parse(str);
+         if (typeof once === 'string') return JSON.parse(once);
+         return once;
+       } catch {
+         return null;
+       }
+     };
+   
+     const parsedStudent = useMemo(() => parseDoubleJSON(params?.student), [params?.student]);
+     const parsedUser = useMemo(() => parseDoubleJSON(params?.user), [params?.user]);
+     const parsedHeaders = useMemo(() => parseDoubleJSON(params?.headers), [params?.headers]);
 
   useEffect(() => {
     getDevoirs().then(() => setLoading(false))
-  }, [student])
+  }, [parsedStudent])
 
   const getDevoirs = async () => {
     try {
-      const res = await axios.get('https://gesco-app.com/api/get-devoirs-children/' + student.classe_id, {headers: headers});
+      const res = await axios.get('https://gesco-app.com/api/get-devoirs-children/' + parsedStudent.classe_id, {headers: parsedHeaders});
       setDevoirs(res.data)
     } catch (error) {
       showToast(error.message)

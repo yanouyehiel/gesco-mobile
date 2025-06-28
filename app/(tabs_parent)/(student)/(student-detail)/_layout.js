@@ -8,11 +8,14 @@ import { useLocalSearchParams } from 'expo-router';
 
 export default function HomeLayout({}) {
   const { user, headers, student } = useLocalSearchParams()
+  const parsedStudent = JSON.parse(student);
+  const parsedUser = JSON.parse(user);
+  const parsedHeaders = JSON.parse(headers);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer 
-        drawerContent={(props) => <SidebarStudent student={student} {...props} />}
+        drawerContent={(props) => <SidebarStudent student={parsedStudent} {...props} />}
         screenOptions={{
           headerStyle: {
             backgroundColor: colors.BLEU
@@ -35,11 +38,19 @@ export default function HomeLayout({}) {
               fontSize: 18,
             },
           }}
-          initialParams={{ student: student, user: user, headers: headers }}
+          initialParams={{
+            student: JSON.stringify(student),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+          }}
         />
         <Drawer.Screen 
           name="(cours)/index" 
-          initialParams={{ student: student, user: user, headers: headers }}
+           initialParams={{
+            student: JSON.stringify(student),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+          }}
           options={{
             drawerIcon: ({ color, size }) => (
               <AntDesign name="book" size={24} color={colors.NOIR} />
@@ -55,7 +66,11 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(note)/index" 
-          initialParams={{ student: student, user: user, headers: headers }}
+          initialParams={{
+            student: JSON.stringify(student),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+          }}
           options={{
             drawerIcon: ({ color, size }) => (
               <SimpleLineIcons name="note" size={24} color={colors.NOIR} />
@@ -71,7 +86,11 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(absence)/index" 
-          initialParams={{ student: student, user: user, headers: headers }}
+           initialParams={{
+            student: JSON.stringify(student),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+          }}
           options={{
             drawerIcon: ({ color, size }) => (
               <Feather name="watch" size={24} color={colors.NOIR} />
@@ -87,7 +106,11 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(devoir)/index" 
-          initialParams={{ student: student, user: user, headers: headers }}
+           initialParams={{
+            student: JSON.stringify(student),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+          }}
           options={{
             drawerIcon: ({ color, size }) => (
               <Octicons name="workflow" size={24} color={colors.NOIR} />
@@ -103,7 +126,11 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(student)/index" 
-          initialParams={{ student: student, user: user, headers: headers }}
+           initialParams={{
+            student: JSON.stringify(student),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+          }}
           options={{
             drawerIcon: ({ color, size }) => (
               <Octicons name="person" size={24} color={colors.NOIR} />
@@ -114,7 +141,7 @@ export default function HomeLayout({}) {
               fontWeight: '600',
               fontSize: 18,
             },
-            headerTitle: student.nom +' '+ student.prenom
+            headerTitle: parsedStudent?.nom +' '+ parsedStudent?.prenom
           }}
         />
       </Drawer>

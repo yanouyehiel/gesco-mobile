@@ -77,6 +77,7 @@ const SignupScreen = () => {
           showToast(err.response.data.message)
         })
       } catch (error: any) {
+        console.log(error)
         setError(true)
         showToast(error.response?.data.message);
       }

@@ -1,4 +1,5 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import React, { useEffect, useState } from 'react'
 import { Drawer } from 'expo-router/drawer';
 import SideBar from '@/components/SideBar';
 import { colors } from '@/utils/colors';
@@ -21,7 +22,7 @@ export default function HomeLayout({}) {
         }}
       >
         <Drawer.Screen
-          name="classe"
+          name="(classe-detail)/classe"
           options={{
             drawerIcon: ({ color, size }) => (
               <Feather name="list" size={24} color={colors.NOIR} />
@@ -34,11 +35,22 @@ export default function HomeLayout({}) {
               fontSize: 18,
             },
           }}
-          initialParams={{ classe: classe, user: user, headers: headers }}
+          initialParams={{
+            classe: JSON.stringify(classe),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+          }}
         />
+
         <Drawer.Screen 
           name="(cours)/index" 
-          initialParams={{ classe: classe, user: user, headers: headers }}
+          initialParams={{
+            classe: JSON.stringify(classe),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+            ecole: JSON.stringify(ecole),
+          }}
+
           options={{
             drawerIcon: ({ color, size }) => (
               <AntDesign name="book" size={24} color={colors.NOIR} />
@@ -54,7 +66,13 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(note)/index" 
-          initialParams={{ classe: classe, user: user, headers: headers }}
+         initialParams={{
+            classe: JSON.stringify(classe),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+            ecole: JSON.stringify(ecole),
+          }}
+
           options={{
             drawerIcon: ({ color, size }) => (
               <SimpleLineIcons name="note" size={24} color={colors.NOIR} />
@@ -70,7 +88,13 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(absence)/index" 
-          initialParams={{ classe: classe, user: user, headers: headers }}
+         initialParams={{
+            classe: JSON.stringify(classe),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+            ecole: JSON.stringify(ecole),
+          }}
+
           options={{
             drawerIcon: ({ color, size }) => (
               <Feather name="watch" size={24} color={colors.NOIR} />
@@ -86,7 +110,13 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(devoir)/index" 
-          initialParams={{ classe: classe, user: user, headers: headers }}
+         initialParams={{
+            classe: JSON.stringify(classe),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+            ecole: JSON.stringify(ecole),
+          }}
+
           options={{
             drawerIcon: ({ color, size }) => (
               <Octicons name="workflow" size={24} color={colors.NOIR} />
@@ -102,7 +132,13 @@ export default function HomeLayout({}) {
         />
         <Drawer.Screen 
           name="(student)/index" 
-          initialParams={{ classe: classe, user: user, headers: headers }}
+          initialParams={{
+            classe: JSON.stringify(classe),
+            user: JSON.stringify(user),
+            headers: JSON.stringify(headers),
+            ecole: JSON.stringify(ecole),
+          }}
+
           options={{
             drawerIcon: ({ color, size }) => (
               <Octicons name="person" size={24} color={colors.NOIR} />

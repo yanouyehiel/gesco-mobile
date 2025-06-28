@@ -1,5 +1,5 @@
 import { View, Text,  FlatList, StyleSheet, TouchableOpacity, Image, ScrollView, RefreshControl, Modal } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { showToast } from '@/utils/fonctions'
 import axios from 'axios'
 import { Skeleton } from 'moti/skeleton'
@@ -15,17 +15,33 @@ const DevoirScreen = () => {
   const [loading, setLoading] = useState(true)
   const [devoirs, setDevoirs] = useState([])
   const route = useRouter()
-  const { classe, user, headers } = useLocalSearchParams()
+  const params = useLocalSearchParams()
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false)
-
+   const parseDoubleJSON = (str) => {
+      if (!str) return null;
+      try {
+        const once = JSON.parse(str);
+        if (typeof once === 'string') {
+          return JSON.parse(once);
+        }
+        return once;
+      } catch {
+        return null;
+      }
+    }
+  
+    const parsedClasse = useMemo(() => parseDoubleJSON(params?.classe), [params?.classe]);
+    const parsedUser = useMemo(() => parseDoubleJSON(params?.user), [params?.user]);
+    const parsedHeaders = useMemo(() => parseDoubleJSON(params?.headers), [params?.headers]);
+    const parsedEcole = useMemo(() => parseDoubleJSON(params?.ecole), [params?.ecole]);
   useEffect(() => {
     getDevoirs().then(() => setLoading(false))
-  }, [classe])
+  }, [parsedClasse])
 
   const getDevoirs = async () => {
     try {
-      const res = await axios.get('https://gesco-app.com/api/devoirs-classe/' + classe.id, {headers: headers});
+      const res = await axios.get('https://gesco-app.com/api/devoirs-classe/' + parsedClasse.id, {headers: parsedHeaders});
       setDevoirs(res.data)
     } catch (error) {
       showToast(error.response.message)
@@ -154,7 +170,10 @@ const DevoirScreen = () => {
         visible={visible}
         onTouchStart={() => setVisible(false)}
       >
-        <AjouterDevoir hideModal={() => setVisible(false)} user={user} headers={headers} classe={classe} />
+        <AjouterDevoir hideModal={() => setVisible(false)} 
+          user={parsedUser}
+          headers={parsedHeaders}
+          classe={parsedClasse}/>
       </Modal>
     </ScrollView>
   )
@@ -187,7 +206,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 5,
+    marginTop:10,
     padding: 10,
     borderRadius: 15,
     borderWidth: 1,

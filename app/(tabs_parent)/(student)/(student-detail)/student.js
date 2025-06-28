@@ -1,7 +1,7 @@
 import { View, Text, Image, StyleSheet, FlatList, ScrollView, TouchableOpacity, BackHandler } from 'react-native'
 import React, { useEffect } from 'react'
 import { colors } from '@/utils/colors';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const items = [
   {
@@ -33,6 +33,19 @@ const items = [
 
 const HomeDetail = () => {
   const router = useRouter()
+  const { student, user, headers } = useLocalSearchParams();
+
+const parsedStudent = JSON.parse(student);
+const parsedUser = JSON.parse(user);
+const parsedHeaders = JSON.parse(headers);
+
+useEffect(() => {
+  console.log("✅ Parsed params in ClasseScreen:", {
+    parsedStudent,
+    parsedUser,
+    parsedHeaders,
+  });
+}, []);
 
   useEffect(() => {
     const backAction = () => {

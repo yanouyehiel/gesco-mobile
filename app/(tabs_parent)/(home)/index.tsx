@@ -1,7 +1,11 @@
-import { View, Text, ActivityIndicator, StyleSheet, FlatList, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Modal } from 'react-native'
+import {
+  View, Text, ActivityIndicator, StyleSheet,
+  FlatList, StatusBar, TouchableOpacity,
+  RefreshControl, Modal
+} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Header from '@/components/Header'
-import { getAllCalendars, getAllEvents, getHeaders, getUser } from '../../../services/MainService'
+import { getAllCalendars, getHeaders, getUser } from '../../../services/MainService'
 import Heading from '../../../components/Heading'
 import { colors } from '../../../utils/colors'
 import Calendar from '../../../components/Calendar'
@@ -20,7 +24,7 @@ const HomeScreen = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [loadingEvent, setLoadingEvent] = useState(true)
   const [showEvent, setShowEvent] = useState<any>(false)
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     const fetchHeaders = async () => {
@@ -30,11 +34,11 @@ const HomeScreen = () => {
       } catch (error) {
         console.error(error);
       }
-    };
+    }
 
     fetchUser()
     fetchHeaders().then(() => setIsLoading(false));
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (!isLoading) {
@@ -46,15 +50,15 @@ const HomeScreen = () => {
     const backAction = () => {
       BackHandler.exitApp();
       return true;
-    };
+    }
 
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       backAction
-    );
+    )
 
-    return () => backHandler.remove();
-  }, []);
+    return () => backHandler.remove()
+  }, [])
 
   const fetchCalendars = async () => {
     try {
@@ -69,113 +73,85 @@ const HomeScreen = () => {
 
   const fetchUser = async () => {
     await getUser().then(res => {
-      setUser(res);
-    });
-  };
+      setUser(res)
+    })
+  }
 
   function handleView(item: any) {
     setEvent(item)
-    setShowEvent(!showEvent)
+    setShowEvent(true)
   }
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = () => {
     setLoadingEvent(true)
-    setRefreshing(true);
-    fetchCalendars().then(() => setLoadingEvent(false))
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+    setRefreshing(true)
+    fetchCalendars().then(() => {
+      setLoadingEvent(false)
+      setRefreshing(false)
+    })
+  }
+
+  const renderItem = ({ item, index }: any) => (
+    <TouchableOpacity onPress={() => handleView(item)}>
+      <Calendar key={index} calendar={item} />
+    </TouchableOpacity>
+  )
+
+  const renderSkeleton = () => (
+    [0, 1, 2, 3, 4].map((t, i) => (
+      <View key={i} style={styles.event}>
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Skeleton show={true} width={50} height={50} colorMode='light' />
+        </View>
+        <View style={styles.eventItem}>
+          <Skeleton show={true} width={150} height={15} colorMode='light' style={{ marginBottom: 10 }} />
+          <Skeleton show={true} width={230} height={10} colorMode='light' style={{ marginBottom: 10 }} />
+          <Skeleton show={true} width={230} height={10} colorMode='light' />
+        </View>
+      </View>
+    ))
+  )
 
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl 
-          refreshing={refreshing} 
-          onRefresh={onRefresh}
-          colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
-          progressBackgroundColor={colors.BLANC}
-        />
-      }
-    >
+    <View style={styles.container}>
       <StatusBar backgroundColor={colors.BLEU} />
-      
-      <Header user={user} />
-      {user ?
-        <View style={{padding: 20}}>
-          <View>
-            <Heading style={styles.headerEvent} text="Le calendrier de l'école" />
-            {!loadingEvent ? <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={events}
-              renderItem={({item, index}) => (
-                <TouchableOpacity onPress={() => handleView(item)}>
-                  <Calendar key={index} calendar={item} />
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item, index) => index.toString()}
-            /> :
-            <View>
-              {[0, 1, 2, 3, 4].map((t, i) => (
-                <View key={i} style={styles.event}>
-                  <View style={{display: 'flex',alignItems: 'center', justifyContent: 'center'}}>
-                    <Skeleton
-                      show={true}
-                      width={50}
-                      height={50} 
-                      colorMode='light'
-                    />
-                  </View>
-                  <View style={styles.eventItem}>
-                    <View style={{marginBottom: 10}}>
-                      <Skeleton 
-                        show={true}
-                        width={150}
-                        height={15}
-                        colorMode='light'
-                      />
-                    </View>
-                    <View style={{marginBottom: 10}}>
-                      <Skeleton 
-                        show={true}
-                        width={230}
-                        height={10}
-                        colorMode='light'
-                      />
-                    </View>
-                    <View style={{marginBottom: 10}}>
-                      <Skeleton 
-                        show={true}
-                        width={230}
-                        height={10}
-                        colorMode='light'
-                      />
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </View>}
-            {(!loadingEvent && events.length === 0) &&
-              <NoData />
-            }
-          </View> 
-        </View>
-        :
-        <Text style={{ fontSize: 15, textAlign: 'center' }}>
-            <ActivityIndicator color={colors.VERT} size='large' />
-        </Text>
-      }
+      {isLoading || !user ? (
+        <ActivityIndicator color={colors.VERT} size="large" style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={loadingEvent ? [] : events}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
+              progressBackgroundColor={colors.BLANC}
+            />
+          }
+          ListHeaderComponent={
+            <>
+              <Header user={user} />
+              <View style={{ padding: 20 }}>
+                <Heading style={styles.headerEvent} text="Le calendrier de l'école" />
+                {loadingEvent && renderSkeleton()}
+                {!loadingEvent && events.length === 0 && <NoData />}
+              </View>
+            </>
+          }
+          ListFooterComponent={<View style={{ height: 50 }} />}
+        />
+      )}
 
       <Modal
         animationType='slide'
         visible={showEvent}
-        onTouchStart={() => setShowEvent(false)}
+        onRequestClose={() => setShowEvent(false)}
       >
         <ShowCalendar hideModal={() => setShowEvent(false)} calendar={event} />
       </Modal>
-
-    </ScrollView>
+    </View>
   )
 }
 
@@ -189,7 +165,6 @@ const styles = StyleSheet.create({
   },
   event: {
     backgroundColor: '#f2f2f2',
-    display: 'flex',
     flexDirection: 'row',
     padding: 10,
     marginBottom: 10,
@@ -200,17 +175,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginLeft: 20,
     height: 50
-  },
-  popup: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    bottom: 0,
-    elevation: 5,
-    height: 400
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
   },
 })
 

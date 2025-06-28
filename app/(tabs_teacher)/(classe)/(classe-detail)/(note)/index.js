@@ -1,5 +1,18 @@
-import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView, RefreshControl, Modal, Animated, TextInput } from 'react-native'
-import React, { useRef, useState, useEffect } from 'react'
+import { 
+  View, 
+  Text, 
+  SafeAreaView, 
+  Image, 
+  StyleSheet, 
+  TouchableOpacity, 
+  FlatList, 
+  ScrollView, 
+  RefreshControl, 
+  Modal, 
+  Animated, 
+  TextInput 
+} from 'react-native'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
 import axios from 'axios'
 import { Skeleton } from 'moti/skeleton'
 import NoData from '@/components/NoData';
@@ -18,7 +31,7 @@ import { useLocalSearchParams } from 'expo-router';
 const NoteScreen = () => {
   const [loading, setLoading] = useState(true)
   const [notes, setNotes] = useState([])
-  const { classe, user, headers } = useLocalSearchParams()
+  const params = useLocalSearchParams();
   const bottomSheetModalRef = useRef(null);
   const handleClosePress = () => bottomSheetModalRef.current?.close()
   const [refreshing, setRefreshing] = useState(false);
@@ -30,19 +43,38 @@ const NoteScreen = () => {
   const [showModalUpdate, setShowModalUpdate] = useState(false)
   const [visibleOption, setVisibleOption] = useState(false)
 
+  const parseDoubleJSON = (str) => {
+    if (!str) return null;
+    try {
+      const once = JSON.parse(str);
+      if (typeof once === 'string') {
+        return JSON.parse(once);
+      }
+      return once;
+    } catch {
+      return null;
+    }
+  }
+
+  const parsedClasse = useMemo(() => parseDoubleJSON(params?.classe), [params?.classe]);
+  const parsedUser = useMemo(() => parseDoubleJSON(params?.user), [params?.user]);
+  const parsedHeaders = useMemo(() => parseDoubleJSON(params?.headers), [params?.headers]);
+  const parsedEcole = useMemo(() => parseDoubleJSON(params?.ecole), [params?.ecole]);
+
   useEffect(() => {
     handleClosePress()
     getNotes().then(() => setLoading(false))
-  }, [classe])
+  }, [parsedClasse])
 
   const getNotes = async () => {
     try {
-      const res = await getNotesClasse(classe.id, headers);
-      setNotes(res.notes)
+      const res = await getNotesClasse(parsedClasse.id, parsedHeaders);
+      //console.log("Notes:", res);
+      setNotes(res.notes);
     } catch (error) {
-      showToast(error.response.data.message)
+      showToast(error.response?.data?.message || error.message);
     }
-  }
+  };
 
   const onRefresh = React.useCallback(() => {
     setLoading(true)
@@ -76,21 +108,34 @@ const NoteScreen = () => {
   }
 
   const handleSubmit = async () => {
-    setLoading(true)
-    if (parseInt(newNote) > 0 && parseInt(newNote) < 20) {
-      const data = {
-        id: newData.id,
-        note: newNote
-      }
-      await updateNote(data, headers).then((res) => {
-        setLoading(false)
-        showToast(res.message)
-      })
-    } else {
-      showToast("Entrer une note supérieure à 0 et inférieure à 20")
+  setLoading(true)
+
+  const noteValue = parseFloat(newNote)
+
+  if (!isNaN(noteValue) && noteValue > 0 && noteValue < 20) {
+    const data = {
+      id: newData.id,
+      note: noteValue
     }
-    setLoading(false)
+
+    console.log("Update Note data:", data)
+
+    try {
+      const res = await updateNote(data, parsedHeaders)
+      showToast(res.message)
+      setShowModalUpdate(false)
+      getNotes()
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de la note :", error)
+      showToast("Erreur lors de la mise à jour")
+    }
+  } else {
+    showToast("Entrez une note valide entre 0 et 20")
   }
+
+  setLoading(false)
+}
+
 
   //Modal popup option note
   const Popup = ({data}) => {
@@ -108,14 +153,18 @@ const NoteScreen = () => {
             <TouchableOpacity
               onPress={() => handleShowNote(data)}
               style={styles.option}
+              activeOpacity={0.7}
             >
-              <Text>Voir</Text>
+              <Ionicons name="eye" size={18} color={colors.BLEU} />
+              <Text style={styles.optionText}>Voir détails</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               onPress={() => handleUpdateNote(data)} 
               style={styles.option}
+              activeOpacity={0.7}
             >
-              <Text>Modifier</Text>
+              <Ionicons name="create" size={18} color={colors.VERT} />
+              <Text style={styles.optionText}>Modifier note</Text>
             </TouchableOpacity>
           </Animated.View>
         </SafeAreaView>
@@ -135,10 +184,13 @@ const NoteScreen = () => {
       }
       style={{backgroundColor: colors.BLANC}}
     >
+      {/* Header Banner */}
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
           <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
-            <Text style={{color: colors.NOIR, fontSize: 17, fontFamily: 'Regular', marginBottom: 10}}>La gestion des notes assure une transparence totale auprès de l'administration et des parents d'élèves de l'exactitude des notes enregistrées.</Text>
+            <Text style={{color: colors.NOIR, fontSize: 17, fontFamily: 'Regular', marginBottom: 10}}>
+              La gestion des notes assure une transparence totale auprès de l'administration et des parents d'élèves de l'exactitude des notes enregistrées.
+            </Text>
           </View>
           <View style={{width: "30%"}}>
             <Image source={require("@/assets/images/ob4.png")} style={{width: 80, height: 80}} />
@@ -146,195 +198,286 @@ const NoteScreen = () => {
         </View>
       </View>
 
+      {/* Main Content */}
       <View style={{margin: 15}}> 
         <Heading text={"Toutes les notes"} style={{marginBottom: 20}} />
         
-        <TouchableOpacity onPress={() => setVisible(true)} style={styles.addButton}>
+        <TouchableOpacity 
+          onPress={() => setVisible(true)} 
+          style={styles.addButton}
+          activeOpacity={0.7}
+        >
           <AntDesign name="plus" size={24} color={colors.BLANC} />
         </TouchableOpacity>
 
-        {!loading ? <FlatList
-          data={notes}
-          showsVerticalScrollIndicator={false}
-          horizontal={false}
-          renderItem={({item, index}) => (
-            <View key={index}>
-              <View style={styles.note}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                  <View style={styles.noteImage}>
-                    <Image source={require("@/assets/images/matiere.png")} style={{width: 50, height: 50}} />
-                  </View>
-                  <View style={styles.noteDesc}>
-                    <Text style={[styles.text, {fontSize: 20}]}>{item.nom_student +' '+ item.prenom_student}</Text>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                      <Text style={[styles.text]}>{longueurTexte(item.nom_matiere, 25)}</Text>
-                      <Text style={styles.text}>{item.note} / 20</Text>
+        {!loading ? (
+          <FlatList
+            data={notes}
+            showsVerticalScrollIndicator={false}
+            horizontal={false}
+            renderItem={({item, index}) => (
+              <View key={index}>
+                <View style={styles.note}>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                    <View style={styles.noteImage}>
+                      <Image source={require("@/assets/images/matiere.png")} style={{width: 50, height: 50}} />
                     </View>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 30}}>
-                      <Text style={[styles.text]}>{item.sequence}</Text>
-                      <Text style={styles.text}>{item.annee_scolaire}</Text>
+                    <View style={styles.noteDesc}>
+                      <Text style={[styles.text, {fontSize: 20}]}>{item.nom_student +' '+ item.prenom_student}</Text>
+                      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <Text style={[styles.text]}>{longueurTexte(item.nom_matiere, 25)}</Text>
+                        <Text style={styles.text}>{item.note} / 20</Text>
+                      </View>
+                      <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 30}}>
+                        <Text style={[styles.text]}>{item.sequence}</Text>
+                        <Text style={styles.text}>{item.annee_scolaire}</Text>
+                      </View>
                     </View>
+                    <TouchableOpacity onPress={() => resizeBox(1)} activeOpacity={0.7}>
+                      <SimpleLineIcons name="options-vertical" size={20} color="black" />
+                    </TouchableOpacity>
                   </View>
-                  <TouchableOpacity onPress={() => resizeBox(1)}>
-                    <SimpleLineIcons name="options-vertical" size={20} color="black" />
-                  </TouchableOpacity>
+                  <Text style={{marginLeft: 15}}>Enregistré le {dateParser(item.created_at)}</Text>
                 </View>
-                <Text style={{marginLeft: 15}}>Enregistré le {dateParser(item.created_at)}</Text>
+                <Popup data={item} />
               </View>
-              <Popup data={item} />
-            </View>
-          )}
-        /> :
-        [0, 1, 2, 3, 4].map((t, i) => (
-          <View style={styles.note} key={i}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-              <View style={{marginRight: 10}}>
-                <Skeleton 
-                  show={true}
-                  width={50}
-                  height={50} 
-                  colorMode='light'
-                />
-              </View>
-              <View style={styles.noteDesc}>
-                <View style={{marginBottom: 10}}>
-                  <Skeleton 
-                    show={true}
-                    width={190}
-                    height={10} 
-                    colorMode='light'
-                  />
-                </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
-                  <Skeleton 
-                    show={true}
-                    width={100}
-                    height={10} 
-                    colorMode='light'
-                  />
-                  <Skeleton 
-                    show={true}
-                    width={50}
-                    height={10} 
-                    colorMode='light'
-                  />
-                </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
-                  <Skeleton 
-                    show={true}
-                    width={90}
-                    height={10} 
-                    colorMode='light'
-                  />
-                  <Skeleton 
-                    show={true}
-                    width={70}
-                    height={10} 
-                    colorMode='light'
-                  />
-                </View>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        ) : (
+          [0, 1, 2, 3, 4].map((t, i) => (
+            <View style={styles.note} key={i}>
+              <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                 <View style={{marginRight: 10}}>
                   <Skeleton 
                     show={true}
-                    width={200}
-                    height={10} 
+                    width={50}
+                    height={50} 
                     colorMode='light'
                   />
                 </View>
+                <View style={styles.noteDesc}>
+                  <View style={{marginBottom: 10}}>
+                    <Skeleton 
+                      show={true}
+                      width={190}
+                      height={10} 
+                      colorMode='light'
+                    />
+                  </View>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
+                    <Skeleton 
+                      show={true}
+                      width={100}
+                      height={10} 
+                      colorMode='light'
+                    />
+                    <Skeleton 
+                      show={true}
+                      width={50}
+                      height={10} 
+                      colorMode='light'
+                    />
+                  </View>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
+                    <Skeleton 
+                      show={true}
+                      width={90}
+                      height={10} 
+                      colorMode='light'
+                    />
+                    <Skeleton 
+                      show={true}
+                      width={70}
+                      height={10} 
+                      colorMode='light'
+                    />
+                  </View>
+                  <View style={{marginRight: 10}}>
+                    <Skeleton 
+                      show={true}
+                      width={200}
+                      height={10} 
+                      colorMode='light'
+                    />
+                  </View>
+                </View>
               </View>
             </View>
-          </View>
-        ))}
-        {(!loading && notes.length) === 0 && 
-          <NoData />
-        }
-
+          ))
+        )}
+        {(!loading && notes.length === 0) && <NoData />}
       </View>
 
-      {/* Modal pour voir la note */}
+      {/* Note Details Modal */}
       <Modal
         animationType='slide'
         visible={showModal}
-        onTouchStart={() => setShowModal(false)}
+        transparent={false}
+        onRequestClose={() => setShowModal(false)}
       >
-        <View style={{flex: 1, margin: 15}}>
-          <TouchableOpacity style={styles.header} onPress={() => setShowModal(false)}>
-            <Ionicons name='arrow-back-outline' size={30} color="black" />
-            <Text style={styles.titleHeader}>Détails de la note</Text>
-          </TouchableOpacity>
-
-          <View>
-            <View style={{marginBottom: 10}}>
-              <Text style={styles.title}>Noms et prénoms :</Text>
-              <Text style={styles.titleContent}>{note.nom_student +' '+ note.prenom_student}</Text>
-            </View>
-            <View style={{marginBottom: 10}}>
-              <Text style={styles.title}>Matière :</Text>
-              <Text style={styles.titleContent}>{note.nom_matiere}</Text>
-            </View>
-            <View style={{marginBottom: 10}}>
-              <Text style={styles.title}>Note :</Text>
-              <Text style={styles.titleContent}>{note.note} / 20</Text>
-            </View>
-            <View style={{marginBottom: 10}}>
-              <Text style={styles.title}>Séquence :</Text>
-              <Text style={styles.titleContent}>{note.sequence}</Text>
-            </View>
-            <View style={{marginBottom: 10}}>
-              <Text style={styles.title}>Année scolaire :</Text>
-              <Text style={styles.titleContent}>{note.annee_scolaire}</Text>
-            </View>
-            <Text style={{fontFamily: 'Regular', fontSize: 20}}>Enregistré le {dateParser(note.created_at)}</Text>
+        <SafeAreaView style={styles.modalContainer}>
+          {/* Header */}
+          <View style={styles.modalHeader}>
+            <TouchableOpacity 
+              onPress={() => setShowModal(false)}
+              style={styles.backButton}
+              activeOpacity={0.7}
+            >
+              <Ionicons name='arrow-back-outline' size={24} color={colors.NOIR} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Détails de la note</Text>
+            <View style={{ width: 70 }} />
           </View>
-        </View>
+
+          {/* Content */}
+          <ScrollView 
+            style={styles.modalContent}
+            contentContainerStyle={styles.modalContentContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Student Info Card */}
+            <View style={[styles.infoCard, { backgroundColor: colors.VERT_CLAIR }]}>
+              <Ionicons name="person" size={24} color={colors.VERT} />
+              <View style={styles.cardContent}>
+                <Text style={styles.cardLabel}>ÉLÈVE</Text>
+                <Text style={[styles.cardValue, { color: colors.BLEU }]}>
+                  {note.nom_student || '-'} {note.prenom_student || '-'}
+                </Text>
+              </View>
+            </View>
+
+            {/* Note Details */}
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>INFORMATIONS SUR LA NOTE</Text>
+              
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Matière:</Text>
+                <Text style={styles.detailValue}>{note.nom_matiere || '-'}</Text>
+              </View>
+
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Note:</Text>
+                <Text style={[styles.detailValue, { color: colors.BLEU }]}>
+                  {note.note || '0'} / 20
+                </Text>
+              </View>
+
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Séquence:</Text>
+                <Text style={styles.detailValue}>{note.sequence || '-'}</Text>
+              </View>
+
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Année scolaire:</Text>
+                <Text style={styles.detailValue}>{note.annee_scolaire || '-'}</Text>
+              </View>
+            </View>
+
+            {/* Date Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>DATE</Text>
+              <View style={[styles.dateContainer]}>
+                <Ionicons name="calendar" size={18} color={colors.GRIS_FONCE} />
+                <Text style={[styles.detailValue, { marginLeft: 8 }]}>
+                  {note.created_at ? dateParser(note.created_at) : 'Date inconnue'}
+                </Text>
+              </View>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
       </Modal>
 
-      {/* Modal pour ajouter une note */}
+      {/* Add Note Modal */}
       <Modal
         animationType='slide'
         visible={visible}
-        onTouchStart={() => setVisible(false)}
+        onRequestClose={() => setVisible(false)}
       >
-        <AjouterNote close={() => setVisible(false)} user={user} headers={headers} classe={classe} />
+        <AjouterNote
+          close={() => setVisible(false)}
+          user={parsedUser}
+          headers={parsedHeaders}
+          classe={parsedClasse}
+          ecole={parsedEcole}
+        />
       </Modal>
 
-      {/* Pop modal update */}
+      {/* Update Note Modal */}
       <Modal 
         visible={showModalUpdate}
         animationType='slide'
-        style={{ height: 300 }}
+        transparent={false}
+        onRequestClose={() => setShowModalUpdate(false)}
       >
-        <View
-          style={{ flex: 1, height: 300 }}
-        >
-          <TouchableOpacity style={styles.header} onPress={() => setShowModalUpdate(false)}>
-            <Ionicons name='arrow-back-outline' size={30} color="black" />
-            <Text style={styles.titleHeader}>Modifier une note</Text>
-          </TouchableOpacity>
+        <SafeAreaView style={styles.modalContainer}>
+          {/* Header */}
+          <View style={styles.modalHeader}>
+            <TouchableOpacity 
+              onPress={() => setShowModalUpdate(false)}
+              style={styles.backButton}
+              activeOpacity={0.7}
+            >
+              <Ionicons name='arrow-back-outline' size={24} color={colors.NOIR} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Modifier une note</Text>
+            <View style={{ width: 70 }} />
+          </View>
 
-          <Animated.View style={styles.popupUpdate}>
-            <Text style={{fontFamily: 'Bold', fontSize: 20, marginBottom: 10}}>{newData.nom_student +' '+ newData.prenom_student}</Text>
+          {/* Content */}
+          <View style={styles.updateModalContent}>
+            {/* Student Info */}
+            <View style={styles.studentInfo}>
+              <Ionicons name="person" size={24} color={colors.BLEU} />
+              <Text style={styles.studentName}>
+                {newData.nom_student} {newData.prenom_student}
+              </Text>
+            </View>
+
+            {/* Subject Info */}
+            <View style={styles.subjectInfo}>
+              <Ionicons name="book" size={20} color={colors.VERT} />
+              <Text style={styles.subjectText}>{newData.nom_matiere}</Text>
+            </View>
+
+            {/* Current Grade */}
+            <View style={styles.currentGrade}>
+              <Text style={styles.gradeLabel}>Note actuelle:</Text>
+              <Text style={styles.gradeValue}>{newData.note} / 20</Text>
+            </View>
+
+            {/* New Grade Input */}
             <TextInput
-              placeholder='Entrer la nouvelle note'
-              numberOfLines={1} multiline={false}
+              placeholder='Entrer la nouvelle note (0-20)'
+              placeholderTextColor={colors.GRIS}
+              keyboardType='numeric'
+              numberOfLines={1} 
+              multiline={false}
               onChangeText={(text) => setNewNote(text)}
-              style={styles.textArea}
+              style={styles.gradeInput}
             />
 
-            <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
-              {loading ? <ActivityIndicator color={colors.BLANC} /> :
-                <Text style={{fontFamily: 'Regular', color: colors.BLANC, fontSize: 23}}>Modifier</Text>
-              }
+            {/* Update Button */}
+            <TouchableOpacity 
+              onPress={handleSubmit} 
+              style={styles.updateButton}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color={colors.BLANC} />
+              ) : (
+                <Text style={styles.updateButtonText}>Mettre à jour</Text>
+              )}
             </TouchableOpacity>
-          </Animated.View>
-        </View>
+          </View>
+        </SafeAreaView>
       </Modal>
-
     </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
+  // Existing styles...
   banner: {},
   card: {
     margin: 15,
@@ -343,7 +486,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: 200, 
-    borderRadius: 15
+    borderRadius: 15,
+    elevation: 3,
+    shadowColor: colors.NOIR,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   addButton: {
     position: 'absolute',
@@ -353,98 +501,228 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     right: 20,
     backgroundColor: colors.BLEU,
-    borderRadius: 99,
+    borderRadius: 25,
     elevation: 5,
+    shadowColor: colors.NOIR,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   note: {
-    backgroundColor: '#f2f2f2',
-    marginBottom: 15,
-    padding: 10,
-    borderRadius: 15,
+    backgroundColor: colors.BLANC,
+    marginBottom: 10,
+    marginTop: 20,
+    padding: 15,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.BLEU
+    borderColor: colors.GRIS_CLAIR,
+    elevation: 2,
+    shadowColor: colors.NOIR,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   noteDesc: {
-    flexDirection: 'column'
+    flexDirection: 'column',
+    flex: 1,
+    marginLeft: 10,
   },
   noteImage: {
     marginTop: 10
   },
   text: {
     fontFamily: 'Regular',
-    fontFamily: 'Bold',
     fontSize: 16
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 10,
-    alignItems: 'center',
-    marginBottom: 20,
-    margin: 10
-  },
-  titleHeader: {
-    fontSize: 25,
-    fontFamily: 'Bold',
-    textAlign: 'center',
-    color: colors.NOIR
-  },
-  title: {
-    textAlign: 'left',
-    fontSize: 22,
-    textDecorationLine: 'underline',
-    fontFamily: 'Bold'
-  },
-  titleContent: {
-    fontSize: 20,
-    fontFamily: 'Regular'
   },
   popup: {
     borderRadius: 8,
-    borderColor: '#f2f2f2',
+    borderColor: colors.GRIS_CLAIR,
     borderWidth: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.BLANC,
     paddingHorizontal: 10,
     position: 'absolute',
     top: '45%',
-    right: 20
+    right: 20,
+    elevation: 5,
+    shadowColor: colors.NOIR,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   option: {
     flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.GRIS_TRES_CLAIR,
+  },
+  optionText: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontFamily: 'Regular',
+  },
+  // Modal Styles
+  modalContainer: {
+    flex: 1,
+    backgroundColor: colors.BLANC,
+  },
+  modalHeader: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 7,
-    borderBottomColor: '#ccc'
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.GRIS_CLAIR,
   },
-  textArea: {
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backText: {
+    fontSize: 16,
+    fontFamily: 'Regular',
+    marginLeft: 5,
+    color: colors.NOIR,
+  },
+  modalTitle: {
+    fontSize: 25,
+    fontFamily: 'SemiBold',
+    color: colors.NOIR,
+    textAlign: 'center',
+    flex: 1,
+  },
+  modalContent: {
+    flex: 1,
+  },
+  modalContentContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 30,
+  },
+  infoCard: {
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cardContent: {
+    marginLeft: 12,
+  },
+  cardLabel: {
+    fontSize: 20,
+    fontFamily: 'SemiBold',
+    color: colors.GRIS_FONCE,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  cardValue: {
+    fontSize: 18,
+    fontFamily: 'SemiBold',
+  },
+  section: {
+    marginBottom: 25,
+  },
+  sectionLabel: {
+    fontSize: 20,
+    fontFamily: 'SemiBold',
+    color: colors.GRIS_FONCE,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 12,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.GRIS_TRES_CLAIR,
+  },
+  detailLabel: {
+    fontSize: 16,
+    fontFamily: 'Regular',
+    color: colors.GRIS_FONCE,
+  },
+  detailValue: {
+    fontSize: 16,
+    fontFamily: 'SemiBold',
+    color: colors.NOIR,
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  // Update Modal Styles
+  updateModalContent: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  studentInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  studentName: {
+    fontSize: 18,
+    fontFamily: 'SemiBold',
+    color: colors.NOIR,
+    marginLeft: 10,
+  },
+  subjectInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  subjectText: {
+    fontSize: 16,
+    fontFamily: 'Regular',
+    color: colors.NOIR,
+    marginLeft: 10,
+  },
+  currentGrade: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.GRIS_TRES_CLAIR,
+    marginBottom: 20,
+  },
+  gradeLabel: {
+    fontSize: 16,
+    fontFamily: 'Regular',
+    color: colors.GRIS_FONCE,
+  },
+  gradeValue: {
+    fontSize: 16,
+    fontFamily: 'SemiBold',
+    color: colors.BLEU,
+  },
+  gradeInput: {
     borderWidth: 1,
-    borderRadius: 15,
-    textAlignVertical: 'top',
-    padding: 10,
+    borderRadius: 10,
+    padding: 15,
     fontSize: 16,
     borderColor: colors.BLEU,
-    marginBottom: 15
+    marginBottom: 25,
+    backgroundColor: colors.GRIS_TRES_CLAIR,
   },
-  popupUpdate: {
-    borderColor: '#f2f2f2',
-    borderWidth: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 10,
-    position: 'absolute',
-    bottom : 35,
-    width: '100%',
-    height: 300
-  },
-  btn: {
+  updateButton: {
     height: 50,
-    width: "100%",
-    marginTop: 20,
-    marginBottom: 20,
     borderRadius: 10,
     backgroundColor: colors.BLEU,
-    display: 'flex',
-    justifyContent:'center',
-    alignItems: 'center'
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+  },
+  updateButtonText: {
+    fontFamily: 'SemiBold',
+    color: colors.BLANC,
+    fontSize: 18,
   },
 })
 

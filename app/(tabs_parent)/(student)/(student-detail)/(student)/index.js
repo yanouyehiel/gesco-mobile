@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, ScrollView, FlatList } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { colors } from '@/utils/colors'
 import Heading from '@/components/Heading'
 import { Skeleton } from 'moti/skeleton'
@@ -10,17 +10,33 @@ import { dateParser, showTost } from '@/utils/fonctions'
 import { useLocalSearchParams } from 'expo-router'
 
 const StudentScreen = () => {
-  const { student, headers } = useLocalSearchParams()
+  const params = useLocalSearchParams();
+     
+  const parseDoubleJSON = (str) => {
+    if (!str) return null;
+    try {
+      const once = JSON.parse(str);
+      if (typeof once === 'string') return JSON.parse(once);
+      return once;
+    } catch {
+      return null;
+    }
+  };
+
+  const parsedStudent = useMemo(() => parseDoubleJSON(params?.student), [params?.student]);
+  const parsedUser = useMemo(() => parseDoubleJSON(params?.user), [params?.user]);
+  const parsedHeaders = useMemo(() => parseDoubleJSON(params?.headers), [params?.headers]);
+
   const [loading, setLoading] = useState(true)
   const [feesStudent, setFeesStudent] = useState(null)
 
   useEffect(() => {
     getFeesStudent().then(() => setLoading(false))
-  }, [])
+  }, [parsedStudent])
 
   async function getFeesStudent() {
     try {
-      const res = await axios.get(`https://gesco-app.com/api/get-fees-student/${parseInt(student.id)}`, {headers: headers});
+      const res = await axios.get(`https://gesco-app.com/api/get-fees-student/${parseInt(parsedStudent.id)}`, {headers: parsedHeaders});
       setFeesStudent(res.data)
     } catch (error) {
       showTost(error.message)
@@ -31,14 +47,14 @@ const StudentScreen = () => {
     <ScrollView style={{backgroundColor: '#f2f2f2',}}>
       <View style={styles.card}>
         <View style={{flexDirection: 'column', marginRight: 15}}>
-          <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>{student.nom +' '+ student.prenom}</Text>
+          <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>{parsedStudent?.nom +' '+ parsedStudent?.prenom}</Text>
           <View style={{backgroundColor: colors.BLANC, color: colors.NOIR, padding: 8, borderRadius: 10, width: 200}}>
-            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>{student.matricule}</Text>
+            <Text style={{textAlign: 'center', fontSize: 18, fontFamily: 'Regular'}}>{parsedStudent?.matricule}</Text>
           </View>
           <View style={{flexDirection: 'row', gap: 30, marginTop: 15}}>
-            <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular'}}>{student.sexe}</Text>
-            <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular'}}>{student.nom_classe}</Text>
-            <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular'}}>{student.date_naissance}</Text>
+            <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular'}}>{parsedStudent?.sexe}</Text>
+            <Text style={{color: colors.BLANC, fontSize: 20, fontFamily: 'Regular'}}>{parsedStudent?.nom_classe}</Text>
+            <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular'}}>{parsedStudent?.date_naissance}</Text>
           </View>
         </View>
       </View>
