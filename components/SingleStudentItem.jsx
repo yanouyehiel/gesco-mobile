@@ -9,9 +9,23 @@ const SingleStudentItem = ({student, headers, user}) => {
     return (
         <TouchableOpacity 
             style={styles.container} 
-            onPress={() => router.push('/(tabs_parent)/(student)/(student-detail)/student', {
-                student: student, user: user, headers: headers
-            })}
+            onPress={() => {
+            if (!student || !user || !headers) {
+                console.warn("❌ Données manquantes avant navigation !");
+                return;
+            }
+
+            router.push({
+                pathname: '/(tabs_parent)/(student)/(student-detail)/student',
+                params: {
+                student: JSON.stringify(student),
+                user: JSON.stringify(user),
+                headers: JSON.stringify(headers),
+                },
+            });
+            }}
+
+           
         >
             <Image 
                 source={require('@/assets/images/user.jpeg')} 

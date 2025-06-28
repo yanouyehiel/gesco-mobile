@@ -1,197 +1,195 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, SafeAreaView, KeyboardAvoidingView  } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { colors } from '@/utils/colors'
-import { dateParser, longueurTexte } from '@/utils/fonctions';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, SafeAreaView, KeyboardAvoidingView } from 'react-native';
+import React, { useEffect, useState, useMemo } from 'react';
+import { colors } from '@/utils/colors';
+import { dateParser, longueurTexte, showToast } from '@/utils/fonctions';
 import Heading from '@/components/Heading';
 import { Skeleton } from 'moti/skeleton';
 import NoData from '@/components/NoData';
 import axios from 'axios';
-import "react-native-gesture-handler"
-import ModalCours from '../../../../../components/ModalCour';
-import { showToast } from '../../../../../utils/fonctions';
+import "react-native-gesture-handler";
+import ModalCours from '@/components/ModalCour';
 import { useLocalSearchParams } from 'expo-router';
 
 const CourseScreen = () => {
-  const { student, headers } = useLocalSearchParams()
-  const [showModal, setShowModal] = useState(false)
-  const [cours, setCours] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [cour, setCour] = useState({})
+  const params = useLocalSearchParams();
+
+  const parseDoubleJSON = (str) => {
+    if (!str) return null;
+    try {
+      const once = JSON.parse(str);
+      if (typeof once === 'string') return JSON.parse(once);
+      return once;
+    } catch {
+      return null;
+    }
+  };
+
+  const parsedStudent = useMemo(() => parseDoubleJSON(params?.student), [params?.student]);
+  const parsedUser = useMemo(() => parseDoubleJSON(params?.user), [params?.user]);
+  const parsedHeaders = useMemo(() => parseDoubleJSON(params?.headers), [params?.headers]);
+
+  const [showModal, setShowModal] = useState(false);
+  const [cours, setCours] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [cour, setCour] = useState({});
 
   useEffect(() => {
-    getCours().then(() => setLoading(false))
-  }, [student])
+    if (parsedStudent?.classe_id && parsedHeaders) {
+      getCours().then(() => setLoading(false));
+    }
+  }, [parsedStudent]);
 
   const getCours = async () => {
     try {
-      const res = await axios.get('https://gesco-app.com/api/get-cours-children/' + student.classe_id, {headers: headers});
+      const res = await axios.get(`https://gesco-app.com/api/get-cours-children/${parsedStudent.classe_id}`, {
+        headers: parsedHeaders,
+      });
       setCours(res.data.cours);
     } catch (error) {
-      showToast(error.message)
+      showToast(error.message);
     }
-  }
+  };
 
   function handleShowCours(data) {
-    setCour(data)
-    setShowModal(true)
+    setCour(data);
+    setShowModal(true);
   }
 
   return (
-    <SafeAreaView style={{backgroundColor: colors.BLANC}}>
+    <SafeAreaView style={{ backgroundColor: colors.BLANC, flex: 1 }}>
       <KeyboardAvoidingView>
         <ScrollView>
           <View style={styles.banner}>
-            <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
-              <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
-                <Text style={{color: colors.NOIR, fontSize: 18, fontFamily: 'Regular', marginBottom: 10}}>La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace</Text>
+            <View style={[styles.card, { backgroundColor: colors.BLEU_CLAIR }]}>
+              <View style={{ flex: 1, paddingRight: 10 }}>
+                <Text style={styles.cardText}>
+                  La gestion des cours permet de planifier et d'organiser les enseignements de manière efficace
+                </Text>
               </View>
-              <View style={{width: "30%"}}>
-                <Image source={require("@/assets/images/ob5.png")} style={{width: 80, height: 80}} />
-              </View>
+              <Image source={require('@/assets/images/ob5.png')} style={styles.bannerImage} />
             </View>
           </View>
 
-          <View style={{margin: 15}}>
-            <Heading text={"Tous les cours"} />
-            {!loading ? <FlatList
-              data={cours}
-              showsVerticalScrollIndicator={false}
-              horizontal={false}
-              renderItem={({item, i}) => (
-                <TouchableOpacity
-                  key={i}
-                  onPress={() => handleShowCours(item)}
-                >
-                  <View style={styles.cours}>
-                    <View style={styles.coursImage}>
-                      <Image source={require("@/assets/images/cours.png")} style={{width: 50, height: 50}} />
-                    </View>
-                    <View style={styles.coursDesc}>
-                      <Text style={{fontSize: 20, fontFamily: 'SemiBold'}}>{item.titre}</Text>
-                      <Text style={[styles.text, {fontSize: 18}]} numberOfLines={2} ellipsizeMode="tail">{longueurTexte(item.description, 35)}</Text>
-                      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <Text style={[styles.text, {fontFamily: 'Bold'}]}>{longueurTexte(item.nom_matiere)}</Text>
-                        <Text style={styles.text}>{item.nom_teacher + ' ' + item.prenom_teacher}</Text>
+          <View style={styles.courseContainer}>
+            <Heading text="Tous les cours" />
+            {!loading ? (
+              <FlatList
+                data={cours}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => handleShowCours(item)} activeOpacity={0.7} style={styles.coursCard}>
+                    <Image source={require('@/assets/images/cours.png')} style={styles.coursIcon} />
+                    <View style={styles.coursInfo}>
+                      <Text style={styles.coursTitle}>{item.titre}</Text>
+                      <Text style={styles.coursDesc}>{longueurTexte(item.description, 45)}</Text>
+                      <View style={styles.coursRow}>
+                        <Text style={styles.matiereText}>{longueurTexte(item.nom_matiere)}</Text>
+                        <Text style={styles.teacherText}>{item.nom_teacher + ' ' + item.prenom_teacher}</Text>
                       </View>
-                      <Text style={styles.text}>Enregistré le {dateParser(item.created_at)}</Text>
+                      <Text style={styles.dateText}>Enregistré le {dateParser(item.created_at)}</Text>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            /> :
-            [0, 1, 2, 3, 4].map((t, i) => (
-              <View style={styles.cours} key={i}>
-                <View style={{marginRight: 10}}>
-                  <Skeleton 
-                    show={true}
-                    width={50}
-                    height={50} 
-                    colorMode='light'
-                  />
-                </View>
-                <View style={styles.coursDesc}>
-                  <View style={{marginBottom: 10}}>
-                    <Skeleton 
-                      show={true}
-                      width={190}
-                      height={10} 
-                      colorMode='light'
-                    />
-                  </View>
-                  <View style={{marginBottom: 10}}>
-                    <Skeleton 
-                      show={true}
-                      width={180}
-                      height={10} 
-                      colorMode='light'
-                    />
-                  </View>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
-                    <Skeleton 
-                      show={true}
-                      width={100}
-                      height={10} 
-                      colorMode='light'
-                    />
-                    <Skeleton 
-                      show={true}
-                      width={70}
-                      height={10} 
-                      colorMode='light'
-                    />
-                  </View>
-                  <View>
-                    <Skeleton 
-                      show={true}
-                      width={190}
-                      height={10} 
-                      colorMode='light'
-                    />
+                  </TouchableOpacity>
+                )}
+                ListEmptyComponent={<NoData />}
+                scrollEnabled={false}
+              />
+            ) : (
+              [0, 1, 2, 3].map((_, i) => (
+                <View style={styles.coursCard} key={i}>
+                  <Skeleton show={true} width={50} height={50} colorMode="light" style={styles.coursIcon} />
+                  <View style={styles.coursInfo}>
+                    <Skeleton show={true} width={180} height={12} colorMode="light" style={{ marginBottom: 8 }} />
+                    <Skeleton show={true} width={200} height={10} colorMode="light" style={{ marginBottom: 8 }} />
+                    <Skeleton show={true} width={150} height={10} colorMode="light" style={{ marginBottom: 4 }} />
+                    <Skeleton show={true} width={100} height={10} colorMode="light" />
                   </View>
                 </View>
-              </View>
-            ))}
-            {(!loading && cours.length) === 0 && 
-              <NoData />
-            }
+              ))
+            )}
           </View>
 
           <ModalCours visible={showModal} setVisible={setShowModal} cour={cour} />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   banner: {
-
+    marginTop: 10,
+    paddingHorizontal: 15,
   },
   card: {
-    margin: 15,
-    display: 'flex',
-    justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    height: 150, 
-    borderRadius: 15
+    padding: 15,
+    borderRadius: 15,
+    height: 140,
   },
-  addButton: {
-    position: 'absolute',
+  bannerImage: {
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
+  },
+  cardText: {
+    fontSize: 16,
+    fontFamily: 'Regular',
+    color: colors.NOIR,
+  },
+  courseContainer: {
+    paddingHorizontal: 15,
+    paddingTop: 20,
+  },
+  coursCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: 15,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 15,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: colors.BLEU_CLAIR,
+  },
+  coursIcon: {
     width: 50,
     height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    right: 20,
-    bottom: 20,
-    backgroundColor: colors.BLEU,
-    borderRadius: 99,
-    elevation: 5,
+    marginRight: 15,
   },
-  modal: {
-    height: 400,
-    elevation: 5,
+  coursInfo: {
+    flex: 1,
+    flexDirection: 'column',
   },
-  cours: {
-    backgroundColor: '#f2f2f2',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-    padding: 10,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: colors.BLEU
-  },
-  coursImage: {
-    marginRight: 10
+  coursTitle: {
+    fontSize: 18,
+    fontFamily: 'SemiBold',
+    marginBottom: 4,
+    color: colors.NOIR,
   },
   coursDesc: {
-    flexDirection: 'column'
+    fontSize: 15,
+    fontFamily: 'Regular',
+    color: '#555',
+    marginBottom: 6,
   },
-  text: {
-    fontFamily: 'Regular'
-  }
-})
+  coursRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  matiereText: {
+    fontFamily: 'Bold',
+    color: colors.BLEU,
+  },
+  teacherText: {
+    fontFamily: 'Regular',
+    color: '#333',
+  },
+  dateText: {
+    fontFamily: 'Regular',
+    fontSize: 13,
+    color: '#777',
+  },
+});
 
-export default CourseScreen
+export default CourseScreen;

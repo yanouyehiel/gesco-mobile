@@ -74,9 +74,12 @@ async function apiPost(url, data, headers) {
 }
 
 export async function getMatieresSchool(id, headers) {
-    const response = await axios.get(`https://gesco-app.com/api/get-matieres/${parseInt(id)}`, {headers: headers})
-    return response.data;
+  const response = await axios.get(`https://gesco-app.com/api/get-matieres/${parseInt(id)}`, {
+    headers,
+  });
+  return response.data;
 }
+
 
 export async function login(data) {
     try {
@@ -172,9 +175,17 @@ export async function addDevoir(devoir, headers) {
 }
 
 export async function addNote(note, headers) {
-    const response = await axios.post(`https://gesco-app.com/api/add-note`, note, {headers});
+  try {
+    const response = await axios.post('https://gesco-app.com/api/add-note', note, {
+      headers
+    });
     return response.data;
+  } catch (err) {
+    console.log(" error  :", JSON.stringify(err, null, 2));
+    throw err;
+  }
 }
+
 
 export async function getAllCoursClasse(id, headers) {
     const response = await axios.get(`https://gesco-app.com/api/get-cours-classe/${parseInt(id)}`, {headers});
@@ -197,8 +208,13 @@ export async function getAllPresences(id, headers) {
 }
 
 export async function addAbsence(absence, headers) {
+    try{
     const response = await axios.post(`https://gesco-app.com/api/add-absence`, absence, {headers});
     return response.data;
+    } catch (err) {
+    console.log(" error  :", JSON.stringify(err, null, 2));
+    throw err;
+  }
 }
 
 export async function getAbsencesClasse(id, headers) {
@@ -237,8 +253,14 @@ export async function getMyChildren(id, headers) {
 }
 
 export async function updateNote(data, headers) {
+    try{
+    console.log("Update Note data:", data);
     const response = await axios.put(`https://gesco-app.com/api/update-note`, data, {headers});
     return response.data;
+     } catch (err) {
+    console.log(" error  :", JSON.stringify(err, null, 2));
+    throw err;
+  }
 }
 
 export async function getSequences(id, headers) {

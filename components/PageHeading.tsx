@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         gap: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom: 25,
     },
     titleHeader: {
         fontSize: 25,

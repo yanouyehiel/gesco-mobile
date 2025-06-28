@@ -62,24 +62,49 @@ const ProfileTeacher = () => {
     }
 
     const deconnexion = async () => {
-        setLoading(true)
-        const data = {
-            token_id: tokenId
+    setLoading(true);
+
+    const data = {
+        token_id: tokenId
+    };
+
+    try {
+        const res = await axios.post("https://gesco-app.com/api/auth/logout", data, {
+            headers: headers
+        });
+
+        console.log("✅ Logout Success:", res.data);
+        showToast(res.data.message);
+
+        setTimeout(() => {
+            removeStorge('tokenGesco').then(() => console.log('🗑️ Tokens supprimés'));
+            router.push("/connexion");
+        }, 1000);
+    } catch (error) {
+        if (error.response) {
+            const message = error.response.data.message;
+            console.log("❌ Logout Error Response:", error.response.data);
+
+            showToast(message || 'Erreur lors de la déconnexion');
+
+            //  Redirect immediately if the error is "Unauthenticated."
+            if (message === "Unauthenticated.") {
+                await removeStorge('tokenGesco');
+                router.push("/connexion");
+            }
+        } else if (error.request) {
+            console.log(" Logout No Response Received:", error.request);
+            showToast('Pas de réponse du serveur');
+        } else {
+            console.log(" Logout Error:", error.message);
+            showToast(error.message);
         }
-        try {
-            const res = await axios.post("https://gesco-app.com/api/auth/logout", data, {
-                headers: headers
-            })
-            showToast(res.data.message)
-            setTimeout(() => {
-                removeStorge('tokenGesco').then(() => console.log('Tokens supprimes'))
-                router.push("/connexion")
-            }, 2000)
-        } catch (error) {
-            showToast(error.message)
-        }
-        setLoading(false)
     }
+
+    setLoading(false);
+};
+
+
 
     const handleSubmit = (label) => {
         if (label === 'don') {

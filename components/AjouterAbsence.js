@@ -8,9 +8,9 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { addAbsence, getStudents } from '@/services/MainService'
 import { showToast } from '@/utils/fonctions'
 
-const AjouterAbsence = ({hideModal, user, headers, classe}) => {
-    const [timeListDebut, setTimeListDebut] = useState()
-    const [timeListFin, setTimeListFin] = useState()
+const AjouterAbsence = ({ hideModal, user, headers, ecole, classe }) => {
+    const [timeListDebut, setTimeListDebut] = useState([])
+    const [timeListFin, setTimeListFin] = useState([])
     const [selectedTimeDebut, setSelectedTimeDebut] = useState("")
     const [selectedTimeFin, setSelectedTimeFin] = useState("")
     const [selectedDate, setSelectedDate] = useState("")
@@ -18,21 +18,25 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
     const [students, setStudents] = useState([])
     const [selectedStudent, setSelectedStudent] = useState()
     const [error, setError] = useState(false)
-    const [open, setOpen] = useState(false);
-    const [studentItems, setStudentItems] = useState([]);
+
+    const [open, setOpen] = useState(false)
+    const [studentItems, setStudentItems] = useState([])
+
+    const [anneeScolaire, setAnneeScolaire] = useState("")
+    const [openAnnees, setOpenAnnees] = useState(false)
+    const [anneeItems, setAnneeItems] = useState([])
+
+    const parsedEcole = typeof ecole === 'string' ? JSON.parse(ecole) : ecole
+    const parsedClasse = typeof classe === 'string' ? JSON.parse(classe) : classe
+    const parsedUser = typeof user === 'string' ? JSON.parse(user) : user
+    const parsedHeaders = typeof headers === 'string' ? JSON.parse(headers) : headers
 
     const getTime = () => {
         const timeList1 = []
         const timeList2 = []
         for (let i = 7; i <= 18; i++) {
-            timeList1.push({
-                time: i + ':00'
-            })
-        }
-        for (let i = 7; i <= 18; i++) {
-            timeList2.push({
-                time: i + ':00'
-            })
+            timeList1.push({ time: i + ':00' })
+            timeList2.push({ time: i + ':00' })
         }
         setTimeListDebut(timeList1)
         setTimeListFin(timeList2)
@@ -46,35 +50,72 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                     label: `${student.nom} ${student.prenom}`,
                     value: student.id
                 }))
-            );
+            )
             setLoading(false)
         })
+
+        // Setup années scolaires
+        const currentYear = new Date().getFullYear()
+        const currentMonth = new Date().getMonth()
+        const startYear = currentMonth < 8 ? currentYear - 1 : currentYear
+        const annees = [
+            { label: `${startYear - 1}-${startYear}`, value: `${startYear - 1}-${startYear}` },
+            { label: `${startYear}-${startYear + 1}`, value: `${startYear}-${startYear + 1}` },
+            { label: `${startYear + 1}-${startYear + 2}`, value: `${startYear + 1}-${startYear + 2}` },
+        ]
+        setAnneeItems(annees)
+        setAnneeScolaire(annees[1].value)
     }, [students])
 
     async function getStudentsClasse() {
-        const res = await getStudents(classe.id, user.ecole_id, headers)
+        const res = await getStudents(parsedClasse.id, parsedUser.ecole_id, parsedHeaders)
         setStudents(res)
     }
 
-    async function handleSubmit() {
-        setLoading(true)
-        if (selectedDate === "" || selectedStudent === "" || selectedTimeDebut === "" || selectedTimeFin === "") {
-            setError(true)
-        } else {
-            const data = {
-                student_id: selectedStudent,
-                date: selectedDate,
-                periode: selectedTimeDebut + ' - ' + selectedTimeFin,
-                ecole_id: user.ecole_id,
-                classe_id: classe.id
-            }
-            
-            await addAbsence(data, headers).then((res) => {
-                showToast(res.message)
-            })
-        }
+  async function handleSubmit() {
+    setLoading(true)
+
+    if (
+        selectedDate === "" ||
+        selectedStudent === "" ||
+        selectedTimeDebut === "" ||
+        selectedTimeFin === "" ||
+        anneeScolaire === ""
+    ) {
+        setError(true)
         setLoading(false)
+        return
     }
+
+    const data = {
+        student_id: selectedStudent,
+        date: selectedDate,
+        periode: selectedTimeDebut + ' - ' + selectedTimeFin,
+        ecole_id: parsedUser.ecole_id,
+        classe_id: parsedClasse.id,
+        annee_scolaire: anneeScolaire
+    }
+
+    try {
+        const res = await addAbsence(data, parsedHeaders)
+        showToast(res.message)
+
+      
+        setSelectedStudent(null)
+        setSelectedDate("")
+        setSelectedTimeDebut("")
+        setSelectedTimeFin("")
+        setAnneeScolaire(anneeItems[1]?.value || null)
+        setError(false)
+
+        hideModal() 
+    } catch (err) {
+        console.log("Error submitting absence:", err)
+        showToast("Une erreur est survenue lors de l'enregistrement.")
+    }
+
+    setLoading(false)
+}
 
     return (
         <ScrollView>
@@ -84,11 +125,11 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                     <Text style={styles.titleHeader}>Enregistrer une absence</Text>
                 </TouchableOpacity>
 
-                <View style={{margin: 15}}>
+                <View style={{ margin: 15 }}>
                     <Heading text={'Selectionnner une date'} />
                     <View style={styles.calendarContainer}>
-                        <CalendarPicker 
-                            onDateChange={setSelectedDate} 
+                        <CalendarPicker
+                            onDateChange={setSelectedDate}
                             width={340}
                             maxDate={Date.now()}
                             todayBackgroundColor={colors.BLANC}
@@ -99,51 +140,46 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                             selectedBackgroundColor={colors.VERT}
                         />
                     </View>
-                    {error && <Text style={styles.errorText}>Veuillez sélectionner une date</Text>}
+                    {error && !selectedDate && <Text style={styles.errorText}>Veuillez sélectionner une date</Text>}
 
-                    <View style={{marginTop: 20}}>
+                    <View style={{ marginTop: 20 }}>
                         <Heading text={"Selectionner une tranche horaire"} />
-                        <FlatList 
+                        <FlatList
                             data={timeListDebut}
                             horizontal={true}
-                            style={{ marginBottom: 5}}
+                            style={{ marginBottom: 5 }}
                             showsHorizontalScrollIndicator={false}
-                            renderItem={({item, index}) => (
-                                <TouchableOpacity 
-                                    key={index} style={{marginRight: 10}}
-                                    onPress={() => setSelectedTimeDebut(item.time)}
-                                >
+                            renderItem={({ item, index }) => (
+                                <TouchableOpacity key={index} style={{ marginRight: 10 }} onPress={() => setSelectedTimeDebut(item.time)}>
                                     <Text style={[
                                         selectedTimeDebut === item.time
                                             ? styles.selectedTimeDebut
-                                            : styles.unselectedTime,
-                                        ]}>{item.time}</Text>
+                                            : styles.unselectedTime
+                                    ]}>{item.time}</Text>
                                 </TouchableOpacity>
                             )}
                         />
-                        {error && <Text style={[styles.errorText, {marginBottom: 15}]}>Veuillez sélectionner un horaire de début</Text>}
-                        <FlatList 
+                        {error && !selectedTimeDebut && <Text style={[styles.errorText, { marginBottom: 15 }]}>Veuillez sélectionner un horaire de début</Text>}
+
+                        <FlatList
                             data={timeListFin}
                             horizontal={true}
                             showsHorizontalScrollIndicator={false}
-                            renderItem={({item, index}) => (
-                                <TouchableOpacity 
-                                    key={index} style={{marginRight: 10}}
-                                    onPress={() => setSelectedTimeFin(item.time)}
-                                >
+                            renderItem={({ item, index }) => (
+                                <TouchableOpacity key={index} style={{ marginRight: 10 }} onPress={() => setSelectedTimeFin(item.time)}>
                                     <Text style={[
                                         selectedTimeFin === item.time
                                             ? styles.selectedTimeFin
-                                            : styles.unselectedTime,
-                                        ]}>{item.time}</Text>
+                                            : styles.unselectedTime
+                                    ]}>{item.time}</Text>
                                 </TouchableOpacity>
                             )}
                         />
-                        {error && <Text style={styles.errorText}>Veuillez sélectionner un horaire de fin</Text>}
+                        {error && !selectedTimeFin && <Text style={styles.errorText}>Veuillez sélectionner un horaire de fin</Text>}
                     </View>
 
-                    <View style={{marginTop: 20}}>
-                        <Text style={{fontFamily: 'SemiBold', fontSize: 20}}>Sélectionner un élève</Text>
+                    <View style={{ marginTop: 20, zIndex: 1000 }}>
+                        <Text style={{ fontFamily: 'SemiBold', fontSize: 20 }}>Sélectionner un élève</Text>
                         <DropDownPicker
                             open={open}
                             value={selectedStudent}
@@ -152,17 +188,34 @@ const AjouterAbsence = ({hideModal, user, headers, classe}) => {
                             setValue={setSelectedStudent}
                             setItems={setStudentItems}
                             placeholder="Sélectionner un élève"
-                            style={[styles.textArea, {marginTop: 10}]}
-                            dropDownContainerStyle={{borderColor: colors.BLEU}}
-                            listItemLabelStyle={{color: colors.BLEU}}
-                            zIndex={1000}
+                            style={[styles.textArea, { marginTop: 10 }]}
+                            dropDownContainerStyle={{ borderColor: colors.BLEU }}
+                            listItemLabelStyle={{ color: colors.BLEU }}
                         />
-                        {error && <Text style={styles.errorText}>Veuillez sélectionner un élève</Text>}
+                        {error && !selectedStudent && <Text style={styles.errorText}>Veuillez sélectionner un élève</Text>}
+                    </View>
+
+                    <View style={{ marginTop: 20, zIndex: 999 }}>
+                        <Text style={{ fontFamily: 'SemiBold', fontSize: 20 }}>Année scolaire</Text>
+                        <DropDownPicker
+                            open={openAnnees}
+                            value={anneeScolaire}
+                            items={anneeItems}
+                            setOpen={setOpenAnnees}
+                            setValue={setAnneeScolaire}
+                            setItems={setAnneeItems}
+                            placeholder="Sélectionner une année"
+                            style={[styles.textArea, { marginTop: 10 }]}
+                            dropDownContainerStyle={{ borderColor: colors.BLEU }}
+                            listItemLabelStyle={{ color: colors.BLEU }}
+                        />
+                        {error && !anneeScolaire && <Text style={styles.errorText}>Veuillez sélectionner une année scolaire</Text>}
                     </View>
 
                     <TouchableOpacity onPress={handleSubmit} disabled={loading} style={styles.btnSave}>
-                        {loading ? <ActivityIndicator color={colors.BLANC} size={30} /> :
-                            <Text style={{textAlign: 'center', color: colors.BLANC, fontSize: 18}}>Enregistrer</Text>
+                        {loading
+                            ? <ActivityIndicator color={colors.BLANC} size={30} />
+                            : <Text style={{ textAlign: 'center', color: colors.BLANC, fontSize: 18 }}>Enregistrer</Text>
                         }
                     </TouchableOpacity>
                 </View>
@@ -178,7 +231,7 @@ const styles = StyleSheet.create({
         gap: 10,
         alignItems: 'center',
         marginBottom: 20,
-        marginTop: 15,
+        marginTop: 30,
         paddingLeft: 15
     },
     titleHeader: {
@@ -221,14 +274,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.BLEU
     },
-    noteTextArea: {
-        borderWidth: 1,
-        borderRadius: 15,
-        textAlignVertical: 'top',
-        padding: 20,
-        fontSize: 16,
-        borderColor: colors.BLEU
-    },
     btnSave: {
         textAlign: 'center',
         fontFamily: 'Regular',
@@ -240,8 +285,9 @@ const styles = StyleSheet.create({
         marginTop: 30
     },
     errorText: {
-        color: colors.ROUGE, 
+        color: colors.ROUGE,
         fontSize: 15,
+        marginTop: 5
     },
 })
 

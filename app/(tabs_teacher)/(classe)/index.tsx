@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, Image, BackHandler, ScrollView, RefreshControl } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Image, BackHandler, RefreshControl } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { colors } from '@/utils/colors'
 import PageHeading from '@/components/PageHeading'
@@ -6,7 +6,7 @@ import SingleClassItem from '@/components/SingleClassItem'
 import { Skeleton } from 'moti/skeleton'
 import { getAllClasses, getEcole, getHeaders, getUser } from '@/services/MainService'
 import { showToast } from '@/utils/fonctions'
-import { useRouter } from 'expo-router';
+import { useRouter } from 'expo-router'
 
 const ClasseScreen = () => {
   const [classes, setClasses] = useState<any[]>([])
@@ -16,20 +16,16 @@ const ClasseScreen = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const router = useRouter()
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false)
   const [ecole, setEcole] = useState(null)
-  
+
   useEffect(() => {
-    setIsLoading(true);
+    setIsLoading(true)
     fetchUser()
     fetchHeaders()
-      .then(() => {
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setError(err);
-      })
-  }, []);
+      .then(() => setIsLoading(false))
+      .catch((err) => setError(err))
+  }, [])
 
   useEffect(() => {
     if (!isLoading) {
@@ -40,101 +36,97 @@ const ClasseScreen = () => {
   useEffect(() => {
     const backAction = () => {
       router.back()
-      return true;
-    };
+      return true
+    }
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction)
+    return () => backHandler.remove()
+  }, [])
 
   const fetchHeaders = async () => {
     try {
       const response: any | string = await getHeaders()
       setHeaders(response.headers)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
 
   const fetchUser = async () => {
     await getUser().then(res => {
-      setUser(res);
+      setUser(res)
       setEcole(res.ecole)
-    });
-  };
+    })
+  }
 
   const fetchClasses = async () => {
     if (user) {
       try {
-        const res = await getAllClasses(user.ecole_id, headers);
-        setClasses(res);
+        const res = await getAllClasses(user.ecole_id, headers)
+        setClasses(res)
       } catch (error: any) {
         showToast(error.message)
       }
     }
-  };
+  }
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = () => {
     setLoading(true)
-    setRefreshing(true);
+    setRefreshing(true)
     fetchClasses().then(() => setLoading(false))
     setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+      setRefreshing(false)
+    }, 2000)
+  }
+
+  const renderSkeleton = () => (
+    [0, 1, 2, 3, 4].map((item, i) => (
+      <View style={styles.container} key={i}>
+        <Skeleton show={true} colorMode='light'>
+          <Image style={styles.image} />
+        </Skeleton>
+        <View style={styles.subcontainer}>
+          <Skeleton show={true} colorMode='light' height={20}>
+            <Text style={[styles.text, {width: 50, marginBottom: 20}]}></Text>
+          </Skeleton>
+          <Skeleton show={true} colorMode='light' height={20}>
+            <Text style={[styles.text, {width: 150, marginBottom: 20}]}></Text>
+          </Skeleton>
+          <View style={{flexDirection: 'row', gap: 20}}>
+            <Skeleton show={true} colorMode='light' height={15}>
+              <Text style={[styles.text, {width: 80}]}></Text>
+            </Skeleton>
+            <Skeleton show={true} colorMode='light' height={15}>
+              <Text style={[styles.text, {width: 120}]}></Text>
+            </Skeleton>
+          </View>
+        </View>
+      </View>
+    ))
+  )
 
   return (
-    <ScrollView 
-      style={{padding: 20, paddingTop: 40}}
-      refreshControl={
-        <RefreshControl 
-          refreshing={refreshing} 
-          onRefresh={onRefresh}
-          colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
-          progressBackgroundColor={colors.BLANC}
-        />
-      }
-    >
+    <View style={{ flex: 1, padding: 20, paddingTop: 40 }}>
       <PageHeading title={'Toutes les classes'} />
-
-      {(classes.length > 0 && !loading) ?
-        <FlatList 
-          data={classes}
-          renderItem={({item, index}) => (
-            <SingleClassItem headers={headers} ecole={ecole} user={user} classe={item} key={index} />
-          )}
-          style={{marginTop: 20}}
-          showsVerticalScrollIndicator={false}
-        /> :
-        [0, 1, 2, 3, 4].map((item, i) => (
-          <View style={styles.container} key={i}>
-            <Skeleton show={true} colorMode='light'>
-              <Image style={styles.image} />
-            </Skeleton>
-            <View style={styles.subcontainer}>
-              <Skeleton show={true} colorMode='light' height={20}>
-                <Text style={[styles.text, {width: 50, marginBottom: 20}]}></Text>
-              </Skeleton>
-              <Skeleton show={true} colorMode='light' height={20}>
-                <Text style={[styles.text, {width: 150, marginBottom: 20}]}></Text>
-              </Skeleton>
-              <View style={{flexDirection: 'row', gap: 20}}>
-                <Skeleton show={true} colorMode='light' height={15}>
-                  <Text style={[styles.text, {width: 80}]}></Text>
-                </Skeleton>
-                <Skeleton show={true} colorMode='light' height={15}>
-                  <Text style={[styles.text, {width: 120}]}></Text>
-                </Skeleton>
-              </View>
-            </View>
-          </View>
-        ))
-      }
-    </ScrollView>
+      <FlatList
+        data={classes}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({item}) => (
+          <SingleClassItem headers={headers} ecole={ecole} user={user} classe={item} />
+        )}
+        ListEmptyComponent={loading ? renderSkeleton : <Text style={styles.noDataText}>Aucune classe trouvée</Text>}
+        contentContainerStyle={{ paddingBottom: 20, paddingTop: 20 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
+            progressBackgroundColor={colors.BLANC}
+          />
+        }
+      />
+    </View>
   )
 }
 
@@ -151,12 +143,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.BLANC,
     borderRadius: 15,
     marginBottom: 15,
-    display: 'flex',
     flexDirection: 'row',
     gap: 10
   },
   subcontainer: {
-    display: 'flex',
     gap: 8,
     marginRight: 20
   },

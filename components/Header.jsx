@@ -30,7 +30,7 @@ const Header = ({user}) => {
         {
             title: "Confidentialité",
             icon: 'lock',
-            action: () => router.push('/settings')
+            action: () => router.push('/(tabs_teacher)/settings')
         },
         {
             title: "Publier un reel",
@@ -103,6 +103,21 @@ const Header = ({user}) => {
                         }
                     </View>
                 </View>
+                <View style={styles.iconGroup}>
+                    <TouchableOpacity
+                        onPress={() => router.push('/notifications')}
+                        style={styles.bellContainer}
+                    >
+                        <Ionicons name="notifications-outline" size={24} color={colors.BLANC} />
+                        {/* Optional unread dot */}
+                        {/* <View style={styles.badgeDot} /> */}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => resizeBox(1)}>
+                        <Ionicons name="options-outline" size={24} color={colors.BLANC} />
+                    </TouchableOpacity>
+                </View>
+
                 {/* <TouchableOpacity onPress={() => resizeBox(1)}>
                     <Ionicons name="options-outline" size={24} color={colors.BLANC} />
                 </TouchableOpacity> */}
@@ -181,7 +196,28 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 7,
         borderBottomColor: '#ccc'
-    }
+    },
+    iconGroup: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 16,
+},
+
+bellContainer: {
+  position: 'relative',
+  padding: 4,
+},
+
+badgeDot: {
+  position: 'absolute',
+  top: 2,
+  right: 2,
+  width: 8,
+  height: 8,
+  borderRadius: 4,
+  backgroundColor: 'red',
+}
+
 })
 
 export default Header

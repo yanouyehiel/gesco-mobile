@@ -1,38 +1,55 @@
 import { View, Text, Image, StyleSheet, FlatList, ScrollView, TouchableOpacity, BackHandler } from 'react-native'
 import React, { useEffect } from 'react'
 import { colors } from '@/utils/colors';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const items = [
   {
     icon: require("@/assets/images/cours.png"),
     text: 'Cours',
-    link: '(cours)/index'
+    path: '(cours)/index'
   },
   {
     icon: require("@/assets/images/presence.jpg"),
     text: 'Devoirs',
-    link: '(devoir)/index'
+    path: '(devoir)/index'
   },
   {
     icon: require("@/assets/images/presence-remove.png"),
     text: 'Présences',
-    link: '(absence)/index'
+    path: '(absence)/index'
   },
   {
     icon: require("@/assets/images/note.png"),
     text: 'Notes',
-    link: '(note)/index'
+    path: '(note)/index'
   },
   {
     icon: require("@/assets/images/classe.png"),
     text: 'Elèves',
-    link: '(student)/index'
+    path: '(student)/index'
   }
 ]
 
-const HomeDetail = () => {
+
+const ClasseScreen = () => {
   const router = useRouter()
+const { classe, user, headers, ecole } = useLocalSearchParams();
+
+const parsedClasse = JSON.parse(classe);
+const parsedUser = JSON.parse(user);
+const parsedHeaders = JSON.parse(headers);
+const parsedEcole = JSON.parse(ecole);
+
+// useEffect(() => {
+//   console.log("✅ Parsed params in ClasseScreen:", {
+//     parsedClasse,
+//     parsedUser,
+//     parsedHeaders,
+//     parsedEcole
+//   });
+// }, []);
+ 
 
   useEffect(() => {
     const backAction = () => {
@@ -55,14 +72,21 @@ const HomeDetail = () => {
           data={items}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          renderItem={(({item, index}) => (
-            <TouchableOpacity onPress={() => router.push(item.link)} key={index}>
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => router.push({
+                pathname: `/(tabs_teacher)/(classe)/(classe-detail)/${item.path}`,
+                params: { classe, user, headers, ecole }
+              })}
+            >
               <View style={styles.item}>
                 <Image source={item.icon} style={styles.itemImage} />
                 <Text style={styles.itemText}>{item.text}</Text>
               </View>
             </TouchableOpacity>
-          ))}
+          )}
+
         />
       </View>
       <View style={[styles.card, {backgroundColor: colors.VERT_CLAIR}]}>
@@ -159,4 +183,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default HomeDetail
+export default ClasseScreen

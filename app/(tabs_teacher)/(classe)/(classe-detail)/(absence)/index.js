@@ -1,5 +1,16 @@
-import { View, Text, ScrollView, StyleSheet, Image, FlatList, TouchableOpacity, Modal, Dimensions } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { 
+  View, 
+  Text, 
+  ScrollView, 
+  StyleSheet, 
+  Image, 
+  FlatList, 
+  TouchableOpacity, 
+  Modal, 
+  SafeAreaView,
+  RefreshControl 
+} from 'react-native'
+import React, { useEffect, useState, useMemo } from 'react'
 import { colors } from '@/utils/colors'
 import Heading from '@/components/Heading'
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -8,11 +19,10 @@ import NoData from '@/components/NoData'
 import { dateParserTime, dateParser } from '@/utils/fonctions'
 import AjouterAbsence from '@/components/AjouterAbsence'
 import axios from 'axios'
-import { RefreshControl } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
 const AbsenceScreen = () => {
-  const { classe, user, headers } = useLocalSearchParams()
+  const params = useLocalSearchParams();
   const [loading, setLoading] = useState(true)
   const [absences, setAbsences] = useState([])
   const [showModal, setShowModal] = useState(false)
@@ -20,15 +30,42 @@ const AbsenceScreen = () => {
   const [visible, setVisible] = useState(false)
   const [absence, setAbsence] = useState({})
 
+  const parseDoubleJSON = (str) => {
+    if (!str) return null;
+    try {
+      const once = JSON.parse(str);
+      if (typeof once === 'string') {
+        return JSON.parse(once);
+      }
+      return once;
+    } catch {
+      return null;
+    }
+  }
+
+  const parsedClasse = useMemo(() => parseDoubleJSON(params?.classe), [params?.classe]);
+  const parsedUser = useMemo(() => parseDoubleJSON(params?.user), [params?.user]);
+  const parsedHeaders = useMemo(() => parseDoubleJSON(params?.headers), [params?.headers]);
+  const parsedEcole = useMemo(() => parseDoubleJSON(params?.ecole), [params?.ecole]);
+
   useEffect(() => {
     getPresences().then(() => setLoading(false))
   }, [])
 
   async function getPresences() {
-    const res = await axios.get('https://gesco-app.com/api/get-absences-classe/' + classe.id, {
-      headers: headers
-    })
-    setAbsences(res.data)
+    const url = 'https://gesco-app.com/api/get-absences-classe/' + parsedClasse.id;
+    console.log('➡️ Appel API GET :', url);
+    console.log('➡️ Headers envoyés :', parsedHeaders);
+
+    try {
+      const res = await axios.get(url, {
+        headers: parsedHeaders
+      });
+      console.log('✅ Réponse reçue :', res.data);
+      setAbsences(res.data);
+    } catch (error) {
+      console.log('❌ Erreur API :', error.response?.data || error.message);
+    }
   }
 
   const onRefresh = React.useCallback(() => {
@@ -52,43 +89,70 @@ const AbsenceScreen = () => {
       }
       style={{backgroundColor: colors.BLANC}}
     >
+      {/* Header Card */}
       <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
         <View style={{flexDirection: 'column', marginRight: 15, width: '60%', margin: '5%'}}>
-          <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>La gestion des présences permet de surveiller l'assiduité des élèves</Text>
+          <Text style={{color: colors.NOIR, fontSize: 20, fontFamily: 'Regular', marginBottom: 10}}>
+            La gestion des présences permet de surveiller l'assiduité des élèves
+          </Text>
         </View>
         <View style={{width: "30%"}}>
-          <Image source={require("@/assets/images/presence-remove.png")} style={{width: 80, height: 80}} />
+          <Image 
+            source={require("@/assets/images/presence-remove.png")} 
+            style={{width: 80, height: 80}} 
+          />
         </View>
       </View>
 
+      {/* Main Content */}
       <View style={{margin: 15}}>
         <Heading text={"Toutes les absences"} style={{marginBottom: 20}} />
         
-        <TouchableOpacity onPress={() => setShowModal(true)} style={styles.addButton}>
+        <TouchableOpacity 
+          onPress={() => setShowModal(true)} 
+          style={styles.addButton}
+          activeOpacity={0.7}
+        >
           <AntDesign name="plus" size={24} color={colors.BLANC} />
         </TouchableOpacity>
 
-        {!loading ?
+        {!loading ? (
           <FlatList
             data={absences}
+            scrollEnabled={false}
             renderItem={({item, i}) => (
-              <TouchableOpacity onPress={() => {
-                setAbsence(item)
-                setVisible(true)
-              }} key={i}>
+              <TouchableOpacity 
+                onPress={() => {
+                  setAbsence(item)
+                  setVisible(true)
+                }} 
+                key={i}
+                activeOpacity={0.7}
+              >
                 <View style={styles.absence}>
                   <View style={{margin: 10}}>
                     <AntDesign name="warning" size={30} color={colors.ROUGE} />
                   </View>
                   <View style={{marginLeft: 10}}>
-                  <Text style={{fontSize: 20, fontFamily: 'Bold'}}>{item.nom_student + ' ' + item.prenom_student}</Text>
-                    <Text style={{fontSize: 18, fontWeight: '400'}}>Absent(e) à : {item.periode}</Text>
-                    <Text>Enregistré le : <Text style={{fontFamily: 'SemiBold', fontSize: 18}}>{dateParserTime(item.created_at)}</Text></Text>
+                    <Text style={{fontSize: 20, fontFamily: 'Bold'}}>
+                      {item.nom_student} {item.prenom_student}
+                    </Text>
+                    <Text style={{fontSize: 18, fontWeight: '400'}}>
+                      Absent(e) à : {item.periode}
+                    </Text>
+                    <Text>
+                      Enregistré le :{' '}
+                      <Text style={{fontFamily: 'SemiBold', fontSize: 18}}>
+                        {dateParserTime(item.created_at)}
+                      </Text>
+                    </Text>
                   </View>
                 </View>
               </TouchableOpacity>
             )}
-          /> :
+            keyExtractor={(item, index) => index.toString()}
+          />
+        ) : (
           [0, 1, 2, 3, 4].map((t, i) => (
             <View key={i} style={styles.absence}>
               <Skeleton
@@ -123,41 +187,91 @@ const AbsenceScreen = () => {
               </View>
             </View>
           ))
-        }
-        {(!loading && absences.length) === 0 &&
-          <NoData />
-        }
+        )}
+        {(!loading && absences.length === 0) && <NoData />}
       </View>
 
+      {/* Absence Details Modal */}
       <Modal
         visible={visible}
         animationType='slide'
-        onTouchStart={() => setVisible(false)}
+        transparent={false}
+        onRequestClose={() => setVisible(false)}
       >
-        <View style={{flex: 1, margin: 15}}>
-          <TouchableOpacity style={styles.header} onPress={() => setVisible(false)}>
-            <Ionicons name='arrow-back-outline' size={30} color="black" />
-            <Text style={styles.titleHeader}>Détails de l'absence</Text>
-          </TouchableOpacity>
-          <View style={{marginBottom: 10}}>
-            <Text style={styles.title}>Période :</Text>
-            <Text style={styles.titleContent}>{absence.periode}</Text>
+        <SafeAreaView style={styles.modalContainer}>
+          {/* Header with back button */}
+          <View style={styles.modalHeader}>
+            <TouchableOpacity 
+              onPress={() => setVisible(false)}
+              style={styles.backButton}
+              activeOpacity={0.7}
+            >
+              <Ionicons name='arrow-back-outline' size={24} color={colors.NOIR} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Détails de l'absence</Text>
+            <View style={{ width: 70 }} /> {/* Spacer for alignment */}
           </View>
-          <View style={{marginBottom: 10}}>
-            <Text style={styles.title}>Nom et prénom de l'élève :</Text>
-            <Text style={styles.titleContent}>{absence.nom_student + ' ' + absence.prenom_student}</Text>
-          </View>
-          <Text style={{fontFamily: 'Regular', fontSize: 20}}>Enregistré le {dateParser(absence.created_at)}</Text>
-        </View>
+
+          {/* Content */}
+          <ScrollView 
+            style={styles.modalContent}
+            contentContainerStyle={styles.modalContentContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Student Info Card */}
+            <View style={[styles.infoCard, { backgroundColor: colors.ROUGE_CLAIR }]}>
+              <Ionicons name="warning" size={24} color={colors.ROUGE} />
+              <View style={styles.cardContent}>
+                <Text style={styles.cardLabel}>ÉLÈVE ABSENT</Text>
+                <Text style={[styles.cardValue, { color: colors.ROUGE }]}>
+                  {absence.nom_student || '-'} {absence.prenom_student || '-'}
+                </Text>
+              </View>
+            </View>
+
+            {/* Absence Details */}
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>DÉTAILS DE L'ABSENCE</Text>
+              
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Période:</Text>
+                <Text style={styles.detailValue}>{absence.periode || 'Non spécifié'}</Text>
+              </View>
+
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Date d'enregistrement:</Text>
+                <Text style={styles.detailValue}>
+                  {absence.created_at ? dateParser(absence.created_at) : 'Date inconnue'}
+                </Text>
+              </View>
+            </View>
+
+            {/* Additional Information */}
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>INFORMATIONS COMPLÉMENTAIRES</Text>
+              <View style={styles.infoBox}>
+                <Ionicons name="information-circle" size={20} color={colors.BLEU} />
+                <Text style={styles.infoText}>
+                  Cette absence a été enregistrée par l'enseignant et sera prise en compte dans le calcul de l'assiduité de l'élève.
+                </Text>
+              </View>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
       </Modal>
 
+      {/* Add Absence Modal */}
       <Modal
         animationType='slide'
         visible={showModal}
-        style={styles.modal}
-        onTouchStart={() => setShowModal(false)}
+        onRequestClose={() => setShowModal(false)}
       >
-        <AjouterAbsence hideModal={() => setShowModal(false)} user={user} headers={headers} classe={classe} />
+        <AjouterAbsence 
+          hideModal={() => setShowModal(false)} 
+          user={parsedUser} 
+          headers={parsedHeaders} 
+          classe={parsedClasse} 
+        />
       </Modal>
     </ScrollView>
   )
@@ -171,10 +285,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: 150, 
-    borderRadius: 15
+    borderRadius: 15,
+    elevation: 3,
+    shadowColor: colors.NOIR,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   absence: {
-    backgroundColor: 'white',
+    backgroundColor: colors.BLANC,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -182,45 +301,131 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: colors.BLEU
+    borderColor: colors.BLEU,
+    elevation: 2,
+    shadowColor: colors.NOIR,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   addButton: {
     position: 'absolute',
     backgroundColor: colors.BLEU,
     width: 50,
     height: 50,
-    borderRadius: 99,
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
     right: 15,
-  },
-  modal: {
-    height: 400,
+    top: 0,
     elevation: 5,
+    shadowColor: colors.NOIR,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
-  header: {
-    display: 'flex',
+  modalContainer: {
+    flex: 1,
+    backgroundColor: colors.BLANC,
+  },
+  modalHeader: {
     flexDirection: 'row',
-    gap: 10,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.GRIS_CLAIR,
   },
-  titleHeader: {
-      fontSize: 25,
-      fontFamily: 'Bold',
-      textAlign: 'center',
-      color: colors.NOIR
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  title: {
-    textAlign: 'left',
-    fontSize: 22,
-    textDecorationLine: 'underline',
-    fontFamily: 'Bold'
+  backText: {
+    fontSize: 16,
+    fontFamily: 'Regular',
+    marginLeft: 5,
+    color: colors.NOIR,
   },
-  titleContent: {
-    fontSize: 24,
-    fontFamily: 'SemiBold'
-  }
+  modalTitle: {
+    fontSize: 25,
+    fontFamily: 'SemiBold',
+    color: colors.NOIR,
+    textAlign: 'center',
+    flex: 1,
+  },
+  modalContent: {
+    flex: 1,
+  },
+  modalContentContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 30,
+  },
+  infoCard: {
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cardContent: {
+    marginLeft: 12,
+  },
+  cardLabel: {
+    fontSize: 20,
+    fontFamily: 'SemiBold',
+    color: colors.GRIS_FONCE,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  cardValue: {
+    fontSize: 18,
+    fontFamily: 'SemiBold',
+  },
+  section: {
+    marginBottom: 25,
+  },
+  sectionLabel: {
+    fontSize: 20,
+    fontFamily: 'SemiBold',
+    color: colors.GRIS_FONCE,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 12,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.GRIS_TRES_CLAIR,
+  },
+  detailLabel: {
+    fontSize: 16,
+    fontFamily: 'Regular',
+    color: colors.GRIS_FONCE,
+  },
+  detailValue: {
+    fontSize: 16,
+    fontFamily: 'SemiBold',
+    color: colors.NOIR,
+  },
+  infoBox: {
+    backgroundColor: colors.BLEU_CLAIR,
+    borderRadius: 10,
+    padding: 15,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  infoText: {
+    fontSize: 14,
+    fontFamily: 'Regular',
+    color: colors.NOIR,
+    marginLeft: 10,
+    flex: 1,
+  },
 })
 
 export default AbsenceScreen
