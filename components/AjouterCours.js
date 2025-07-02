@@ -7,8 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import Heading from '@/components/Heading';
 import { colors } from '@/utils/colors';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { sendPushTokenToBackend } from '@/services/notification'; 
 import { showToast } from '@/utils/fonctions';
-import { addCours, getMatieresSchool } from '@/services/MainService';
+import { addCours, getMatieresSchool, getData } from '@/services/MainService';
 
 const AjouterCours = ({ user, headers, classe, ecole, close }) => {
   // Parse JSON strings if needed
@@ -29,7 +30,7 @@ const AjouterCours = ({ user, headers, classe, ecole, close }) => {
   const [items, setItems] = useState([]);
 
   // useEffect(() => {
-  //   console.log("Parsed props:", { parsedUser, parsedHeaders, parsedClasse, parsedEcole });
+  //   console.log("Parsed props:", { parsedUser });
   // }, []);
 
   useEffect(() => {
@@ -40,6 +41,18 @@ const AjouterCours = ({ user, headers, classe, ecole, close }) => {
     
     }
   }, [parsedEcole]);
+
+  useEffect(() => {
+  async function checkStoredData() {
+    const token = await getData('pushToken');
+    console.log('📦 Stored pushToken:', token);
+
+    const user = await getData('user');
+    console.log('👤 Stored user:', user);
+  }
+
+  checkStoredData();
+}, []);
 
   async function getMatieres() {
     try { 
@@ -59,35 +72,44 @@ const AjouterCours = ({ user, headers, classe, ecole, close }) => {
   }
 
   async function handleSubmit() {
-    setLoading(true);
-    if (titre.trim() === '' || desc.trim() === '' || !selectedValue) {
-      setError(true);
-      setLoading(false);
-      return;
-    }
-    setError(false);
-
-    const data = {
-      titre: titre.trim(),
-      description: desc.trim(),
-      matiere_id: selectedValue,
-      teacher_id: parsedUser.id,
-      ecole_id: parsedEcole.id,
-      classe_id: parsedClasse.id,
-    };
-
-    try {
-      const res = await addCours(data, parsedHeaders);
-      showToast(res.message);
-      setTitre('');
-      setDesc('');
-      setSelectedValue(null);
-      close();
-    } catch (error) {
-      showToast(error.message);
-    }
+  setLoading(true);
+  if (titre.trim() === '' || desc.trim() === '' || !selectedValue) {
+    setError(true);
     setLoading(false);
+    return;
   }
+  setError(false);
+
+  const data = {
+    titre: titre.trim(),
+    description: desc.trim(),
+    matiere_id: selectedValue,
+    teacher_id: parsedUser.id,
+    ecole_id: parsedEcole.id,
+    classe_id: parsedClasse.id,
+  };
+
+  try {
+    const res = await addCours(data, parsedHeaders);
+    showToast(res.message);
+
+    //  Send notification after successful course creation
+    await sendPushTokenToBackend(
+      'Nouveau cours ajouté',
+      `Le cours "${data.titre}" a été ajouté avec succès.`,
+      'INFORMATION',
+        parsedUser?.user?.id || parsedUser.id 
+    );
+
+    setTitre('');
+    setDesc('');
+    setSelectedValue(null);
+    close();
+  } catch (error) {
+    showToast(error.message || 'Erreur lors de l\'enregistrement');
+  }
+  setLoading(false);
+}
 
   return (
     <View style={{ flex: 1, margin: 15 }}>

@@ -4,18 +4,17 @@ import Heading from '@/components/Heading';
 import { colors } from '@/utils/colors';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
-import { addDevoir} from '@/services/MainService'
+import { addDevoir } from '@/services/MainService';
 import { showToast } from '@/utils/fonctions';
 import { Ionicons } from '@expo/vector-icons';
+import { sendPushTokenToBackend } from '@/services/notification'; 
 
 const AjouterDevoir = ({ user, headers, classe, hideModal }) => {
-  // ✅ Parse les props si elles arrivent sous forme de string
   const parsedUser = typeof user === 'string' ? JSON.parse(user) : user;
   const parsedClasse = typeof classe === 'string' ? JSON.parse(classe) : classe;
   const parsedHeaders = typeof headers === 'string' ? JSON.parse(headers) : headers;
   const parsedEcole = typeof parsedUser?.ecole_id === 'string' ? JSON.parse(parsedUser.ecole_id) : parsedUser?.ecole_id;
-  //console.log(parsedEcole)
-   
+
   const [selectMatiere, setSelectMatiere] = useState(null);
   const [selectLivre, setSelectLivre] = useState(null);
   const [matieres, setMatieres] = useState([]);
@@ -25,7 +24,6 @@ const AjouterDevoir = ({ user, headers, classe, hideModal }) => {
   const [numExo, setNumExo] = useState('');
   const [error, setError] = useState(false);
 
-  // DropDownPicker states
   const [openMatiere, setOpenMatiere] = useState(false);
   const [openLivre, setOpenLivre] = useState(false);
   const [itemsMatieres, setItemsMatieres] = useState([]);
@@ -39,45 +37,42 @@ const AjouterDevoir = ({ user, headers, classe, hideModal }) => {
     };
     fetchData();
   }, []);
-async function getMatieres() {
-  try {
-    const res = await axios.get(`https://gesco-app.com/api/get-matieres/${parsedEcole}`, {
-      headers: parsedHeaders,
-    });
-    //console.log(res.data);  // Log the data returned from your backend
-    setMatieres(res.data);
-    setItemsMatieres(
-      res.data.map((matiere) => ({
-        label: matiere.intitule,
-        value: matiere.id,
-      }))
-    );
-  } catch (error) {
-    showToast(error.message);
+
+  async function getMatieres() {
+    try {
+      const res = await axios.get(`https://gesco-app.com/api/get-matieres/${parsedEcole}`, {
+        headers: parsedHeaders,
+      });
+      setMatieres(res.data);
+      setItemsMatieres(
+        res.data.map((matiere) => ({
+          label: matiere.intitule,
+          value: matiere.id,
+        }))
+      );
+    } catch (error) {
+      showToast(error.message);
+    }
   }
-}
 
-
-async function getLivres() {
-  try {
-    const res = await axios.get(`https://gesco-app.com/api/get-livres/${parsedEcole}`, {
-      headers: parsedHeaders,
-    });
-    console.log(res.data); 
-    setLivres(res.data);
-    setItemsLivres(
-      res.data.map((livre) => ({
-        label: livre.intitule,
-        value: livre.id,
-      }))
-    );
-  } catch (error) {
-    showToast(error.message);
+  async function getLivres() {
+    try {
+      const res = await axios.get(`https://gesco-app.com/api/get-livres/${parsedEcole}`, {
+        headers: parsedHeaders,
+      });
+      setLivres(res.data);
+      setItemsLivres(
+        res.data.map((livre) => ({
+          label: livre.intitule,
+          value: livre.id,
+        }))
+      );
+    } catch (error) {
+      showToast(error.message);
+    }
   }
-}
 
-
-async function handleSubmit() {
+  async function handleSubmit() {
   setLoading(true);
   if (!numExo || !numPage || !selectLivre || !selectMatiere) {
     setError(true);
@@ -95,25 +90,29 @@ async function handleSubmit() {
     num_page: numPage,
   };
 
-  console.log("Data to submit:", data);
-
   try {
     const res = await addDevoir(data, parsedHeaders);
-
     if (res && res.success) {
       showToast(res.message || 'Devoir ajouté avec succès');
-      
+
+      // Send push notification
+      await sendPushTokenToBackend(
+        'Nouveau devoir ajouté',
+        `Un devoir (Page ${data.num_page}, Exercice ${data.num_exo}) a été ajouté.`,
+        'INFORMATION',
+        parsedUser?.user?.id || parsedUser.id
+      );
+
+      // Clear form
       setNumExo('');
       setNumPage('');
       setSelectLivre(null);
       setSelectMatiere(null);
-
       hideModal();
     } else {
       showToast(res.message || "Une erreur est survenue");
     }
   } catch (error) {
-    console.log("Erreur API:", error);
     showToast(error.message || "Erreur inattendue");
   }
 
@@ -128,38 +127,42 @@ async function handleSubmit() {
         <Text style={styles.titleHeader}>Enregistrer un devoir</Text>
       </TouchableOpacity>
 
-      <View style={{ margin: 10, zIndex: 1000 }}>
+      <View style={{ margin: 10 }}>
         <View style={{ marginTop: 20, paddingBottom: 20 }}>
           <Heading text={'Remplissez le formulaire'} />
 
           <Text style={styles.label}>Sélectionner la matière</Text>
-          <DropDownPicker
-            open={openMatiere}
-            value={selectMatiere}
-            items={itemsMatieres}
-            setOpen={setOpenMatiere}
-            setValue={setSelectMatiere}
-            setItems={setItemsMatieres}
-            placeholder="Sélectionner ici..."
-            style={[styles.textArea, error && !selectMatiere && styles.error]}
-            dropDownContainerStyle={{ borderColor: colors.BLEU }}
-            listItemLabelStyle={{ color: colors.BLEU }}
-          />
+          <View style={{ zIndex: openMatiere ? 3000 : 1000 }}>
+            <DropDownPicker
+              open={openMatiere}
+              value={selectMatiere}
+              items={itemsMatieres}
+              setOpen={setOpenMatiere}
+              setValue={setSelectMatiere}
+              setItems={setItemsMatieres}
+              placeholder="Sélectionner ici..."
+              style={[styles.textArea, error && !selectMatiere && styles.error]}
+              dropDownContainerStyle={{ borderColor: colors.BLEU }}
+              listItemLabelStyle={{ color: colors.BLEU }}
+            />
+          </View>
           {error && !selectMatiere && <Text style={styles.errorText}>Veuillez sélectionner une matière</Text>}
 
           <Text style={styles.label}>Sélectionner le livre</Text>
-          <DropDownPicker
-            open={openLivre}
-            value={selectLivre}
-            items={itemsLivres}
-            setOpen={setOpenLivre}
-            setValue={setSelectLivre}
-            setItems={setItemsLivres}
-            placeholder="Sélectionner ici..."
-            style={[styles.textArea, error && !selectLivre && styles.error]}
-            dropDownContainerStyle={{ borderColor: colors.BLEU }}
-            listItemLabelStyle={{ color: colors.BLEU }}
-          />
+          <View style={{ zIndex: openLivre ? 2000 : 500 }}>
+            <DropDownPicker
+              open={openLivre}
+              value={selectLivre}
+              items={itemsLivres}
+              setOpen={setOpenLivre}
+              setValue={setSelectLivre}
+              setItems={setItemsLivres}
+              placeholder="Sélectionner ici..."
+              style={[styles.textArea, error && !selectLivre && styles.error]}
+              dropDownContainerStyle={{ borderColor: colors.BLEU }}
+              listItemLabelStyle={{ color: colors.BLEU }}
+            />
+          </View>
           {error && !selectLivre && <Text style={styles.errorText}>Veuillez sélectionner un livre</Text>}
 
           <TextInput
@@ -200,7 +203,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-     marginTop: 30,
+    marginTop: 30,
   },
   titleHeader: {
     fontSize: 25,

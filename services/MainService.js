@@ -44,13 +44,20 @@ export const removeStorge = async (key) => {
     }
 }
 
-export const getData = (key) => {
+export const getData = async (key) => {
+  try {
+    const value = await AsyncStorage.getItem(key);
+    if (!value) return null;
+
     try {
-      const jsonValue = AsyncStorage.getItem(key);
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
-        console.log('Erreur de lecture de la data : ' + e)
+      return JSON.parse(value); // Try to parse if it's JSON
+    } catch {
+      return value; // If parsing fails, return raw string
     }
+  } catch (e) {
+    console.log('❌ Erreur de lecture de la data :', e);
+    return null;
+  }
 };
 
 async function apiGet(url, headers) {
@@ -160,9 +167,10 @@ export async function getAllLivres(id, headers) {
 }
 
 export async function getFees(id, headers) {
-    const response = await axios.get(`https://gesco-app.com/api/get-fees-student/${parseInt(id)}`, {headers: headers});
-    return response.data;
+  const response = await axios.get(`https://gesco-app.com/gesco/api/get-fees-student/${parseInt(id)}`, { headers });
+  return response.data;
 }
+
 
 export async function addCours(cours, headers) {
     const response = await axios.post(`https://gesco-app.com/api/add-cours`, cours, {headers});
@@ -262,6 +270,23 @@ export async function updateNote(data, headers) {
     throw err;
   }
 }
+
+export async function getNotification(userId, headers) {
+  try {
+    const response = await axios.get(
+      `https://gesco-app.com/api/notification/user`,
+      {
+        headers,
+       
+      }
+    );
+    return response.data;
+  } catch (err) {
+    console.log("notification error:", JSON.stringify(err, null, 2));
+    throw err;
+  }
+}
+
 
 export async function getSequences(id, headers) {
     const response = await axios.get(`https://gesco-app.com/api/get-sequences/${parseInt(id)}`, {headers});

@@ -41,22 +41,13 @@ const ModalStudent = ({ student, headers, visible, setVisible }) => {
       console.log("❗ Authorization header is missing");
       return showToast("Identifiants manquants.");
     }
-
-    // Construct valid headers
-    const headers = {
-      Accept: "application/json",
-      Authorization: parsedHeaders.authorization,
-    };
-
-    console.log(" Fetching fees for student:", student.id, "with headers:", headers);
+    console.log(" Fetching fees for student:", student.id, "with headers12:", parsedHeaders);
 
     // API request
-    const res = await axios.get(
-      `https://gesco-app.com/gesco/api/get-fees-student/${parseInt(student.id)}`,
-      { headers }
+    const res = await axios.get(`https://gesco-app.com/api/get-fees-student/${parseInt(student.id)}`, { headers:parsedHeaders }
     );
 
-    console.log("✅ Fees data:", res.data);
+    //console.log(" Fees data:", res.data);
     setFeesStudent(res.data);
     
   } catch (err) {

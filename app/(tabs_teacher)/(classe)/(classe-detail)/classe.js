@@ -7,7 +7,7 @@ const items = [
   {
     icon: require("@/assets/images/cours.png"),
     text: 'Cours',
-    path: '(cours)/index'
+    path: '(classe-detail)/(cours)/index'
   },
   {
     icon: require("@/assets/images/presence.jpg"),
@@ -33,7 +33,7 @@ const items = [
 
 
 const ClasseScreen = () => {
-  const router = useRouter()
+const router = useRouter();
 const { classe, user, headers, ecole } = useLocalSearchParams();
 
 const parsedClasse = JSON.parse(classe);
@@ -42,7 +42,7 @@ const parsedHeaders = JSON.parse(headers);
 const parsedEcole = JSON.parse(ecole);
 
 // useEffect(() => {
-//   console.log("✅ Parsed params in ClasseScreen:", {
+//   console.log(" Parsed params in ClasseScreen:", {
 //     parsedClasse,
 //     parsedUser,
 //     parsedHeaders,

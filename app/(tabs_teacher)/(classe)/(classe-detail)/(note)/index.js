@@ -5,8 +5,7 @@ import {
   Image, 
   StyleSheet, 
   TouchableOpacity, 
-  FlatList, 
-  ScrollView, 
+  FlatList,
   RefreshControl, 
   Modal, 
   Animated, 
@@ -69,7 +68,6 @@ const NoteScreen = () => {
   const getNotes = async () => {
     try {
       const res = await getNotesClasse(parsedClasse.id, parsedHeaders);
-      //console.log("Notes:", res);
       setNotes(res.notes);
     } catch (error) {
       showToast(error.response?.data?.message || error.message);
@@ -108,34 +106,31 @@ const NoteScreen = () => {
   }
 
   const handleSubmit = async () => {
-  setLoading(true)
+    setLoading(true)
 
-  const noteValue = parseFloat(newNote)
+    const noteValue = parseFloat(newNote)
 
-  if (!isNaN(noteValue) && noteValue > 0 && noteValue < 20) {
-    const data = {
-      id: newData.id,
-      note: noteValue
+    if (!isNaN(noteValue) && noteValue > 0 && noteValue < 20) {
+      const data = {
+        id: newData.id,
+        note: noteValue
+      }
+
+      try {
+        const res = await updateNote(data, parsedHeaders)
+        showToast(res.message)
+        setShowModalUpdate(false)
+        getNotes()
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour de la note :", error)
+        showToast("Erreur lors de la mise à jour")
+      }
+    } else {
+      showToast("Entrez une note valide entre 0 et 20")
     }
 
-    console.log("Update Note data:", data)
-
-    try {
-      const res = await updateNote(data, parsedHeaders)
-      showToast(res.message)
-      setShowModalUpdate(false)
-      getNotes()
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour de la note :", error)
-      showToast("Erreur lors de la mise à jour")
-    }
-  } else {
-    showToast("Entrez une note valide entre 0 et 20")
+    setLoading(false)
   }
-
-  setLoading(false)
-}
-
 
   //Modal popup option note
   const Popup = ({data}) => {
@@ -172,18 +167,8 @@ const NoteScreen = () => {
     )
   }
 
-  return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl 
-          refreshing={refreshing} 
-          onRefresh={onRefresh}
-          colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
-          progressBackgroundColor={colors.BLANC}
-        />
-      }
-      style={{backgroundColor: colors.BLANC}}
-    >
+  const renderHeader = () => (
+    <View>
       {/* Header Banner */}
       <View style={styles.banner}>
         <View style={[styles.card, {backgroundColor: colors.BLEU_CLAIR}]}>
@@ -198,7 +183,6 @@ const NoteScreen = () => {
         </View>
       </View>
 
-      {/* Main Content */}
       <View style={{margin: 15}}> 
         <Heading text={"Toutes les notes"} style={{marginBottom: 20}} />
         
@@ -209,105 +193,124 @@ const NoteScreen = () => {
         >
           <AntDesign name="plus" size={24} color={colors.BLANC} />
         </TouchableOpacity>
+      </View>
+    </View>
+  )
 
-        {!loading ? (
-          <FlatList
-            data={notes}
-            showsVerticalScrollIndicator={false}
-            horizontal={false}
-            renderItem={({item, index}) => (
-              <View key={index}>
-                <View style={styles.note}>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                    <View style={styles.noteImage}>
-                      <Image source={require("@/assets/images/matiere.png")} style={{width: 50, height: 50}} />
-                    </View>
-                    <View style={styles.noteDesc}>
-                      <Text style={[styles.text, {fontSize: 20}]}>{item.nom_student +' '+ item.prenom_student}</Text>
-                      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <Text style={[styles.text]}>{longueurTexte(item.nom_matiere, 25)}</Text>
-                        <Text style={styles.text}>{item.note} / 20</Text>
-                      </View>
-                      <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 30}}>
-                        <Text style={[styles.text]}>{item.sequence}</Text>
-                        <Text style={styles.text}>{item.annee_scolaire}</Text>
-                      </View>
-                    </View>
-                    <TouchableOpacity onPress={() => resizeBox(1)} activeOpacity={0.7}>
-                      <SimpleLineIcons name="options-vertical" size={20} color="black" />
-                    </TouchableOpacity>
-                  </View>
-                  <Text style={{marginLeft: 15}}>Enregistré le {dateParser(item.created_at)}</Text>
-                </View>
-                <Popup data={item} />
+  const renderItem = ({item, index}) => (
+    <View key={index}>
+      <View style={styles.note}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          <View style={styles.noteImage}>
+            <Image source={require("@/assets/images/matiere.png")} style={{width: 50, height: 50}} />
+          </View>
+          <View style={styles.noteDesc}>
+            <Text style={[styles.text, {fontSize: 20}]}>{item.nom_student +' '+ item.prenom_student}</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={[styles.text]}>{longueurTexte(item.nom_matiere, 25)}</Text>
+              <Text style={styles.text}>{item.note} / 20</Text>
+            </View>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 30}}>
+              <Text style={[styles.text]}>{item.sequence}</Text>
+              <Text style={styles.text}>{item.annee_scolaire}</Text>
+            </View>
+          </View>
+          <TouchableOpacity onPress={() => resizeBox(1)} activeOpacity={0.7}>
+            <SimpleLineIcons name="options-vertical" size={20} color="black" />
+          </TouchableOpacity>
+        </View>
+        <Text style={{marginLeft: 15}}>Enregistré le {dateParser(item.created_at)}</Text>
+      </View>
+      <Popup data={item} />
+    </View>
+  )
+
+    const renderSkeleton = () => (
+      <View>
+        {[0, 1, 2, 3, 4].map((t, i) => (
+          <View style={styles.note} key={i}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+              <View style={{marginRight: 10}}>
+                <Skeleton 
+                  show={true}
+                  width={50}
+                  height={50} 
+                  colorMode='light'
+                />
               </View>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        ) : (
-          [0, 1, 2, 3, 4].map((t, i) => (
-            <View style={styles.note} key={i}>
-              <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                <View style={{marginRight: 10}}>
+              <View style={styles.noteDesc}>
+                <View style={{marginBottom: 10}}>
                   <Skeleton 
                     show={true}
-                    width={50}
-                    height={50} 
+                    width={190}
+                    height={10} 
                     colorMode='light'
                   />
                 </View>
-                <View style={styles.noteDesc}>
-                  <View style={{marginBottom: 10}}>
-                    <Skeleton 
-                      show={true}
-                      width={190}
-                      height={10} 
-                      colorMode='light'
-                    />
-                  </View>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
-                    <Skeleton 
-                      show={true}
-                      width={100}
-                      height={10} 
-                      colorMode='light'
-                    />
-                    <Skeleton 
-                      show={true}
-                      width={50}
-                      height={10} 
-                      colorMode='light'
-                    />
-                  </View>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
-                    <Skeleton 
-                      show={true}
-                      width={90}
-                      height={10} 
-                      colorMode='light'
-                    />
-                    <Skeleton 
-                      show={true}
-                      width={70}
-                      height={10} 
-                      colorMode='light'
-                    />
-                  </View>
-                  <View style={{marginRight: 10}}>
-                    <Skeleton 
-                      show={true}
-                      width={200}
-                      height={10} 
-                      colorMode='light'
-                    />
-                  </View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
+                  <Skeleton 
+                    show={true}
+                    width={100}
+                    height={10} 
+                    colorMode='light'
+                  />
+                  <Skeleton 
+                    show={true}
+                    width={50}
+                    height={10} 
+                    colorMode='light'
+                  />
+                </View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 20}}>
+                  <Skeleton 
+                    show={true}
+                    width={90}
+                    height={10} 
+                    colorMode='light'
+                  />
+                  <Skeleton 
+                    show={true}
+                    width={70}
+                    height={10} 
+                    colorMode='light'
+                  />
+                </View>
+                <View style={{marginRight: 10}}>
+                  <Skeleton 
+                    show={true}
+                    width={200}
+                    height={10} 
+                    colorMode='light'
+                  />
                 </View>
               </View>
             </View>
-          ))
-        )}
-        {(!loading && notes.length === 0) && <NoData />}
+          </View>
+        ))}
       </View>
+    )
+
+  return (
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.BLANC}}>
+      <FlatList
+        ListHeaderComponent={renderHeader}
+        data={loading ? [] : notes}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        ListEmptyComponent={
+          loading ? renderSkeleton() : 
+          notes.length === 0 ? <NoData /> : null
+        }
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh}
+            colors={[colors.BLEU, colors.VERT, colors.BLEU_CLAIR]}
+            progressBackgroundColor={colors.BLANC}
+          />
+        }
+        contentContainerStyle={{paddingBottom: 30}}
+      />
 
       {/* Note Details Modal */}
       <Modal
@@ -331,60 +334,64 @@ const NoteScreen = () => {
           </View>
 
           {/* Content */}
-          <ScrollView 
+          <FlatList
             style={styles.modalContent}
             contentContainerStyle={styles.modalContentContainer}
             showsVerticalScrollIndicator={false}
-          >
-            {/* Student Info Card */}
-            <View style={[styles.infoCard, { backgroundColor: colors.VERT_CLAIR }]}>
-              <Ionicons name="person" size={24} color={colors.VERT} />
-              <View style={styles.cardContent}>
-                <Text style={styles.cardLabel}>ÉLÈVE</Text>
-                <Text style={[styles.cardValue, { color: colors.BLEU }]}>
-                  {note.nom_student || '-'} {note.prenom_student || '-'}
-                </Text>
-              </View>
-            </View>
+            data={[1]} // Dummy data for single item render
+            renderItem={() => (
+              <>
+                {/* Student Info Card */}
+                <View style={[styles.infoCard, { backgroundColor: colors.VERT_CLAIR }]}>
+                  <Ionicons name="person" size={24} color={colors.VERT} />
+                  <View style={styles.cardContent}>
+                    <Text style={styles.cardLabel}>ÉLÈVE</Text>
+                    <Text style={[styles.cardValue, { color: colors.BLEU }]}>
+                      {note.nom_student || '-'} {note.prenom_student || '-'}
+                    </Text>
+                  </View>
+                </View>
 
-            {/* Note Details */}
-            <View style={styles.section}>
-              <Text style={styles.sectionLabel}>INFORMATIONS SUR LA NOTE</Text>
-              
-              <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Matière:</Text>
-                <Text style={styles.detailValue}>{note.nom_matiere || '-'}</Text>
-              </View>
+                {/* Note Details */}
+                <View style={styles.section}>
+                  <Text style={styles.sectionLabel}>INFORMATIONS SUR LA NOTE</Text>
+                  
+                  <View style={styles.detailItem}>
+                    <Text style={styles.detailLabel}>Matière:</Text>
+                    <Text style={styles.detailValue}>{note.nom_matiere || '-'}</Text>
+                  </View>
 
-              <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Note:</Text>
-                <Text style={[styles.detailValue, { color: colors.BLEU }]}>
-                  {note.note || '0'} / 20
-                </Text>
-              </View>
+                  <View style={styles.detailItem}>
+                    <Text style={styles.detailLabel}>Note:</Text>
+                    <Text style={[styles.detailValue, { color: colors.BLEU }]}>
+                      {note.note || '0'} / 20
+                    </Text>
+                  </View>
 
-              <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Séquence:</Text>
-                <Text style={styles.detailValue}>{note.sequence || '-'}</Text>
-              </View>
+                  <View style={styles.detailItem}>
+                    <Text style={styles.detailLabel}>Séquence:</Text>
+                    <Text style={styles.detailValue}>{note.sequence || '-'}</Text>
+                  </View>
 
-              <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Année scolaire:</Text>
-                <Text style={styles.detailValue}>{note.annee_scolaire || '-'}</Text>
-              </View>
-            </View>
+                  <View style={styles.detailItem}>
+                    <Text style={styles.detailLabel}>Année scolaire:</Text>
+                    <Text style={styles.detailValue}>{note.annee_scolaire || '-'}</Text>
+                  </View>
+                </View>
 
-            {/* Date Section */}
-            <View style={styles.section}>
-              <Text style={styles.sectionLabel}>DATE</Text>
-              <View style={[styles.dateContainer]}>
-                <Ionicons name="calendar" size={18} color={colors.GRIS_FONCE} />
-                <Text style={[styles.detailValue, { marginLeft: 8 }]}>
-                  {note.created_at ? dateParser(note.created_at) : 'Date inconnue'}
-                </Text>
-              </View>
-            </View>
-          </ScrollView>
+                {/* Date Section */}
+                <View style={styles.section}>
+                  <Text style={styles.sectionLabel}>DATE</Text>
+                  <View style={[styles.dateContainer]}>
+                    <Ionicons name="calendar" size={18} color={colors.GRIS_FONCE} />
+                    <Text style={[styles.detailValue, { marginLeft: 8 }]}>
+                      {note.created_at ? dateParser(note.created_at) : 'Date inconnue'}
+                    </Text>
+                  </View>
+                </View>
+              </>
+            )}
+          />
         </SafeAreaView>
       </Modal>
 
@@ -472,12 +479,11 @@ const NoteScreen = () => {
           </View>
         </SafeAreaView>
       </Modal>
-    </ScrollView>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  // Existing styles...
   banner: {},
   card: {
     margin: 15,

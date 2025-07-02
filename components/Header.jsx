@@ -135,9 +135,9 @@ const Header = ({user}) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 30,
+       
         padding: 20,
-        paddingTop: 10,
+        paddingTop: 40,
         backgroundColor: colors.BLEU,
         borderBottomLeftRadius: 25,
         borderBottomRightRadius: 25
