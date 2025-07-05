@@ -54,14 +54,12 @@ const AbsenceScreen = () => {
 
   async function getPresences() {
     const url = 'https://gesco-app.com/api/get-absences-classe/' + parsedClasse.id;
-    console.log('➡️ Appel API GET :', url);
-    console.log('➡️ Headers envoyés :', parsedHeaders);
 
     try {
       const res = await axios.get(url, {
         headers: parsedHeaders
       });
-      console.log('✅ Réponse reçue :', res.data);
+      //console.log('✅ Réponse reçue :', res.data);
       setAbsences(res.data);
     } catch (error) {
       console.log('❌ Erreur API :', error.response?.data || error.message);
@@ -209,7 +207,7 @@ const AbsenceScreen = () => {
               <Ionicons name='arrow-back-outline' size={24} color={colors.NOIR} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Détails de l'absence</Text>
-            <View style={{ width: 70 }} /> {/* Spacer for alignment */}
+            <View style={{ width: 70 }} /> 
           </View>
 
           {/* Content */}
@@ -298,6 +296,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    merginTop:10,
     padding: 10,
     borderRadius: 15,
     borderWidth: 1,

@@ -11,11 +11,12 @@ import Heading from '@/components/Heading';
 import { Skeleton } from 'moti/skeleton';
 import NoData from '@/components/NoData';
 import { getAllCoursClasse } from '@/services/MainService';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const CourseScreen = () => {
   const params = useLocalSearchParams();
-
+  const router = useRouter();
+  
   const parseDoubleJSON = (str) => {
     if (!str) return null;
     try {
@@ -45,7 +46,7 @@ const CourseScreen = () => {
     try {
       if (!parsedClasse?.id) throw new Error("Classe ID non défini");
       const res = await getAllCoursClasse(parsedClasse.id, parsedHeaders);
-      console.log("✅ Cours récupérés:", res.cours);
+      //console.log("✅ Cours récupérés:", res.cours);
       setCours(res.cours);
     } catch (error) {
       console.error("❌ Erreur getAllCoursClasse:", error);

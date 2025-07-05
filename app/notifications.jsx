@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList
+  FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
+import { getNotification, getHeaders, getData } from '@/services/MainService';
 
-// Dummy colors – adjust as needed
 const colors = {
   BLEU: '#009AD7',
   BLANC: '#FFFFFF',
@@ -18,60 +19,6 @@ const colors = {
   NOIR: '#111827',
 };
 
-// Static list of notifications
-const notifications = [
-  {
-    id: '1',
-    title: 'Nouvel événement scolaire',
-    message: 'Réunion de parents prévue le 28 juin à 10h.',
-    date: 'Aujourd\'hui à 09:00',
-    read: false,
-  },
-  {
-    id: '2',
-    title: 'Devoir disponible',
-    message: 'Le devoir de mathématiques pour la 5e A est disponible.',
-    date: 'Hier à 17:30',
-    read: true,
-  },
-   {
-    id: '3',
-    title: 'Résultats trimestriels publiés',
-    message: 'Consultez les résultats de votre enfant sur le portail.',
-    date: '20 juin à 14:00',
-    read: false,
-  },
-  {
-    id: '4',
-    title: 'Absence enregistrée',
-    message: 'Votre enfant a été absent le 19 juin.',
-    date: '19 juin à 18:15',
-    read: true,
-  },
-  {
-    id: '5',
-    title: 'Message de l’enseignant',
-    message: 'Veuillez vérifier le cahier de correspondance de votre enfant.',
-    date: '18 juin à 09:40',
-    read: true,
-  },
-  {
-    id: '6',
-    title: 'Mise à jour du règlement',
-    message: 'Veuillez lire la mise à jour du règlement intérieur.',
-    date: '14 juin à 11:10',
-    read: true,
-  },
-  {
-    id: '7',
-    title: 'Journée sportive',
-    message: 'La journée sportive aura lieu le 30 juin. Prévoir une tenue adaptée.',
-    date: '13 juin à 10:15',
-    read: false,
-  },
-];
-
-// Notification item component
 const NotificationItem = ({ title, message, date, read = false, onPress }) => {
   return (
     <TouchableOpacity
@@ -94,9 +41,51 @@ const NotificationItem = ({ title, message, date, read = false, onPress }) => {
   );
 };
 
-// Main component
 const Notification = () => {
   const navigation = useNavigation();
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchNotifications = async () => {
+  try {
+    const headers = await getHeaders(); 
+    const token = await getData('tokenGesco');
+
+    const userId = token?.user?.id;
+    if (!userId) {
+      console.warn('User ID not found in token');
+      return;
+    }
+
+    const userData = { user_id: userId };
+    console.log('Sending user_id:', userId);
+
+    const response = await axios.post(`https://gesco-app.com/api/notification/${parseInt(userId)}`, { headers } );
+
+    console.log('Fetched notifications:', response.data);
+    setNotifications(response.data.notifications || []);
+  } catch (err) {
+    console.log("notification error:", JSON.stringify(err, null, 2));
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  useEffect(() => {
+    // Debug: Show local storage values
+    async function checkStorage() {
+      const token = await getData('tokenGesco');
+      const user = await getData('userGesco');
+      const school = await getData('ecoleGesco');
+    }
+
+    checkStorage();
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
@@ -106,24 +95,33 @@ const Notification = () => {
           <Ionicons name="arrow-back" size={24} color={colors.BLANC} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notifications</Text>
-        <View style={{ width: 24 }} /> {/* Placeholder for spacing */}
+        <View style={{ width: 24 }} />
       </View>
 
-      {/* Notification List */}
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <NotificationItem
-            title={item.title}
-            message={item.message}
-            date={item.date}
-            read={item.read}
-            onPress={() => console.log('Tapped:', item.title)}
-          />
-        )}
-        contentContainerStyle={{ paddingVertical: 10 }}
-      />
+      {/* Loading Indicator */}
+      {loading ? (
+        <ActivityIndicator size="large" color={colors.BLEU} style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={notifications}
+          keyExtractor={(item) => item.id?.toString()}
+          renderItem={({ item }) => (
+            <NotificationItem
+              title={item.title}
+              message={item.message}
+              date={item.date}
+              read={item.read}
+              onPress={() => console.log('Tapped:', item.title)}
+            />
+          )}
+          contentContainerStyle={{ paddingVertical: 10 }}
+          ListEmptyComponent={
+            <Text style={{ textAlign: 'center', color: colors.GRIS }}>
+              Aucune notification
+            </Text>
+          }
+        />
+      )}
     </View>
   );
 };

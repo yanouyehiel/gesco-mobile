@@ -1,6 +1,5 @@
 import {
-  View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput,
-  Platform
+  View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, Platform
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { colors } from '@/utils/colors';
@@ -8,8 +7,9 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Heading from '@/components/Heading';
 import { Ionicons } from '@expo/vector-icons';
 import { showToast } from '@/utils/fonctions';
+import { sendPushTokenToBackend } from '@/services/notification';
 import { addNote, getStudents, getMatieresSchool, getSequences } from "@/services/MainService";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 const AjouterNote = ({ user, headers, classe, ecole, close }) => {
   const parsedUser = typeof user === 'string' ? JSON.parse(user) : user;
@@ -17,14 +17,13 @@ const AjouterNote = ({ user, headers, classe, ecole, close }) => {
   const parsedHeaders = typeof headers === 'string' ? JSON.parse(headers) : headers;
   const parsedEcole = typeof ecole === 'string' ? JSON.parse(ecole) : ecole;
 
-  const [ecoleId, setEcoleId] = useState(parsedEcole?.id || null);
-  const [classeId, setClasseId] = useState(parsedClasse?.id || null);
+  const [ecoleId] = useState(parsedEcole?.id || null);
+  const [classeId] = useState(parsedClasse?.id || null);
 
   const [loading, setLoading] = useState(true);
   const [selectMatiere, setSelectMatiere] = useState(null);
   const [selectStudent, setSelectStudent] = useState(null);
   const [selectSequence, setSelectSequence] = useState(null);
-
   const [annee_scolaire, setAnneeScolaire] = useState(null);
   const [note, setNote] = useState('');
   const [appreciation, setAppreciation] = useState('');
@@ -134,6 +133,14 @@ const AjouterNote = ({ user, headers, classe, ecole, close }) => {
     try {
       const res = await addNote(data, parsedHeaders);
       showToast(res.message);
+
+      await sendPushTokenToBackend(
+        'Nouvelle note enregistrée',
+        `L'élève a reçu une note de ${data.note}/20 pour la matière sélectionnée.`,
+        'INFORMATION',
+        parsedUser?.user?.id || parsedUser.id
+      );
+
       setNote('');
       setAppreciation('');
       setSelectMatiere(null);
@@ -149,109 +156,112 @@ const AjouterNote = ({ user, headers, classe, ecole, close }) => {
     setSubmitting(false);
   }
 
+  const formItems = [
+    <TouchableOpacity style={styles.header} onPress={close}>
+      <Ionicons name='arrow-back-outline' size={30} color="black" />
+      <Text style={styles.titleHeader}>Enregistrer une note</Text>
+    </TouchableOpacity>,
+    <Heading text="Remplissez le formulaire" />,
+
+    <Text style={styles.label}>Sélectionner la matière</Text>,
+    <DropDownPicker
+      open={openMatiere}
+      value={selectMatiere}
+      items={itemsMatieres}
+      setOpen={setOpenMatiere}
+      setValue={setSelectMatiere}
+      setItems={setItemsMatieres}
+      placeholder="Sélectionner ici..."
+      style={[styles.textArea, error && !selectMatiere && styles.error]}
+      dropDownContainerStyle={{ borderColor: colors.BLEU }}
+      listItemLabelStyle={{ color: colors.BLEU }}
+      zIndex={3000}
+      zIndexInverse={1000}
+    />,
+    error && !selectMatiere && <Text style={styles.errorText}>Veuillez sélectionner une matière</Text>,
+
+    <Text style={styles.label}>Sélectionner la séquence</Text>,
+    <DropDownPicker
+      open={openSequence}
+      value={selectSequence}
+      items={itemsSequences}
+      setOpen={setOpenSequence}
+      setValue={setSelectSequence}
+      setItems={setItemsSequences}
+      placeholder="Sélectionner ici..."
+      style={[styles.textArea, error && !selectSequence && styles.error]}
+      dropDownContainerStyle={{ borderColor: colors.BLEU }}
+      listItemLabelStyle={{ color: colors.BLEU }}
+      zIndex={2500}
+      zIndexInverse={900}
+    />,
+    error && !selectSequence && <Text style={styles.errorText}>Veuillez sélectionner une séquence</Text>,
+
+    <Text style={styles.label}>Sélectionner l'élève</Text>,
+    <DropDownPicker
+      open={openStudent}
+      value={selectStudent}
+      items={itemsStudents}
+      setOpen={setOpenStudent}
+      setValue={setSelectStudent}
+      setItems={setItemsStudents}
+      placeholder="Sélectionner ici..."
+      style={[styles.textArea, error && !selectStudent && styles.error]}
+      dropDownContainerStyle={{ borderColor: colors.BLEU }}
+      listItemLabelStyle={{ color: colors.BLEU }}
+      zIndex={2000}
+      zIndexInverse={800}
+    />,
+    error && !selectStudent && <Text style={styles.errorText}>Veuillez sélectionner un élève</Text>,
+
+    <TextInput
+      placeholder='Entrer la note'
+      style={[styles.textArea, error && (note === "" || parseInt(note) > 20) && styles.error]}
+      keyboardType="numeric"
+      value={note}
+      onChangeText={setNote}
+    />,
+    error && note === "" && <Text style={styles.errorText}>Veuillez entrer une note</Text>,
+    error && note !== "" && parseInt(note) > 20 && <Text style={styles.errorText}>Entrer une note ≤ 20</Text>,
+
+    <TextInput
+      placeholder='Entrer une appréciation'
+      style={styles.textArea}
+      value={appreciation}
+      onChangeText={setAppreciation}
+    />,
+
+    <Text style={styles.label}>Sélectionner l'année scolaire</Text>,
+    <DropDownPicker
+      open={openAnnee}
+      value={annee_scolaire}
+      items={itemsAnnees}
+      setOpen={setOpenAnnee}
+      setValue={setAnneeScolaire}
+      setItems={setItemsAnnees}
+      placeholder="Sélectionner ici..."
+      style={[styles.textArea, error && !annee_scolaire && styles.error]}
+      dropDownContainerStyle={{ borderColor: colors.BLEU }}
+      listItemLabelStyle={{ color: colors.BLEU }}
+      zIndex={1500}
+      zIndexInverse={700}
+    />,
+    error && !annee_scolaire && <Text style={styles.errorText}>Veuillez sélectionner une année scolaire</Text>,
+
+    <TouchableOpacity onPress={handleSubmit} style={styles.btn} disabled={loading || submitting}>
+      {loading ? <ActivityIndicator color={colors.BLANC} /> :
+        <Text style={{ fontFamily: 'Regular', color: colors.BLANC, fontSize: 23 }}>Enregistrer</Text>}
+    </TouchableOpacity>
+  ];
+
   return (
-    <KeyboardAwareScrollView
+    <KeyboardAwareFlatList
+      data={formItems}
+      renderItem={({ item }) => <View style={{ marginBottom: 10 }}>{item}</View>}
+      keyExtractor={(_, index) => index.toString()}
       contentContainerStyle={{ padding: 15 }}
-      enableOnAndroid={true}
       keyboardShouldPersistTaps="handled"
-    >
-      <TouchableOpacity style={styles.header} onPress={close}>
-        <Ionicons name='arrow-back-outline' size={30} color="black" />
-        <Text style={styles.titleHeader}>Enregistrer une note</Text>
-      </TouchableOpacity>
-
-      <Heading text={"Remplissez le formulaire"} />
-
-      <Text style={styles.label}>Sélectionner la matière</Text>
-      <DropDownPicker
-        open={openMatiere}
-        value={selectMatiere}
-        items={itemsMatieres}
-        setOpen={setOpenMatiere}
-        setValue={setSelectMatiere}
-        setItems={setItemsMatieres}
-        placeholder="Sélectionner ici..."
-        style={[styles.textArea, error && !selectMatiere && styles.error]}
-        dropDownContainerStyle={{ borderColor: colors.BLEU }}
-        listItemLabelStyle={{ color: colors.BLEU }}
-        zIndex={3000}
-        zIndexInverse={1000}
-      />
-      {error && !selectMatiere && <Text style={styles.errorText}>Veuillez sélectionner une matière</Text>}
-
-      <Text style={styles.label}>Sélectionner la séquence</Text>
-      <DropDownPicker
-        open={openSequence}
-        value={selectSequence}
-        items={itemsSequences}
-        setOpen={setOpenSequence}
-        setValue={setSelectSequence}
-        setItems={setItemsSequences}
-        placeholder="Sélectionner ici..."
-        style={[styles.textArea, error && !selectSequence && styles.error]}
-        dropDownContainerStyle={{ borderColor: colors.BLEU }}
-        listItemLabelStyle={{ color: colors.BLEU }}
-        zIndex={2500}
-        zIndexInverse={900}
-      />
-      {error && !selectSequence && <Text style={styles.errorText}>Veuillez sélectionner une séquence</Text>}
-
-      <Text style={styles.label}>Sélectionner l'élève</Text>
-      <DropDownPicker
-        open={openStudent}
-        value={selectStudent}
-        items={itemsStudents}
-        setOpen={setOpenStudent}
-        setValue={setSelectStudent}
-        setItems={setItemsStudents}
-        placeholder="Sélectionner ici..."
-        style={[styles.textArea, error && !selectStudent && styles.error]}
-        dropDownContainerStyle={{ borderColor: colors.BLEU }}
-        listItemLabelStyle={{ color: colors.BLEU }}
-        zIndex={2000}
-        zIndexInverse={800}
-      />
-      {error && !selectStudent && <Text style={styles.errorText}>Veuillez sélectionner un élève</Text>}
-
-      <TextInput
-        placeholder='Entrer la note'
-        style={[styles.textArea, error && (note === "" || parseInt(note) > 20) && styles.error]}
-        keyboardType="numeric"
-        value={note}
-        onChangeText={setNote}
-      />
-      {error && note === "" && <Text style={styles.errorText}>Veuillez entrer une note</Text>}
-      {error && note !== "" && parseInt(note) > 20 && <Text style={styles.errorText}>Entrer une note ≤ 20</Text>}
-
-      <TextInput
-        placeholder='Entrer une appréciation'
-        style={styles.textArea}
-        value={appreciation}
-        onChangeText={setAppreciation}
-      />
-
-      <Text style={styles.label}>Sélectionner l'année scolaire</Text>
-      <DropDownPicker
-        open={openAnnee}
-        value={annee_scolaire}
-        items={itemsAnnees}
-        setOpen={setOpenAnnee}
-        setValue={setAnneeScolaire}
-        setItems={setItemsAnnees}
-        placeholder="Sélectionner ici..."
-        style={[styles.textArea, error && !annee_scolaire && styles.error]}
-        dropDownContainerStyle={{ borderColor: colors.BLEU }}
-        listItemLabelStyle={{ color: colors.BLEU }}
-        zIndex={1500}
-        zIndexInverse={700}
-      />
-      {error && !annee_scolaire && <Text style={styles.errorText}>Veuillez sélectionner une année scolaire</Text>}
-
-      <TouchableOpacity onPress={handleSubmit} style={styles.btn} disabled={loading || submitting}>
-        {loading ? <ActivityIndicator color={colors.BLANC} /> :
-          <Text style={{ fontFamily: 'Regular', color: colors.BLANC, fontSize: 23 }}>Enregistrer</Text>}
-      </TouchableOpacity>
-    </KeyboardAwareScrollView>
+    />
   );
 };
 
@@ -260,7 +270,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: 20,
+    marginBottom: 10,
     marginTop: 30,
   },
   titleHeader: {
@@ -273,7 +283,7 @@ const styles = StyleSheet.create({
     fontFamily: 'SemiBold',
     fontSize: 20,
     marginBottom: 5,
-    marginTop: 15
+    marginTop: 1
   },
   textArea: {
     borderWidth: 1,
@@ -281,7 +291,7 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     borderColor: colors.BLEU,
-    marginBottom: 15
+    marginBottom: 1
   },
   error: {
     borderColor: colors.ROUGE

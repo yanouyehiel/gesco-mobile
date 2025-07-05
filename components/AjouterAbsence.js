@@ -6,6 +6,7 @@ import Heading from '@/components/Heading'
 import { colors } from '@/utils/colors'
 import DropDownPicker from 'react-native-dropdown-picker';
 import { addAbsence, getStudents } from '@/services/MainService'
+import { sendPushTokenToBackend } from '@/services/notification'; 
 import { showToast } from '@/utils/fonctions'
 
 const AjouterAbsence = ({ hideModal, user, headers, ecole, classe }) => {
@@ -72,50 +73,58 @@ const AjouterAbsence = ({ hideModal, user, headers, ecole, classe }) => {
         setStudents(res)
     }
 
-  async function handleSubmit() {
-    setLoading(true)
+async function handleSubmit() {
+  setLoading(true);
 
-    if (
-        selectedDate === "" ||
-        selectedStudent === "" ||
-        selectedTimeDebut === "" ||
-        selectedTimeFin === "" ||
-        anneeScolaire === ""
-    ) {
-        setError(true)
-        setLoading(false)
-        return
-    }
+  if (
+    selectedDate === "" ||
+    selectedStudent === "" ||
+    selectedTimeDebut === "" ||
+    selectedTimeFin === "" ||
+    anneeScolaire === ""
+  ) {
+    setError(true);
+    setLoading(false);
+    return;
+  }
 
-    const data = {
-        student_id: selectedStudent,
-        date: selectedDate,
-        periode: selectedTimeDebut + ' - ' + selectedTimeFin,
-        ecole_id: parsedUser.ecole_id,
-        classe_id: parsedClasse.id,
-        annee_scolaire: anneeScolaire
-    }
+  const data = {
+    student_id: selectedStudent,
+    date: selectedDate,
+    periode: selectedTimeDebut + ' - ' + selectedTimeFin,
+    ecole_id: parsedUser.ecole_id,
+    classe_id: parsedClasse.id,
+    annee_scolaire: anneeScolaire
+  };
 
-    try {
-        const res = await addAbsence(data, parsedHeaders)
-        showToast(res.message)
+  try {
+    const res = await addAbsence(data, parsedHeaders);
+    showToast(res.message);
 
-      
-        setSelectedStudent(null)
-        setSelectedDate("")
-        setSelectedTimeDebut("")
-        setSelectedTimeFin("")
-        setAnneeScolaire(anneeItems[1]?.value || null)
-        setError(false)
+    // Send push notification
+    await sendPushTokenToBackend(
+      'Nouvelle absence enregistrée',
+      `Une absence a été notée pour l'élève le ${selectedDate} (${data.periode}).`,
+      'INFORMATION',
+      parsedUser?.user?.id || parsedUser.id
+    );
 
-        hideModal() 
-    } catch (err) {
-        console.log("Error submitting absence:", err)
-        showToast("Une erreur est survenue lors de l'enregistrement.")
-    }
+    // Reset form
+    setSelectedStudent(null);
+    setSelectedDate("");
+    setSelectedTimeDebut("");
+    setSelectedTimeFin("");
+    setAnneeScolaire(anneeItems[1]?.value || null);
+    setError(false);
+    hideModal();
+  } catch (err) {
+    console.log("Error submitting absence:", err);
+    showToast("Une erreur est survenue lors de l'enregistrement.");
+  }
 
-    setLoading(false)
+  setLoading(false);
 }
+
 
     return (
         <ScrollView>
